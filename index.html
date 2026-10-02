@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>RailAtlas Europe MVP</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="brand">RailAtlas Europe</div>
+      <div class="sub">Atlas · Route · Fahrplan · Infrastruktur</div>
+    </div>
+    <button id="locateBtn" class="ghost">Standort</button>
+  </header>
+  <section class="planner">
+    <input id="fromInput" value="Heilbronn Hbf" aria-label="Start" />
+    <span class="arrow">→</span>
+    <input id="toInput" value="Würzburg Hbf" aria-label="Ziel" />
+    <button id="routeBtn">Route anzeigen</button>
+  </section>
+  <main>
+    <div id="map"></div>
+    <aside id="infoPanel" class="panel">
+      <div class="tabs">
+        <button class="tab active" data-tab="atlas">Atlas</button>
+        <button class="tab" data-tab="route">Route</button>
+        <button class="tab" data-tab="timetable">Zeitplan</button>
+      </div>
+      <div id="tabContent"></div>
+    </aside>
+  </main>
+  <section class="timeline-wrap">
+    <input id="timeline" type="range" min="0" max="100" value="0" />
+    <div id="timelineLabel" class="timeline-label">Heilbronn Hbf · 08:02</div>
+  </section>
+  <footer>
+    <label><input type="checkbox" id="ormToggle" checked /> OpenRailwayMap</label>
+    <label><input type="checkbox" id="historicToggle" /> Historisch (Platzhalter)</label>
+    <span class="status" id="status">MVP-Demo</span>
+  </footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
