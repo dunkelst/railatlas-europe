@@ -4,9 +4,9 @@ const base = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-const orm = L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
+const orm = L.tileLayer('https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
   maxZoom: 19,
-  attribution: 'Railway overlay &copy; OpenRailwayMap / OSM contributors'
+  attribution: 'Railway overlay &copy; OpenRailwayMap contributors'
 }).addTo(map);
 
 const route = [
