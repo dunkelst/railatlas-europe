@@ -3,20 +3,42 @@
   "$id": "https://railatlas.example/schema/railatlas.graph.schema.json",
   "title": "RailAtlas graph bundle",
   "type": "object",
-  "required": ["schema", "region", "nodes", "edges", "operational_points"],
+  "required": [
+    "schema",
+    "region",
+    "nodes",
+    "edges",
+    "operational_points"
+  ],
   "properties": {
-    "schema": { "const": "railatlas.graph/1" },
-    "region": { "type": "string" },
-    "generated_at": { "type": "string" },
+    "schema": {
+      "const": "railatlas.graph/1"
+    },
+    "region": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
     "nodes": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "lon", "lat"],
+        "required": [
+          "id",
+          "lon",
+          "lat"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "lon": { "type": "number" },
-          "lat": { "type": "number" }
+          "id": {
+            "type": "string"
+          },
+          "lon": {
+            "type": "number"
+          },
+          "lat": {
+            "type": "number"
+          }
         }
       }
     },
@@ -24,22 +46,196 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "from", "to", "length_m", "geometry"],
+        "required": [
+          "id",
+          "from",
+          "to",
+          "length_m",
+          "geometry"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "from": { "type": "string" },
-          "to": { "type": "string" },
-          "length_m": { "type": "number", "minimum": 0 },
-          "routing_cost": { "type": "number", "minimum": 0 },
+          "id": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "length_m": {
+            "type": "number",
+            "minimum": 0
+          },
+          "routing_cost": {
+            "type": "number",
+            "minimum": 0
+          },
           "geometry": {
             "type": "array",
             "minItems": 2,
             "items": {
               "type": "array",
-              "prefixItems": [{ "type": "number" }, { "type": "number" }],
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
               "minItems": 2,
               "maxItems": 2
             }
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 3
+          },
+          "railway": {
+            "type": "string"
+          },
+          "infrastructure": {
+            "type": "object",
+            "properties": {
+              "usage": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "service": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "tracks": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              },
+              "gauge_mm": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              },
+              "electrified": {
+                "type": [
+                  "string",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "voltage_v": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "frequency_hz": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "maxspeed_kmh": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "operator": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "infrastructure_manager": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "line_ref": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "bridge": {
+                "type": [
+                  "string",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "tunnel": {
+                "type": [
+                  "string",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "layer": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "signalling": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "traffic_mode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          },
+          "source_refs": {
+            "type": "object",
+            "properties": {
+              "osm_way_id": {
+                "type": [
+                  "integer",
+                  "string",
+                  "null"
+                ]
+              },
+              "osm_relation_ids": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                }
+              },
+              "rinf_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "national_ids": {
+                "type": "object"
+              }
+            },
+            "additionalProperties": true
           }
         }
       }
@@ -48,16 +244,71 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "name", "node_id"],
+        "required": [
+          "id",
+          "name",
+          "node_id"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "node_id": { "type": "string" },
-          "aliases": { "type": "array", "items": { "type": "string" } },
-          "identifiers": { "type": "object" }
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "node_id": {
+            "type": "string"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "identifiers": {
+            "type": "object"
+          }
         }
       }
     },
-    "source_metadata": { "type": "object" }
+    "source_metadata": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "builder_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    }
   }
 }
