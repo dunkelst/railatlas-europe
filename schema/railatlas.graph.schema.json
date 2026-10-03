@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://railatlas.example/schema/railatlas.graph.schema.json",
+  "title": "RailAtlas graph bundle",
+  "type": "object",
+  "required": ["schema", "region", "nodes", "edges", "operational_points"],
+  "properties": {
+    "schema": { "const": "railatlas.graph/1" },
+    "region": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "lon", "lat"],
+        "properties": {
+          "id": { "type": "string" },
+          "lon": { "type": "number" },
+          "lat": { "type": "number" }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "from", "to", "length_m", "geometry"],
+        "properties": {
+          "id": { "type": "string" },
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "length_m": { "type": "number", "minimum": 0 },
+          "routing_cost": { "type": "number", "minimum": 0 },
+          "geometry": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "array",
+              "prefixItems": [{ "type": "number" }, { "type": "number" }],
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        }
+      }
+    },
+    "operational_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "node_id"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "node_id": { "type": "string" },
+          "aliases": { "type": "array", "items": { "type": "string" } },
+          "identifiers": { "type": "object" }
+        }
+      }
+    },
+    "source_metadata": { "type": "object" }
+  }
+}
