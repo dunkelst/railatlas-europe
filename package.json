@@ -1,0 +1,8 @@
+{
+  "name": "railatlas-europe",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/routing.test.mjs"
+  }
+}
