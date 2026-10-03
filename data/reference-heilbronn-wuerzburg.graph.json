@@ -1,0 +1,33 @@
+{
+  "schema": "railatlas.graph/1",
+  "region": "reference-heilbronn-wuerzburg",
+  "generated_at": "2026-10-03T07:40:00Z",
+  "source_metadata": {
+    "status": "reference-fixture",
+    "note": "Temporary routing fixture. Replace with reproducible OSM-derived graph bundle."
+  },
+  "nodes": [
+    {"id":"n-hn","lon":9.2081,"lat":49.1421},
+    {"id":"n-bfh","lon":9.2198,"lat":49.2308},
+    {"id":"n-osk","lon":9.4227,"lat":49.4297},
+    {"id":"n-lad","lon":9.7090,"lat":49.5650},
+    {"id":"n-wue","lon":9.9357,"lat":49.8019}
+  ],
+  "edges": [
+    {"id":"e-hn-bfh","from":"n-hn","to":"n-bfh","length_m":11000,"geometry":[[9.2081,49.1421],[9.2198,49.2308]],"railway":"rail","country":"DE"},
+    {"id":"e-bfh-hn","from":"n-bfh","to":"n-hn","length_m":11000,"geometry":[[9.2198,49.2308],[9.2081,49.1421]],"railway":"rail","country":"DE"},
+    {"id":"e-bfh-osk","from":"n-bfh","to":"n-osk","length_m":30000,"geometry":[[9.2198,49.2308],[9.4227,49.4297]],"railway":"rail","country":"DE"},
+    {"id":"e-osk-bfh","from":"n-osk","to":"n-bfh","length_m":30000,"geometry":[[9.4227,49.4297],[9.2198,49.2308]],"railway":"rail","country":"DE"},
+    {"id":"e-osk-lad","from":"n-osk","to":"n-lad","length_m":27000,"geometry":[[9.4227,49.4297],[9.7090,49.5650]],"railway":"rail","country":"DE"},
+    {"id":"e-lad-osk","from":"n-lad","to":"n-osk","length_m":27000,"geometry":[[9.7090,49.5650],[9.4227,49.4297]],"railway":"rail","country":"DE"},
+    {"id":"e-lad-wue","from":"n-lad","to":"n-wue","length_m":34000,"geometry":[[9.7090,49.5650],[9.9357,49.8019]],"railway":"rail","country":"DE"},
+    {"id":"e-wue-lad","from":"n-wue","to":"n-lad","length_m":34000,"geometry":[[9.9357,49.8019],[9.7090,49.5650]],"railway":"rail","country":"DE"}
+  ],
+  "operational_points": [
+    {"id":"ra:op:de:heilbronn-hbf","name":"Heilbronn Hbf","node_id":"n-hn","aliases":["Heilbronn"]},
+    {"id":"ra:op:de:bad-friedrichshall-hbf","name":"Bad Friedrichshall Hbf","node_id":"n-bfh"},
+    {"id":"ra:op:de:osterburken","name":"Osterburken","node_id":"n-osk"},
+    {"id":"ra:op:de:lauda","name":"Lauda","node_id":"n-lad"},
+    {"id":"ra:op:de:wuerzburg-hbf","name":"Würzburg Hbf","node_id":"n-wue","aliases":["Wuerzburg Hbf","Würzburg"]}
+  ]
+}
