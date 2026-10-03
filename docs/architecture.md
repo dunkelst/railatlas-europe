@@ -74,3 +74,25 @@ Edges should at minimum expose `id`, `from`, `to`, `geometry`, `length_m`, `rail
 7. No timetable data is required for routing to work.
 
 Only after this test passes should DELFI/GTFS/NeTEx timetable mapping become the next milestone.
+
+
+## Europe scaling
+
+RailAtlas must not ship a single monolithic Europe graph to the browser.
+
+The data build pipeline produces multiple products from the same canonical source data:
+
+1. lightweight Europe overview network
+2. country-level overview bundles
+3. regional detailed graph bundles
+4. optional smaller routing tiles/chunks for dense metropolitan areas
+
+The browser loads only the bundles needed for the current viewport and requested route. Cross-region routing uses stable portal/border nodes that are shared by adjacent bundles.
+
+Display and routing are allowed to use different levels of generalisation. A Europe overview may use simplified geometry, while the routing graph preserves the topology required for a reproducible path.
+
+A registry at `data/regions.json` describes bundle hierarchy, zoom range, geographic extent and availability. This avoids hard-coding Germany or individual regions into the UI.
+
+## Cartographic scale model
+
+Rendering follows the scale hierarchy described in `docs/cartography.md`. Infrastructure data remains canonical; only visual generalisation changes with zoom.
