@@ -23,7 +23,10 @@ let graphRegion = null;
 let graph = null;
 let activeRoute = null;
 let activeStops = [];
+let atlasLayer = L.layerGroup().addTo(map);
+let selectionLayer = L.layerGroup().addTo(map);
 let routeLayer = L.layerGroup().addTo(map);
+let selectedEdge = null;
 let trainMarker = null;
 const graphCache = new Map();
 
@@ -37,6 +40,101 @@ function orderedOperationalPoints(routeResult) {
   return graph.operational_points
     .filter(op => position.has(op.node_id))
     .sort((a, b) => position.get(a.node_id) - position.get(b.node_id));
+}
+
+
+function valueOrUnknown(value, suffix = '') {
+  if (value === null || value === undefined || value === '') return 'unbekannt';
+  return `${value}${suffix}`;
+}
+
+function edgeInfrastructure(edge) {
+  return edge?.infrastructure ?? {};
+}
+
+function physicalEdgeKey(edge) {
+  const endpoints = [edge.from, edge.to].sort().join('|');
+  const source = edge?.source_refs?.osm_way_id ?? edge.id.replace(/:(?:f|r)$/, '');
+  return `${source}|${endpoints}`;
+}
+
+function edgeWeight(edge) {
+  const infra = edgeInfrastructure(edge);
+  if (infra.usage === 'main') return 5;
+  if (infra.usage === 'branch') return 4;
+  if (infra.service) return 2.5;
+  return 3.5;
+}
+
+function infrastructureHtml(edge) {
+  const infra = edgeInfrastructure(edge);
+  const source = edge?.source_refs?.osm_way_id ? `OSM Way ${edge.source_refs.osm_way_id}` : (graph?.source_metadata?.status ?? '—');
+  return `
+    <div class="inspector-title">Streckenabschnitt</div>
+    <div class="kv inspector-grid">
+      <span>Strecke / Ref</span><span>${valueOrUnknown(infra.line_ref)}</span>
+      <span>Nutzung</span><span>${valueOrUnknown(infra.usage)}</span>
+      <span>Gleise</span><span>${valueOrUnknown(infra.tracks)}</span>
+      <span>Spurweite</span><span>${valueOrUnknown(infra.gauge_mm, infra.gauge_mm ? ' mm' : '')}</span>
+      <span>Elektrifizierung</span><span>${valueOrUnknown(infra.electrified)}</span>
+      <span>Spannung</span><span>${valueOrUnknown(infra.voltage_v, infra.voltage_v ? ' V' : '')}</span>
+      <span>Frequenz</span><span>${valueOrUnknown(infra.frequency_hz, infra.frequency_hz ? ' Hz' : '')}</span>
+      <span>Vmax</span><span>${valueOrUnknown(infra.maxspeed_kmh, infra.maxspeed_kmh ? ' km/h' : '')}</span>
+      <span>Betreiber</span><span>${valueOrUnknown(infra.operator)}</span>
+      <span>Brücke</span><span>${valueOrUnknown(infra.bridge)}</span>
+      <span>Tunnel</span><span>${valueOrUnknown(infra.tunnel)}</span>
+      <span>Länge</span><span>${(edge.length_m / 1000).toFixed(2)} km</span>
+      <span>Quelle</span><span>${source}</span>
+    </div>`;
+}
+
+function selectEdge(edge) {
+  selectedEdge = edge;
+  selectionLayer.clearLayers();
+  const coords = edge.geometry.map(([lon, lat]) => [lat, lon]);
+  L.polyline(coords, { weight: edgeWeight(edge) + 5, opacity: .35, className: 'railatlas-selection' })
+    .addTo(selectionLayer);
+  document.querySelector('[data-tab="atlas"]').click();
+}
+
+function drawAtlasGraph() {
+  atlasLayer.clearLayers();
+  selectionLayer.clearLayers();
+  selectedEdge = null;
+  if (!graph) return;
+
+  const seen = new Set();
+  for (const edge of graph.edges ?? []) {
+    const key = physicalEdgeKey(edge);
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const coords = edge.geometry.map(([lon, lat]) => [lat, lon]);
+    const infra = edgeInfrastructure(edge);
+    const line = L.polyline(coords, {
+      weight: edgeWeight(edge),
+      opacity: infra.service ? .58 : .82,
+      className: infra.service ? 'railatlas-track railatlas-service' : 'railatlas-track'
+    });
+    line.on('click', () => selectEdge(edge));
+    line.bindTooltip(
+      [infra.line_ref, infra.usage, infra.maxspeed_kmh ? `${infra.maxspeed_kmh} km/h` : null]
+        .filter(Boolean).join(' · ') || 'Streckenabschnitt',
+      { sticky: true }
+    );
+    line.addTo(atlasLayer);
+  }
+
+  for (const op of graph.operational_points ?? []) {
+    const node = nodeById(op.node_id);
+    if (!node) continue;
+    const marker = L.circleMarker([node.lat, node.lon], {
+      radius: 5, weight: 2, fillOpacity: 1, className: 'railatlas-op'
+    })
+      .bindPopup(`<b>${op.name}</b><br><span class="popup-muted">${op.id}</span>`)
+      .bindTooltip(op.name, { direction: 'top', offset: [0, -5] });
+    marker.addTo(atlasLayer);
+  }
 }
 
 async function ensureGraphForCurrentView() {
@@ -54,7 +152,10 @@ async function ensureGraphForCurrentView() {
       graph = null;
       activeRoute = null;
       activeStops = [];
+      atlasLayer.clearLayers();
+      selectionLayer.clearLayers();
       routeLayer.clearLayers();
+      selectedEdge = null;
       trainMarker = null;
     }
     document.getElementById('status').textContent =
@@ -82,6 +183,7 @@ async function ensureGraphForCurrentView() {
   activeStops = [];
   routeLayer.clearLayers();
   trainMarker = null;
+  drawAtlasGraph();
   document.getElementById('status').textContent =
     `${nextGraphRegion.label} · Rail-Graph geladen`;
   renderTab(document.querySelector('.tab.active')?.dataset.tab ?? 'atlas');
@@ -117,13 +219,24 @@ function renderTab(tab) {
   const graphLabel = graphRegion?.label ?? '—';
 
   if (tab === 'atlas') {
+    const opCount = graph?.operational_points?.length ?? 0;
+    const edgeCount = graph?.edges?.length ?? 0;
     el.innerHTML = `
       <h3>Atlas</h3>
-      <div class="card">RailAtlas trennt Topologie, Infrastruktur, Betriebsstellen und Fahrplandaten.</div>
-      <div class="kv">
-        <span>Atlasregion</span><span>${atlasLabel}</span>
-        <span>Routingregion</span><span>${graphLabel}</span>
-        <span>Graph</span><span>${sourceStatus}</span>
+      <div class="atlas-summary">
+        <div><b>${atlasLabel}</b><span>${graphLabel !== '—' ? graphLabel : 'noch ohne Detailgraph'}</span></div>
+        <div class="atlas-counts"><b>${opCount}</b><span>Betriebsstellen</span><b>${edgeCount}</b><span>Routing-Edges</span></div>
+      </div>
+      ${selectedEdge ? `<div class="card inspector">${infrastructureHtml(selectedEdge)}</div>` : `
+        <div class="card atlas-hint"><b>Strecke antippen</b><br>Ein Streckenabschnitt öffnet hier Gleise, Elektrifizierung, Vmax, Spurweite, Betreiber, Bauwerke und Quelle.</div>`}
+      <div class="legend">
+        <span><i class="line main"></i> Hauptstrecke</span>
+        <span><i class="line branch"></i> Nebenstrecke</span>
+        <span><i class="line service"></i> Betriebs-/Nebengleis</span>
+        <span><i class="dot"></i> Betriebsstelle</span>
+      </div>
+      <div class="kv compact-meta">
+        <span>Datenstatus</span><span>${sourceStatus}</span>
         <span>Fahrplan</span><span>noch nicht angebunden</span>
       </div>`;
     return;
