@@ -6,7 +6,7 @@ import {
   loadGraphForRegion
 } from './src/region-loader.js';
 
-const map = L.map('map', { zoomControl: true }).setView([49.6, 9.6], 8);
+const map = L.map('map', { zoomControl: true }).setView([51.1, 10.2], 6);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; OpenStreetMap contributors'
@@ -364,9 +364,6 @@ async function start() {
     await ensureGraphForCurrentView();
     renderTab('atlas');
 
-    if (graph && document.getElementById('fromInput').value && document.getElementById('toInput').value) {
-      document.getElementById('routeBtn').click();
-    }
   } catch (error) {
     console.error(error);
     document.getElementById('status').textContent = 'RailAtlas-Daten konnten nicht geladen werden';
