@@ -16,9 +16,12 @@ export function regionsForZoom(registry, zoom) {
   );
 }
 
-export function regionContaining(registry, lon, lat, zoom) {
+export function regionContaining(registry, lon, lat, zoom, options = {}) {
+  const { requireGraph = false } = options;
+
   const candidates = regionsForZoom(registry, zoom)
     .filter(region => {
+      if (requireGraph && !region.graph) return false;
       if (!region.bbox) return false;
       const [west, south, east, north] = region.bbox;
       return lon >= west && lon <= east && lat >= south && lat <= north;
@@ -26,6 +29,10 @@ export function regionContaining(registry, lon, lat, zoom) {
     .sort((a, b) => (b.min_zoom ?? 0) - (a.min_zoom ?? 0));
 
   return candidates[0] ?? null;
+}
+
+export function graphRegionContaining(registry, lon, lat, zoom) {
+  return regionContaining(registry, lon, lat, zoom, { requireGraph: true });
 }
 
 export async function loadGraphForRegion(region) {
