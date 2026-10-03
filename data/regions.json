@@ -1,0 +1,36 @@
+{
+  "schema": "railatlas.regions/1",
+  "strategy": "overview-country-region-tile",
+  "levels": [
+    {
+      "id": "eu",
+      "label": "Europe",
+      "kind": "overview",
+      "min_zoom": 4,
+      "max_zoom": 6,
+      "graph": null,
+      "status": "planned"
+    },
+    {
+      "id": "de",
+      "label": "Deutschland",
+      "kind": "country",
+      "parent": "eu",
+      "min_zoom": 6,
+      "max_zoom": 8,
+      "graph": null,
+      "status": "planned"
+    },
+    {
+      "id": "de-bw-north",
+      "label": "Nordbaden / Heilbronn",
+      "kind": "region",
+      "parent": "de",
+      "min_zoom": 8,
+      "max_zoom": 12,
+      "graph": "reference-heilbronn-wuerzburg.graph.json",
+      "status": "reference-fixture",
+      "bbox": [8.8, 48.9, 10.2, 50.1]
+    }
+  ]
+}
