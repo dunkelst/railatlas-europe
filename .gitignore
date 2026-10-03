@@ -1,0 +1,7 @@
+# RailAtlas local data build cache
+data/raw/
+data/build/
+*.osm.pbf
+*.pbf
+__pycache__/
+*.pyc
