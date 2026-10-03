@@ -9,7 +9,13 @@
       "min_zoom": 4,
       "max_zoom": 6,
       "graph": null,
-      "status": "planned"
+      "status": "planned",
+      "bbox": [
+        -25,
+        34,
+        45,
+        72
+      ]
     },
     {
       "id": "de",
@@ -19,7 +25,13 @@
       "min_zoom": 6,
       "max_zoom": 8,
       "graph": null,
-      "status": "planned"
+      "status": "planned",
+      "bbox": [
+        5.5,
+        47,
+        15.5,
+        55.2
+      ]
     },
     {
       "id": "de-bw-north",
@@ -30,7 +42,12 @@
       "max_zoom": 12,
       "graph": "reference-heilbronn-wuerzburg.graph.json",
       "status": "reference-fixture",
-      "bbox": [8.8, 48.9, 10.2, 50.1]
+      "bbox": [
+        8.8,
+        48.9,
+        10.2,
+        50.1
+      ]
     }
   ]
 }
