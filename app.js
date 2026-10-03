@@ -1,6 +1,12 @@
 import { dijkstra, resolveOperationalPoint, routeGeometry } from './src/routing.js';
+import {
+  loadRegionRegistry,
+  regionContaining,
+  graphRegionContaining,
+  loadGraphForRegion
+} from './src/region-loader.js';
 
-const map = L.map('map', { zoomControl: true }).setView([49.6, 9.6], 7);
+const map = L.map('map', { zoomControl: true }).setView([49.6, 9.6], 8);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; OpenStreetMap contributors'
@@ -11,28 +17,74 @@ const orm = L.tileLayer('https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.p
   attribution: 'Railway overlay &copy; OpenRailwayMap contributors'
 }).addTo(map);
 
+let registry = null;
+let atlasRegion = null;
+let graphRegion = null;
 let graph = null;
 let activeRoute = null;
 let activeStops = [];
 let routeLayer = L.layerGroup().addTo(map);
 let trainMarker = null;
-
-async function loadGraph() {
-  const response = await fetch('./data/reference-heilbronn-wuerzburg.graph.json');
-  if (!response.ok) throw new Error(`Graph konnte nicht geladen werden: ${response.status}`);
-  graph = await response.json();
-  document.getElementById('status').textContent = 'Rail-Graph geladen';
-}
+const graphCache = new Map();
 
 function nodeById(id) {
-  return graph.nodes.find(node => node.id === id);
+  return graph?.nodes.find(node => node.id === id);
 }
 
 function orderedOperationalPoints(routeResult) {
+  if (!graph) return [];
   const position = new Map(routeResult.nodeIds.map((id, index) => [id, index]));
   return graph.operational_points
     .filter(op => position.has(op.node_id))
     .sort((a, b) => position.get(a.node_id) - position.get(b.node_id));
+}
+
+async function ensureGraphForCurrentView() {
+  if (!registry) return;
+
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+
+  atlasRegion = regionContaining(registry, center.lng, center.lat, zoom);
+  const nextGraphRegion = graphRegionContaining(registry, center.lng, center.lat, zoom);
+
+  if (!nextGraphRegion) {
+    if (graphRegion || graph) {
+      graphRegion = null;
+      graph = null;
+      activeRoute = null;
+      activeStops = [];
+      routeLayer.clearLayers();
+      trainMarker = null;
+    }
+    document.getElementById('status').textContent =
+      atlasRegion ? `${atlasRegion.label} · Routing-Bundle noch nicht verfügbar` : 'Außerhalb verfügbarer Atlasregionen';
+    renderTab(document.querySelector('.tab.active')?.dataset.tab ?? 'atlas');
+    return;
+  }
+
+  if (graphRegion?.id === nextGraphRegion.id && graph) {
+    renderTab(document.querySelector('.tab.active')?.dataset.tab ?? 'atlas');
+    return;
+  }
+
+  graphRegion = nextGraphRegion;
+
+  if (graphCache.has(nextGraphRegion.id)) {
+    graph = graphCache.get(nextGraphRegion.id);
+  } else {
+    document.getElementById('status').textContent = `${nextGraphRegion.label} · Rail-Graph wird geladen…`;
+    graph = await loadGraphForRegion(nextGraphRegion);
+    graphCache.set(nextGraphRegion.id, graph);
+  }
+
+  activeRoute = null;
+  activeStops = [];
+  routeLayer.clearLayers();
+  trainMarker = null;
+  document.getElementById('status').textContent =
+    `${nextGraphRegion.label} · Rail-Graph geladen`;
+  renderTab(document.querySelector('.tab.active')?.dataset.tab ?? 'atlas');
 }
 
 function drawComputedRoute(routeResult) {
@@ -60,24 +112,35 @@ function drawComputedRoute(routeResult) {
 
 function renderTab(tab) {
   const el = document.getElementById('tabContent');
+  const sourceStatus = graph?.source_metadata?.status ?? 'kein Routing-Bundle';
+  const atlasLabel = atlasRegion?.label ?? '—';
+  const graphLabel = graphRegion?.label ?? '—';
 
   if (tab === 'atlas') {
-    const sourceStatus = graph?.source_metadata?.status ?? 'nicht geladen';
     el.innerHTML = `
       <h3>Atlas</h3>
       <div class="card">RailAtlas trennt Topologie, Infrastruktur, Betriebsstellen und Fahrplandaten.</div>
       <div class="kv">
-        <span>Routing</span><span>Graph-basiert</span>
+        <span>Atlasregion</span><span>${atlasLabel}</span>
+        <span>Routingregion</span><span>${graphLabel}</span>
         <span>Graph</span><span>${sourceStatus}</span>
-        <span>Testregion</span><span>Heilbronn → Würzburg</span>
         <span>Fahrplan</span><span>noch nicht angebunden</span>
       </div>`;
     return;
   }
 
   if (tab === 'route') {
+    if (!graph) {
+      el.innerHTML = `
+        <h3>Route</h3>
+        <div class="card">Für diesen Kartenausschnitt ist noch kein Routing-Bundle verfügbar.</div>`;
+      return;
+    }
+
     if (!activeRoute) {
-      el.innerHTML = '<h3>Route</h3><div class="card">Noch keine Route berechnet.</div>';
+      el.innerHTML = `
+        <h3>Route</h3>
+        <div class="card">Rail-Graph geladen. Start und Ziel eingeben und Route berechnen.</div>`;
       return;
     }
 
@@ -86,13 +149,13 @@ function renderTab(tab) {
       <div class="card"><b>${(activeRoute.distanceM / 1000).toFixed(1)} km</b><br>
       ${activeRoute.edgeIds.length} gerichtete Graph-Edges · Dijkstra</div>
       ${activeStops.map(op => `<div class="card"><b>${op.name}</b><br><span>${op.id}</span></div>`).join('')}
-      <div class="card"><b>Datenstatus</b><br>Route wird berechnet; der aktuelle Graph ist noch ein Referenz-Fixture. Nächster Schritt: reproduzierbarer OSM-Import.</div>`;
+      <div class="card"><b>Datenstatus</b><br>${sourceStatus}. Nächster Schritt: reproduzierbarer OSM-PBF-Import.</div>`;
     return;
   }
 
   el.innerHTML = `
     <h3>Zeitplan</h3>
-    <div class="card">Fahrplandaten sind bewusst noch getrennt vom Infrastruktur-Routing. DELFI/GTFS/NeTEx folgt nach dem echten OSM-Graph.</div>
+    <div class="card">Fahrplandaten bleiben getrennt vom Infrastruktur-Routing. DELFI/GTFS/NeTEx folgt nach dem echten OSM-Graph.</div>
     ${activeStops.map(op => `<div class="kv"><span>${op.name}</span><span>—</span></div>`).join('')}`;
 }
 
@@ -124,13 +187,18 @@ function updateTimeline(value) {
   }
 
   const distance = activeRoute.distanceM * x;
-  document.getElementById('timelineLabel').textContent = `${(distance / 1000).toFixed(1)} km / ${(activeRoute.distanceM / 1000).toFixed(1)} km`;
+  document.getElementById('timelineLabel').textContent =
+    `${(distance / 1000).toFixed(1)} km / ${(activeRoute.distanceM / 1000).toFixed(1)} km`;
 }
 
 document.getElementById('timeline').addEventListener('input', e => updateTimeline(e.target.value));
 
 document.getElementById('routeBtn').addEventListener('click', () => {
-  if (!graph) return;
+  if (!graph) {
+    document.getElementById('status').textContent =
+      atlasRegion ? `${atlasRegion.label} · noch kein Routing-Bundle` : 'Kein Rail-Graph geladen';
+    return;
+  }
 
   const fromText = document.getElementById('fromInput').value.trim();
   const toText = document.getElementById('toInput').value.trim();
@@ -138,18 +206,19 @@ document.getElementById('routeBtn').addEventListener('click', () => {
   const to = resolveOperationalPoint(graph, toText);
 
   if (!from || !to) {
-    document.getElementById('status').textContent = 'Betriebsstelle im aktuellen Graph nicht gefunden';
+    document.getElementById('status').textContent = 'Betriebsstelle im aktuellen Routing-Bundle nicht gefunden';
     return;
   }
 
   const result = dijkstra(graph, from.node_id, to.node_id);
   if (!result) {
-    document.getElementById('status').textContent = 'Keine Schienenverbindung im aktuellen Graph gefunden';
+    document.getElementById('status').textContent = 'Keine Schienenverbindung im aktuellen Routing-Bundle gefunden';
     return;
   }
 
   activeRoute = result;
-  document.getElementById('status').textContent = `Route berechnet · ${(result.distanceM / 1000).toFixed(1)} km`;
+  document.getElementById('status').textContent =
+    `Route berechnet · ${(result.distanceM / 1000).toFixed(1)} km`;
   drawComputedRoute(result);
 });
 
@@ -160,7 +229,7 @@ document.getElementById('ormToggle').addEventListener('change', e =>
 document.getElementById('historicToggle').addEventListener('change', e => {
   document.getElementById('status').textContent = e.target.checked
     ? 'Historien-Layer vorbereitet – Datenimport folgt'
-    : 'Rail-Graph aktiv';
+    : (graphRegion ? `${graphRegion.label} · Rail-Graph aktiv` : 'Atlas aktiv');
 });
 
 document.getElementById('locateBtn').addEventListener('click', () => map.locate({setView:true,maxZoom:12}));
@@ -168,15 +237,26 @@ map.on('locationfound', e =>
   L.circleMarker(e.latlng,{radius:8,fillOpacity:1}).bindPopup('Dein Standort').addTo(map).openPopup()
 );
 
+map.on('moveend zoomend', () => {
+  ensureGraphForCurrentView().catch(error => {
+    console.error(error);
+    document.getElementById('status').textContent = 'Regionswechsel fehlgeschlagen';
+  });
+});
+
 async function start() {
   renderTab('atlas');
   try {
-    await loadGraph();
+    registry = await loadRegionRegistry();
+    await ensureGraphForCurrentView();
     renderTab('atlas');
-    document.getElementById('routeBtn').click();
+
+    if (graph && document.getElementById('fromInput').value && document.getElementById('toInput').value) {
+      document.getElementById('routeBtn').click();
+    }
   } catch (error) {
     console.error(error);
-    document.getElementById('status').textContent = 'Rail-Graph konnte nicht geladen werden';
+    document.getElementById('status').textContent = 'RailAtlas-Daten konnten nicht geladen werden';
   }
 }
 
