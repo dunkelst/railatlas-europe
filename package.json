@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node test/routing.test.mjs && node test/region-loader.test.mjs && node test/infrastructure-schema.test.mjs"
+    "test": "node test/routing.test.mjs && node test/region-loader.test.mjs && node test/infrastructure-schema.test.mjs && python3 -m unittest test/osm-builder.test.py"
   }
 }
