@@ -16,6 +16,12 @@ export function regionsForZoom(registry, zoom) {
   );
 }
 
+// Routing must not depend on the current map viewport. This list is the
+// canonical set of graph bundles available to a JourneyRequest.
+export function graphRegions(registry) {
+  return (registry?.levels ?? []).filter(region => Boolean(region.graph));
+}
+
 export function regionContaining(registry, lon, lat, zoom, options = {}) {
   const { requireGraph = false } = options;
 
