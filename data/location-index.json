@@ -1,0 +1,66 @@
+{
+  "schema": "railatlas.locations/1",
+  "generated_at": "2026-10-06T19:30:00+02:00",
+  "locations": [
+    {
+      "id": "ra:op:de:heilbronn-hbf",
+      "name": "Heilbronn Hbf",
+      "aliases": ["Heilbronn", "HN", "HN Hbf", "Heilbronn Hauptbahnhof"],
+      "type": "station",
+      "country": "DE",
+      "lat": 49.1421,
+      "lon": 9.2081,
+      "node_id": "n-hn",
+      "bundle_ids": ["de-bw-north"],
+      "identifiers": {}
+    },
+    {
+      "id": "ra:op:de:bad-friedrichshall-hbf",
+      "name": "Bad Friedrichshall Hbf",
+      "aliases": ["Bad Friedrichshall"],
+      "type": "station",
+      "country": "DE",
+      "lat": 49.2308,
+      "lon": 9.2198,
+      "node_id": "n-bfh",
+      "bundle_ids": ["de-bw-north"],
+      "identifiers": {}
+    },
+    {
+      "id": "ra:op:de:osterburken",
+      "name": "Osterburken",
+      "aliases": [],
+      "type": "station",
+      "country": "DE",
+      "lat": 49.4297,
+      "lon": 9.4227,
+      "node_id": "n-osk",
+      "bundle_ids": ["de-bw-north"],
+      "identifiers": {}
+    },
+    {
+      "id": "ra:op:de:lauda",
+      "name": "Lauda",
+      "aliases": ["Lauda-Königshofen"],
+      "type": "station",
+      "country": "DE",
+      "lat": 49.565,
+      "lon": 9.709,
+      "node_id": "n-lad",
+      "bundle_ids": ["de-bw-north"],
+      "identifiers": {}
+    },
+    {
+      "id": "ra:op:de:wuerzburg-hbf",
+      "name": "Würzburg Hbf",
+      "aliases": ["Würzburg", "Wuerzburg", "WUE", "WÜ", "Würzburg Hauptbahnhof"],
+      "type": "station",
+      "country": "DE",
+      "lat": 49.8019,
+      "lon": 9.9357,
+      "node_id": "n-wue",
+      "bundle_ids": ["de-bw-north"],
+      "identifiers": {}
+    }
+  ]
+}
