@@ -10,45 +10,12 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div>
-      <div class="brand">RailAtlas Europe</div>
-      <div class="sub">Atlas · Route · Fahrplan · Infrastruktur</div>
-    </div>
-    <button id="locateBtn" class="ghost">Standort</button>
-  </header>
-  <section class="planner">
-    <div class="location-field-shell">
-      <input id="fromInput" placeholder="Start / Bahnhof / Ort" aria-label="Start" autocomplete="off" />
-    </div>
-    <span class="arrow">→</span>
-    <div class="location-field-shell">
-      <input id="toInput" placeholder="Ziel / Bahnhof / Ort" aria-label="Ziel" autocomplete="off" />
-    </div>
-    <button id="routeBtn">Route anzeigen</button>
-  </section>
-  <main>
-    <div id="map"></div>
-    <aside id="infoPanel" class="panel">
-      <div class="tabs">
-        <button class="tab active" data-tab="atlas">Atlas</button>
-        <button class="tab" data-tab="route">Route</button>
-        <button class="tab" data-tab="timetable">Zeitplan</button>
-      </div>
-      <div id="tabContent"></div>
-    </aside>
-  </main>
-  <section class="timeline-wrap">
-    <input id="timeline" type="range" min="0" max="100" value="0" />
-    <div id="timelineLabel" class="timeline-label">Noch keine Route gewählt</div>
-  </section>
-  <footer>
-    <label><input type="checkbox" id="ormToggle" checked /> OpenRailwayMap</label>
-    <label><input type="checkbox" id="historicToggle" /> Historisch (Platzhalter)</label>
-    <span class="status" id="status">RailAtlas wird geladen…</span>
-  </footer>
+  <header class="topbar"><div><div class="brand">RailAtlas Europe</div><div class="sub">Atlas · Route · Fahrplan · Infrastruktur</div></div><button id="locateBtn" class="ghost">Standort</button></header>
+  <section class="planner"><div class="location-field-shell"><input id="fromInput" placeholder="Start / Bahnhof / Ort" aria-label="Start" autocomplete="off" /></div><span class="arrow">→</span><div class="location-field-shell"><input id="toInput" placeholder="Ziel / Bahnhof / Ort" aria-label="Ziel" autocomplete="off" /></div><button id="routeBtn">Route anzeigen</button></section>
+  <main><div id="map"></div><aside id="infoPanel" class="panel"><div class="tabs"><button class="tab active" data-tab="atlas">Atlas</button><button class="tab" data-tab="route">Route</button><button class="tab" data-tab="timetable">Zeitplan</button></div><div id="tabContent"></div></aside></main>
+  <section class="timeline-wrap"><input id="timeline" type="range" min="0" max="100" value="0" /><div id="timelineLabel" class="timeline-label">Noch keine Route gewählt</div></section>
+  <footer><label><input type="checkbox" id="ormToggle" checked /> OpenRailwayMap</label><label><input type="checkbox" id="historicToggle" /> Historisch (Platzhalter)</label><span class="status" id="status">RailAtlas wird geladen…</span></footer>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script type="module" src="src/init-autocomplete.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
