@@ -18,9 +18,13 @@
     <button id="locateBtn" class="ghost">Standort</button>
   </header>
   <section class="planner">
-    <input id="fromInput" placeholder="Start / Betriebsstelle" aria-label="Start" />
+    <div class="location-field-shell">
+      <input id="fromInput" placeholder="Start / Bahnhof / Ort" aria-label="Start" autocomplete="off" />
+    </div>
     <span class="arrow">→</span>
-    <input id="toInput" placeholder="Ziel / Betriebsstelle" aria-label="Ziel" />
+    <div class="location-field-shell">
+      <input id="toInput" placeholder="Ziel / Bahnhof / Ort" aria-label="Ziel" autocomplete="off" />
+    </div>
     <button id="routeBtn">Route anzeigen</button>
   </section>
   <main>
@@ -44,6 +48,7 @@
     <span class="status" id="status">RailAtlas wird geladen…</span>
   </footer>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script type="module" src="src/init-autocomplete.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
