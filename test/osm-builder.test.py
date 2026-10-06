@@ -10,12 +10,14 @@ BUILDER = ROOT / "tools" / "osm_pbf_builder.py"
 FIXTURE = ROOT / "test" / "fixtures" / "rail-mini.osm"
 
 class OsmBuilderTest(unittest.TestCase):
-    def test_xml_fixture_builds_topology_and_attributes(self):
+    def test_xml_fixture_builds_topology_attributes_and_location_index(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp) / "graph.json"
+            locations = Path(tmp) / "locations.json"
             subprocess.run([
                 sys.executable, str(BUILDER), str(FIXTURE), str(out),
-                "--region", "test-mini", "--country", "DE"
+                "--region", "test-mini", "--country", "DE",
+                "--location-index", str(locations)
             ], check=True, cwd=ROOT)
 
             graph = json.loads(out.read_text(encoding="utf-8"))
@@ -35,29 +37,23 @@ class OsmBuilderTest(unittest.TestCase):
             self.assertEqual(infra["maxspeed_kmh"], 160)
             self.assertEqual(infra["line_ref"], "4711")
 
-            # Shared node 3 creates a graph junction.
             self.assertIn("osm:n3", {n["id"] for n in graph["nodes"]})
-
-            # Station 2 lies on the track and must be a split/routing node.
             alpha = next(op for op in graph["operational_points"] if op["name"] == "Alpha")
             self.assertEqual(alpha["node_id"], "osm:n2")
-
-            # Off-track halt snaps to a real rail node, not a geometric crossing.
             bravo = next(op for op in graph["operational_points"] if op["name"] == "Bravo Halt")
             self.assertTrue(bravo["node_id"].startswith("osm:n"))
 
-            # Way 102 crosses geometrically but shares no node ID with way 101.
-            way101_nodes = {
-                e["from"] for e in edges if e["source_refs"]["osm_way_id"] == 101
-            } | {
-                e["to"] for e in edges if e["source_refs"]["osm_way_id"] == 101
-            }
-            way102_nodes = {
-                e["from"] for e in edges if e["source_refs"]["osm_way_id"] == 102
-            } | {
-                e["to"] for e in edges if e["source_refs"]["osm_way_id"] == 102
-            }
+            way101_nodes = {e["from"] for e in edges if e["source_refs"]["osm_way_id"] == 101} | {e["to"] for e in edges if e["source_refs"]["osm_way_id"] == 101}
+            way102_nodes = {e["from"] for e in edges if e["source_refs"]["osm_way_id"] == 102} | {e["to"] for e in edges if e["source_refs"]["osm_way_id"] == 102}
             self.assertTrue(way101_nodes.isdisjoint(way102_nodes))
+
+            index = json.loads(locations.read_text(encoding="utf-8"))
+            self.assertEqual(index["schema"], "railatlas.locations/1")
+            alpha_location = next(x for x in index["locations"] if x["name"] == "Alpha")
+            self.assertEqual(alpha_location["bundle_ids"], ["test-mini"])
+            self.assertEqual(alpha_location["country"], "DE")
+            self.assertEqual(alpha_location["node_id"], "osm:n2")
+            self.assertEqual(alpha_location["identifiers"]["osm"], ["2"])
 
 if __name__ == "__main__":
     unittest.main()
