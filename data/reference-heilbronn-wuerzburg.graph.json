@@ -24,10 +24,10 @@
     {"id":"e-wue-lad","from":"n-wue","to":"n-lad","length_m":34000,"geometry":[[9.9357,49.8019],[9.7090,49.5650]],"railway":"rail","country":"DE"}
   ],
   "operational_points": [
-    {"id":"ra:op:de:heilbronn-hbf","name":"Heilbronn Hbf","node_id":"n-hn","aliases":["Heilbronn"]},
-    {"id":"ra:op:de:bad-friedrichshall-hbf","name":"Bad Friedrichshall Hbf","node_id":"n-bfh"},
+    {"id":"ra:op:de:heilbronn-hbf","name":"Heilbronn Hbf","node_id":"n-hn","aliases":["Heilbronn","HN","HN Hbf","Heilbronn Hauptbahnhof"]},
+    {"id":"ra:op:de:bad-friedrichshall-hbf","name":"Bad Friedrichshall Hbf","node_id":"n-bfh","aliases":["Bad Friedrichshall"]},
     {"id":"ra:op:de:osterburken","name":"Osterburken","node_id":"n-osk"},
-    {"id":"ra:op:de:lauda","name":"Lauda","node_id":"n-lad"},
-    {"id":"ra:op:de:wuerzburg-hbf","name":"Würzburg Hbf","node_id":"n-wue","aliases":["Wuerzburg Hbf","Würzburg"]}
+    {"id":"ra:op:de:lauda","name":"Lauda","node_id":"n-lad","aliases":["Lauda-Königshofen"]},
+    {"id":"ra:op:de:wuerzburg-hbf","name":"Würzburg Hbf","node_id":"n-wue","aliases":["Wuerzburg Hbf","Würzburg","Wuerzburg","WUE","WÜ","Würzburg Hauptbahnhof"]}
   ]
 }
