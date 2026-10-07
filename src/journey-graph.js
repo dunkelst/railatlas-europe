@@ -1,6 +1,7 @@
 import { resolveOperationalPoint } from './routing.js';
 import { graphRegions, loadGraphForRegion } from './region-loader.js';
 import { mergeJourneyBundles } from './bundle-graph.js';
+import { resolveBundlePathForLocations } from './bundle-router.js';
 
 async function cachedGraph(region, cache) {
   let graph = cache.get(region.id);
@@ -31,12 +32,13 @@ function resolveLocationInGraph(graph, value) {
   return resolveOperationalPoint(graph, locationQuery(value));
 }
 
-function indexedRegions(registry, ...locations) {
-  const ids = new Set(locations.flatMap(location => isLocation(location) ? (location.bundle_ids ?? []) : []));
-  if (!ids.size) return null;
-  const byId = new Map(graphRegions(registry).map(region => [region.id, region]));
-  const regions = [...ids].map(id => byId.get(id)).filter(Boolean);
-  return regions.length === ids.size ? regions : null;
+async function loadRegions(regions, cache) {
+  const loaded = [];
+  for (const region of regions ?? []) {
+    const graph = await cachedGraph(region, cache);
+    if (graph) loaded.push({ region, graph });
+  }
+  return loaded;
 }
 
 export async function resolveJourneyGraphSet(registry, fromValue, toValue, cache = new Map()) {
@@ -44,24 +46,29 @@ export async function resolveJourneyGraphSet(registry, fromValue, toValue, cache
   const toQuery = locationQuery(toValue);
   if (!fromQuery || !toQuery) return null;
 
-  // Indexed fast path: an autocomplete selection already tells us which
-  // bundles contain the endpoints. Never scan unrelated European bundles.
-  const directRegions = indexedRegions(registry, fromValue, toValue);
-  if (directRegions?.length) {
-    const loaded = [];
-    for (const region of directRegions) {
-      const graph = await cachedGraph(region, cache);
-      if (graph) loaded.push({ region, graph });
-    }
-    if (!loaded.length) return null;
-    const graph = loaded.length === 1 ? loaded[0].graph : mergeJourneyBundles(loaded.map(item => item.graph));
-    const from = resolveLocationInGraph(graph, fromValue);
-    const to = resolveLocationInGraph(graph, toValue);
-    if (from && to) {
-      return {
-        regions: loaded.map(item => item.region), graph, from, to,
-        endpointRegions: { from: loaded.find(item => resolveLocationInGraph(item.graph, fromValue))?.region ?? null, to: loaded.find(item => resolveLocationInGraph(item.graph, toValue))?.region ?? null },
-      };
+  // Indexed path: location selections define endpoint bundles; the bundle
+  // metagraph supplies any intermediate regions. This keeps European routing
+  // proportional to the corridor instead of the total number of bundles.
+  if (isLocation(fromValue) && isLocation(toValue)) {
+    const corridor = resolveBundlePathForLocations(registry, fromValue, toValue);
+    if (corridor?.length) {
+      const loaded = await loadRegions(corridor, cache);
+      if (loaded.length !== corridor.length) return null;
+      const graph = loaded.length === 1 ? loaded[0].graph : mergeJourneyBundles(loaded.map(item => item.graph));
+      const from = resolveLocationInGraph(graph, fromValue);
+      const to = resolveLocationInGraph(graph, toValue);
+      if (from && to) {
+        return {
+          regions: loaded.map(item => item.region),
+          graph,
+          from,
+          to,
+          endpointRegions: {
+            from: loaded.find(item => resolveLocationInGraph(item.graph, fromValue))?.region ?? null,
+            to: loaded.find(item => resolveLocationInGraph(item.graph, toValue))?.region ?? null,
+          },
+        };
+      }
     }
   }
 
