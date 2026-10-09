@@ -1,5 +1,5 @@
-const CACHE_NAME = 'railatlas-europe-v0.3';
-const APP_SHELL = ['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./src/routing.js','./src/region-loader.js','./src/journey-graph.js','./src/bundle-graph.js','./src/location-index.js','./src/location-autocomplete.js','./data/regions.json','./data/location-index.json'];
+const CACHE_NAME = 'railatlas-europe-v0.4';
+const APP_SHELL = ['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./src/routing.js','./src/region-loader.js','./src/journey-graph.js','./src/bundle-graph.js','./src/bundle-router.js','./src/location-index.js','./src/location-catalog.js','./src/location-autocomplete.js','./data/regions.json','./data/location-index.json','./data/location-catalog.json'];
 
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));self.skipWaiting();});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
