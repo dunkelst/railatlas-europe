@@ -7,7 +7,7 @@ function labelFor(location) {
   return suffix ? `${location.name} · ${suffix}` : location.name;
 }
 
-export function bindLocationAutocomplete(input, index, { limit = 6, onSelect } = {}) {
+export function bindLocationAutocomplete(input, source, { limit = 6, onSelect } = {}) {
   const host = input.parentElement;
   host.classList.add('location-field');
 
@@ -18,11 +18,20 @@ export function bindLocationAutocomplete(input, index, { limit = 6, onSelect } =
 
   let selected = null;
   let activeIndex = -1;
+  let matches = [];
+  let renderToken = 0;
+
+  async function find(query) {
+    if (typeof source === 'function') return await source(query, { limit });
+    if (source?.search && typeof source.search === 'function') return await source.search(query, { limit });
+    return searchLocations(source, query, { limit });
+  }
 
   function close() {
     list.hidden = true;
     list.innerHTML = '';
     activeIndex = -1;
+    matches = [];
   }
 
   function choose(location) {
@@ -34,7 +43,8 @@ export function bindLocationAutocomplete(input, index, { limit = 6, onSelect } =
     onSelect?.(location);
   }
 
-  function render() {
+  async function render() {
+    const token = ++renderToken;
     const query = input.value.trim();
     delete input.dataset.locationId;
     delete input.dataset.bundleIds;
@@ -44,7 +54,16 @@ export function bindLocationAutocomplete(input, index, { limit = 6, onSelect } =
       return;
     }
 
-    const matches = searchLocations(index, query, { limit });
+    try {
+      const result = await find(query);
+      if (token !== renderToken) return;
+      matches = result;
+    } catch (error) {
+      console.error('RailAtlas location search failed', error);
+      if (token === renderToken) close();
+      return;
+    }
+
     list.innerHTML = '';
     activeIndex = -1;
     if (!matches.length) {
@@ -81,7 +100,7 @@ export function bindLocationAutocomplete(input, index, { limit = 6, onSelect } =
       items.forEach((item, index) => item.classList.toggle('active', index === activeIndex));
     } else if (event.key === 'Enter' && activeIndex >= 0) {
       event.preventDefault();
-      const location = searchLocations(index, input.value.trim(), { limit })[activeIndex];
+      const location = matches[activeIndex];
       if (location) choose(location);
     } else if (event.key === 'Escape') {
       close();

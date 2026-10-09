@@ -1,4 +1,5 @@
 import { loadLocationIndex } from './location-index.js';
+import { loadLocationCatalog } from './location-catalog.js';
 import { bindLocationAutocomplete } from './location-autocomplete.js';
 
 async function init() {
@@ -7,9 +8,15 @@ async function init() {
   if (!fromInput || !toInput) return;
 
   try {
-    const index = await loadLocationIndex('./data/location-index.json');
-    bindLocationAutocomplete(fromInput, index);
-    bindLocationAutocomplete(toInput, index);
+    let source;
+    try {
+      source = await loadLocationCatalog('./data/location-catalog.json');
+    } catch (catalogError) {
+      console.warn('RailAtlas Europe catalog unavailable, using legacy location index', catalogError);
+      source = await loadLocationIndex('./data/location-index.json');
+    }
+    bindLocationAutocomplete(fromInput, source);
+    bindLocationAutocomplete(toInput, source);
   } catch (error) {
     console.error('RailAtlas autocomplete failed', error);
   }

@@ -1,0 +1,54 @@
+name: Build Europe station catalog
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/build_europe_locations.py'
+      - '.github/workflows/build-europe-catalog.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download current Europe station source
+        run: |
+          curl --fail --location --retry 3 \
+            https://raw.githubusercontent.com/trainline-eu/stations/master/stations.csv \
+            --output /tmp/trainline-stations.csv
+      - name: Build sharded RailAtlas Europe catalog
+        run: |
+          python3 tools/build_europe_locations.py /tmp/trainline-stations.csv --output-dir data
+      - name: Validate headline Europe stations
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          checks = {'ch': 'bern', 'nl': 'amsterdam', 'de': 'berlin'}
+          for country, needle in checks.items():
+              path = Path('data/locations') / f'{country}.json'
+              data = json.loads(path.read_text(encoding='utf-8'))
+              names = [x.get('name','').lower() for x in data['locations']]
+              assert any(needle in name for name in names), f'{needle} missing in {country}'
+          manifest = json.loads(Path('data/location-catalog.json').read_text(encoding='utf-8'))
+          assert manifest['total_locations'] > 10000, manifest['total_locations']
+          print('Europe catalog gate:', manifest['total_locations'], 'locations')
+          PY
+      - name: Commit refreshed catalog
+        run: |
+          git config user.name 'railatlas-bot'
+          git config user.email 'railatlas-bot@users.noreply.github.com'
+          git add data/location-catalog.json data/locations/
+          if git diff --cached --quiet; then
+            echo 'Europe catalog already current.'
+            exit 0
+          fi
+          git commit -m 'Refresh Europe station catalog [skip ci]'
+          git push
