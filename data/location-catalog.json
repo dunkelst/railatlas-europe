@@ -1,0 +1,17 @@
+{
+  "schema": "railatlas.location-catalog/1",
+  "scope": "Europe",
+  "total_locations": 5,
+  "shards": [
+    {"id":"de","country":"DE","path":"location-index.json","count":5}
+  ],
+  "prefixes": {
+    "ba":["de"],
+    "he":["de"],
+    "hn":["de"],
+    "la":["de"],
+    "os":["de"],
+    "wü":["de"],
+    "wu":["de"]
+  }
+}
