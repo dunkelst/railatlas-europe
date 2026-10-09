@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
-"""Merge RailAtlas location indexes into a lazy-loadable Europe catalog."""
+"""Build a lazy-loadable RailAtlas Europe station catalog.
+
+Inputs may be RailAtlas location/graph JSON files or the ODbL Trainline EU
+stations.csv dataset. JSON graph inputs preserve bundle_ids; Trainline data is
+used as a broad Europe-wide discovery catalog and is later cross-walked to
+RailAtlas operational points as real rail-graph bundles become available.
+"""
 
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import re
 import unicodedata
@@ -17,18 +24,64 @@ def fold(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", value).strip()
 
 
+def truthy(value):
+    return str(value or "").strip().lower() in {"1", "t", "true", "yes", "y"}
+
+
+def read_trainline_csv(path: Path):
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle, delimiter=";")
+        for row in reader:
+            name = (row.get("name") or "").strip()
+            country = (row.get("country") or "").strip().upper()
+            if not name or not country or truthy(row.get("is_city")):
+                continue
+            try:
+                lon = float(row.get("longitude") or "")
+                lat = float(row.get("latitude") or "")
+            except ValueError:
+                continue
+            identifiers = {"trainline": [str(row.get("id"))]}
+            for source, target in (
+                ("uic", "uic"), ("db_id", "db"), ("cff_id", "cff"),
+                ("obb_id", "obb"), ("sncf_id", "sncf"), ("renfe_id", "renfe"),
+                ("atoc_id", "atoc"), ("benerail_id", "benerail")
+            ):
+                value = (row.get(source) or "").strip()
+                if value:
+                    identifiers[target] = [value]
+            aliases = []
+            slug = (row.get("slug") or "").strip()
+            if slug and fold(slug) != fold(name):
+                aliases.append(slug.replace("-", " "))
+            yield {
+                "id": f"ra:ext:trainline:{row.get('id')}",
+                "name": name,
+                "aliases": aliases,
+                "type": "station",
+                "country": country,
+                "location": [lon, lat],
+                "identifiers": identifiers,
+                "bundle_ids": [],
+                "source": "trainline-eu/stations"
+            }
+
+
 def read_locations(path: Path):
+    if path.suffix.lower() == ".csv":
+        yield from read_trainline_csv(path)
+        return
     data = json.loads(path.read_text(encoding="utf-8"))
     if data.get("schema") == "railatlas.locations/1":
-        return data.get("locations", [])
+        yield from data.get("locations", [])
+        return
     if data.get("schema") == "railatlas.graph/1":
         region = data.get("region")
-        out = []
         for op in data.get("operational_points", []):
             item = dict(op)
             item["bundle_ids"] = [region] if region else []
-            out.append(item)
-        return out
+            yield item
+        return
     raise ValueError(f"Unsupported input schema in {path}")
 
 
@@ -114,6 +167,7 @@ def main(argv=None):
         "schema": "railatlas.location-catalog/1",
         "scope": "Europe",
         "total_locations": len(merged),
+        "sources": [{"id":"trainline-eu/stations","license":"ODbL-1.0","url":"https://github.com/trainline-eu/stations"}],
         "shards": shards,
         "prefixes": {k: sorted(v) for k, v in sorted(prefix_map.items())}
     }
