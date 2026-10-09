@@ -1,0 +1,1 @@
+{"schema":"railatlas.locations/1","locations":[{"id":"ra:ext:trainline:35212","name":"Tirana Airport","aliases":[],"type":"station","country":"AL","location":[19.713871,41.418218],"identifiers":{"trainline":["35212"]},"bundle_ids":[],"source":"trainline-eu/stations"}]}

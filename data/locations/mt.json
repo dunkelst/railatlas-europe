@@ -1,0 +1,1 @@
+{"schema":"railatlas.locations/1","locations":[{"id":"ra:ext:trainline:34820","name":"Malta Airport","aliases":[],"type":"station","country":"MT","location":[14.486894,35.85581],"identifiers":{"trainline":["34820"]},"bundle_ids":[],"source":"trainline-eu/stations"}]}

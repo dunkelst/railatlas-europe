@@ -1,0 +1,1 @@
+{"schema":"railatlas.locations/1","locations":[{"id":"ra:ext:trainline:38319","name":"Tallinn Airport","aliases":[],"type":"station","country":"EE","location":[24.798823,59.4162],"identifiers":{"trainline":["38319"]},"bundle_ids":[],"source":"trainline-eu/stations"}]}
