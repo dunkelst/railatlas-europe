@@ -1,35 +1,39 @@
 # RailAtlas Europe
 
-Interaktiver Eisenbahnatlas für Europa – als moderne Weiterentwicklung der Idee eines klassischen Bahnatlas.
+Interaktiver Eisenbahnatlas für Europa mit getrennten Ebenen für Infrastruktur, Reiseplanung und Fahrplandaten.
 
-## MVP v0.1
+## Aktueller Stand
 
-- OpenStreetMap Basiskarte
-- OpenRailwayMap Overlay
-- iPad-taugliches responsives Layout
-- Referenzroute Heilbronn Hbf → Würzburg Hbf
-- Atlas-/Route-/Zeitplan-Tabs
-- interaktive Zeitachse mit Positionsmarker
-- PWA-Manifest und Service Worker
-- automatisches Deployment über GitHub Pages
+- OSM-Basiskarte und OpenRailwayMap-Overlay
+- Europäischer Standortkatalog mit Stations-/Orts-Autocomplete
+- GPS-Standort als Start oder Ziel
+- Graph-Auflösung für ausgewählte Katalogorte und GPS-Zugänge
+- Echter, bei Deployment aus OSM/PBF erzeugter RailGraph für den Regierungsbezirk Stuttgart
+- Automatischer Routing-Smoke-Test für Heilbronn Hbf → Stuttgart Hbf vor Veröffentlichung
+- Atlas-, Route- und Zeitplan-Ansichten sowie PWA-Grundlage
 
-> Hinweis: Route und Uhrzeiten sind in v0.1 noch Demo-/UI-Daten. Sie sind kein Live-Fahrplan.
+**Wichtig:** Der Katalog ist europaweit, die tatsächlich routbare Netzabdeckung ist es noch nicht. Aktuell ist der erste reale Korridor Heilbronn–Stuttgart das Abnahmeziel. Fahrplandaten sind noch nicht angebunden; berechnete Strecken sind keine Live-Verbindungen und enthalten keine Abfahrtszeiten.
 
-## Zielarchitektur
+## Reproduzierbarer OSM-Graph-Build
 
-RailAtlas Europe soll Infrastrukturkarte, Streckenplanung und Fahrplan kombinieren. Geplant sind offene bzw. lizenzierbare Datenquellen wie OSM/OpenRailwayMap, ERA/RINF sowie GTFS/NeTEx-/nationale Fahrplandaten.
+```bash
+python3 -m pip install -r requirements-builder.txt
+bash tools/build_stuttgart_graph.sh
+```
 
-## Roadmap
+Der Build lädt den aktuellen Geofabrik-Extrakt des Regierungsbezirks Stuttgart, pinnt die tatsächlich geladene Snapshot-URL, erzeugt `data/de-bw-stuttgart.graph.json`, führt Graph-QA aus und muss eine verbundene Route zwischen Heilbronn und Stuttgart nachweisen. Derselbe Build läuft vor jedem GitHub-Pages-Deployment und als eigener CI-Gate für relevante Pull Requests.
 
-1. echter Rail-Graph statt Demo-Geometrie
-2. Betriebsstellen- und Infrastrukturdaten
-3. DELFI/GTFS für Deutschland
-4. ERA/RINF und Länderadapter für Europa
-5. grenzüberschreitendes Routing
-6. historische Strecken
-7. Echtzeitdaten
-8. Offline-/PWA-Ausbau
+OSM-Daten: © OpenStreetMap contributors, ODbL 1.0. Geofabrik-Extrakte werden regelmäßig aktualisiert; der erzeugte Graph enthält Quelle und Snapshot-Datum in den Metadaten.
+
+## Ausbauplan
+
+1. Heilbronn → Stuttgart zuverlässig routen und Regressionen absichern
+2. weitere echte, benachbarte Graph-Bundles erzeugen und über gemeinsame OSM-Knoten verbinden
+3. Nürnberg, Frankfurt, Karlsruhe, Ulm und München ergänzen
+4. Infrastruktur-Attribute als auswählbare Karten-Layer bereitstellen
+5. Fahrplanadapter (DELFI/GTFS/NeTEx) über stabile Betriebsstellen-IDs anbinden
+6. Grenzüberschreitendes Routing und später Echtzeitdaten ausbauen
 
 ## GitHub Pages
 
-Der Workflow `.github/workflows/pages.yml` veröffentlicht den Inhalt von `main` automatisch als GitHub Pages Site.
+`.github/workflows/pages.yml` erzeugt und validiert den echten Stuttgart-Graphen und veröffentlicht anschließend die statische Site.
