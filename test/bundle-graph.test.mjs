@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { mergeJourneyBundles } from '../src/bundle-graph.js';
-import { shortestPath } from '../src/routing.js';
+import { dijkstra } from '../src/routing.js';
 
 const bundleA = {
   region: 'a',
@@ -27,9 +27,9 @@ assert.equal(graph.nodes.length, 3, 'shared OSM node must be stitched once');
 assert.equal(graph.edges.length, 2);
 assert.equal(graph.operational_points.length, 2);
 
-const path = shortestPath(graph, 'a1', 'b3');
+const path = dijkstra(graph, 'a1', 'b3');
 assert.ok(path, 'route must cross the stitched bundle boundary');
-assert.equal(path.distance_m, 3000);
-assert.deepEqual(path.node_ids, ['a1', 'a2', 'b3']);
+assert.equal(path.distanceM, 3000);
+assert.deepEqual(path.nodeIds, ['a1', 'a2', 'b3']);
 
 console.log('bundle-graph tests passed');
