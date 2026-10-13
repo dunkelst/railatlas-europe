@@ -12,7 +12,7 @@ function coordinates(location) {
 }
 
 function bboxNear(region, lon, lat, radiusMeters) {
-  if (!region?.bbox) return true;
+  if (!region?.bbox) return false;
   const [west, south, east, north] = region.bbox;
   const latDelta = radiusMeters / 111320;
   const lonDelta = radiusMeters / Math.max(1000, 111320 * Math.cos(lat * Math.PI / 180));
@@ -58,8 +58,9 @@ export async function resolveLocationToGraph(registry, location, cache = new Map
   const available = graphRegions(registry);
   const explicitIds = location.bundle_ids ?? [];
   const point = coordinates(location);
-  const candidates = explicitIds.length
-    ? available.filter(region => explicitIds.includes(region.id))
+  const explicitCandidates = explicitIds.length ? available.filter(region => explicitIds.includes(region.id)) : [];
+  const candidates = explicitCandidates.length
+    ? explicitCandidates
     : point ? available.filter(region => bboxNear(region, point.lon, point.lat, maxMatchDistanceMeters)) : [];
   if (!candidates.length) {
     return { status: 'catalog_only', location, reason: explicitIds.length ? 'bundle-not-available' : 'no-nearby-graph-bundle' };
@@ -95,7 +96,7 @@ export async function resolveLocationToGraph(registry, location, cache = new Map
   const boundLocation = {
     ...location,
     node_id: match.op.node_id,
-    bundle_ids: [...new Set([...explicitIds, ...regionIds])],
+    bundle_ids: [...new Set(regionIds)],
     graph_status: 'routable',
     graph_match_method: match.method,
     graph_operational_point_ids: [match.op.id],
