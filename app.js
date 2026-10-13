@@ -3,6 +3,7 @@ import { resolveJourneyGraph } from './src/journey-graph.js';
 import { loadLocationIndex, resolveLocation } from './src/location-index.js';
 import { loadLocationCatalog } from './src/location-catalog.js';
 import { bindLocationAutocomplete } from './src/location-autocomplete.js';
+import { resolveLocationToGraph } from './src/location-graph-resolver.js';
 import {
   loadRegionRegistry,
   regionContaining,
@@ -36,7 +37,79 @@ function interpolate(a,b,t){return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];}
 function updateTimeline(value){if(!activeRoute)return;const coords=routeGeometry(activeRoute);if(coords.length<2)return;const x=Number(value)/100,scaled=x*(coords.length-1),seg=Math.min(coords.length-2,Math.floor(scaled)),local=scaled-seg,pos=interpolate(coords[seg],coords[seg+1],local);if(!trainMarker)trainMarker=L.circleMarker(pos,{radius:9,weight:3,fillOpacity:1}).addTo(routeLayer);else trainMarker.setLatLng(pos);const distance=activeRoute.distanceM*x;document.getElementById('timelineLabel').textContent=`${(distance/1000).toFixed(1)} km / ${(activeRoute.distanceM/1000).toFixed(1)} km`;}
 document.getElementById('timeline').addEventListener('input',e=>updateTimeline(e.target.value));
 
-document.getElementById('routeBtn').addEventListener('click',async()=>{const fromInput=document.getElementById('fromInput'),toInput=document.getElementById('toInput');const fromText=fromInput.value.trim(),toText=toInput.value.trim();if(!fromText||!toText){document.getElementById('status').textContent='Start und Ziel eingeben';return;}const fromLocation=selectedFromLocation??(locationIndex?(resolveLocation(locationIndex,fromInput.dataset.locationId)||resolveLocation(locationIndex,fromText)):null);const toLocation=selectedToLocation??(locationIndex?(resolveLocation(locationIndex,toInput.dataset.locationId)||resolveLocation(locationIndex,toText)):null);document.getElementById('status').textContent='Passenden Rail-Graph suchen…';try{const resolved=await resolveJourneyGraph(registry,fromLocation??fromText,toLocation??toText,graphCache);if(!resolved){document.getElementById('status').textContent='Station gefunden, aber noch kein passendes Routing-Bundle verfügbar';return;}graphRegion=resolved.region;graph=resolved.graph;drawAtlasGraph();const result=dijkstra(graph,resolved.from.node_id,resolved.to.node_id);if(!result){document.getElementById('status').textContent='Keine Schienenverbindung im Routing-Bundle gefunden';return;}activeRoute=result;document.getElementById('status').textContent=`Route berechnet · ${(result.distanceM/1000).toFixed(1)} km`;drawComputedRoute(result);}catch(error){console.error(error);document.getElementById('status').textContent='Routing-Bundle konnte nicht geladen werden';}});
+document.getElementById('routeBtn').addEventListener('click', async () => {
+  const fromInput = document.getElementById('fromInput');
+  const toInput = document.getElementById('toInput');
+  const fromText = fromInput.value.trim();
+  const toText = toInput.value.trim();
+  if (!fromText || !toText) {
+    document.getElementById('status').textContent = 'Start und Ziel eingeben';
+    return;
+  }
+
+  const fromCandidate = selectedFromLocation ?? (locationIndex
+    ? (resolveLocation(locationIndex, fromInput.dataset.locationId) || resolveLocation(locationIndex, fromText))
+    : null);
+  const toCandidate = selectedToLocation ?? (locationIndex
+    ? (resolveLocation(locationIndex, toInput.dataset.locationId) || resolveLocation(locationIndex, toText))
+    : null);
+
+  document.getElementById('status').textContent = 'Standort und Stationen an den RailGraph anbinden…';
+  try {
+    const fromResolution = await resolveLocationToGraph(registry, fromCandidate ?? fromText, graphCache);
+    const toResolution = await resolveLocationToGraph(registry, toCandidate ?? toText, graphCache);
+    for (const [label, resolution] of [['Start', fromResolution], ['Ziel', toResolution]]) {
+      if (resolution.status === 'ambiguous') {
+        document.getElementById('status').textContent = label + ' ist nicht eindeutig einer Betriebsstelle zugeordnet';
+        return;
+      }
+      if (resolution.status === 'catalog_only') {
+        document.getElementById('status').textContent = label + ' gefunden, aber im verfügbaren RailGraph noch nicht routbar';
+        return;
+      }
+      if (resolution.status === 'no_access') {
+        const nearest = resolution.nearest?.name ? ' Nächste Betriebsstelle: ' + resolution.nearest.name + ' (' + (resolution.nearest.distanceMeters / 1000).toFixed(1) + ' km).' : '';
+        document.getElementById('status').textContent = label + ': kein RailGraph-Zugang innerhalb von ' + (resolution.maxDistanceMeters / 1000).toFixed(0) + ' km gefunden.' + nearest;
+        return;
+      }
+      if (resolution.status === 'invalid_location') {
+        document.getElementById('status').textContent = label + ': Standortkoordinaten fehlen';
+        return;
+      }
+    }
+
+    const fromValue = fromResolution.status === 'text' ? fromText : fromResolution.location;
+    const toValue = toResolution.status === 'text' ? toText : toResolution.location;
+    document.getElementById('status').textContent = 'Passenden Rail-Graph-Korridor suchen…';
+    const resolved = await resolveJourneyGraph(registry, fromValue, toValue, graphCache);
+    if (!resolved) {
+      document.getElementById('status').textContent = 'Station erkannt, aber es gibt noch keinen durchgehenden Graph-Korridor zwischen Start und Ziel';
+      return;
+    }
+
+    graphRegion = resolved.region;
+    graph = resolved.graph;
+    drawAtlasGraph();
+    const result = dijkstra(graph, resolved.from.node_id, resolved.to.node_id);
+    if (!result) {
+      document.getElementById('status').textContent = 'Keine Schienenverbindung im verfügbaren RailGraph gefunden';
+      return;
+    }
+    activeRoute = result;
+    const accessNotes = [];
+    if (fromResolution.operationalPoint && fromCandidate?.type === 'position') {
+      accessNotes.push('Start über ' + fromResolution.operationalPoint.name + ' (' + (fromResolution.distanceMeters / 1000).toFixed(1) + ' km zum Zugang)');
+    }
+    if (toResolution.operationalPoint && toCandidate?.type === 'position') {
+      accessNotes.push('Ziel über ' + toResolution.operationalPoint.name + ' (' + (toResolution.distanceMeters / 1000).toFixed(1) + ' km zum Zugang)');
+    }
+    document.getElementById('status').textContent = 'Route berechnet · ' + (result.distanceM / 1000).toFixed(1) + ' km' + (accessNotes.length ? ' · ' + accessNotes.join(' · ') : '');
+    drawComputedRoute(result);
+  } catch (error) {
+    console.error(error);
+    document.getElementById('status').textContent = 'Location-/RailGraph-Auflösung fehlgeschlagen';
+  }
+});
 
 const fromInput=document.getElementById('fromInput'),toInput=document.getElementById('toInput');
 [fromInput,toInput].forEach(input=>input.addEventListener('focus',()=>{activeLocationInput=input;}));
