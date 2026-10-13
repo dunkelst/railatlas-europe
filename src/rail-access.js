@@ -18,7 +18,7 @@ export function distanceMeters(lon1, lat1, lon2, lat2) {
 }
 
 function bboxNear(region, lon, lat, radiusMeters) {
-  if (!region?.bbox) return true;
+  if (!region?.bbox) return false;
   const [west, south, east, north] = region.bbox;
   const latDelta = radiusMeters / 111320;
   const lonDelta = radiusMeters / Math.max(1000, 111320 * Math.cos(lat * Math.PI / 180));
@@ -90,7 +90,7 @@ export async function nearestRailAccess(registry, location, cache = new Map(), {
   const boundLocation = {
     ...location,
     node_id: op.node_id,
-    bundle_ids: [...new Set([...(location.bundle_ids ?? []), best.region.id])],
+    bundle_ids: [best.region.id],
     graph_status: 'routable',
     graph_match_method: 'nearest-operational-point',
     graph_operational_point_ids: [op.id],
