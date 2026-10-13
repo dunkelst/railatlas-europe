@@ -2,7 +2,7 @@
 """Build a RailAtlas graph bundle from OpenStreetMap railway data.
 
 Small .osm/.xml files are parsed with the Python standard library for regression
-fixtures. Real .osm.pbf extracts use pyosmium when installed.
+fixtures. Real .osm.pbf extracts use the osmium Python package when installed.
 
 The builder never creates a connection merely because two geometries cross.
 Connectivity follows shared OSM node IDs only.
@@ -69,7 +69,7 @@ def load_osm_pbf(path: Path) -> OsmModel:
     try:
         import osmium  # type: ignore
     except ImportError as exc:
-        raise RuntimeError("PBF import requires pyosmium. Install with: pip install -r requirements-builder.txt") from exc
+        raise RuntimeError("PBF import requires the osmium package. Install with: pip install -r requirements-builder.txt") from exc
     nodes: Dict[int, OsmNode] = {}
     ways: List[OsmWay] = []
     class Handler(osmium.SimpleHandler):
@@ -111,24 +111,60 @@ def first_int(value):
 def infrastructure_from_tags(tags):
     return {"usage":tags.get("usage"),"service":tags.get("service"),"tracks":first_int(tags.get("tracks")),"gauge_mm":first_int(tags.get("gauge")),"electrified":tags.get("electrified"),"voltage_v":first_number(tags.get("voltage")),"frequency_hz":first_number(tags.get("frequency")),"maxspeed_kmh":first_number(tags.get("maxspeed")),"operator":tags.get("operator"),"infrastructure_manager":tags.get("owner") or tags.get("operator"),"line_ref":tags.get("ref"),"bridge":tags.get("bridge"),"tunnel":tags.get("tunnel"),"layer":first_int(tags.get("layer")),"signalling":tags.get("railway:signal:main") or tags.get("signal"),"traffic_mode":tags.get("passenger") or tags.get("freight")}
 
-def nearest_rail_node(model, point, max_distance_m):
+def rail_node_spatial_index(model, node_ids=None, cell_size=0.01):
+    """Index rail nodes into ~1 km geographic cells for fast station snapping."""
+    if node_ids is None:
+        node_ids = {nid for way in model.ways for nid in way.node_ids}
+    index = {}
+    for nid in node_ids:
+        node = model.nodes[nid]
+        cell = (math.floor(node.lon / cell_size), math.floor(node.lat / cell_size))
+        index.setdefault(cell, []).append(nid)
+    return index
+
+
+def nearest_rail_node(model, point, max_distance_m, spatial_index=None, cell_size=0.01):
+    if spatial_index is None:
+        spatial_index = rail_node_spatial_index(model, cell_size=cell_size)
+    lon, lat = point
+    lat_delta = max_distance_m / 111320
+    lon_delta = max_distance_m / max(1000, 111320 * math.cos(math.radians(lat)))
+    cell_x, cell_y = math.floor(lon / cell_size), math.floor(lat / cell_size)
+    radius_x = math.ceil(lon_delta / cell_size) + 1
+    radius_y = math.ceil(lat_delta / cell_size) + 1
     best_id, best_distance = None, max_distance_m
-    for nid in {nid for way in model.ways for nid in way.node_ids}:
-        node=model.nodes[nid]; distance=haversine_m(point,(node.lon,node.lat))
-        if distance <= best_distance: best_id,best_distance=nid,distance
+    for dx in range(-radius_x, radius_x + 1):
+        for dy in range(-radius_y, radius_y + 1):
+            for nid in spatial_index.get((cell_x + dx, cell_y + dy), ()):
+                node = model.nodes[nid]
+                distance = haversine_m(point, (node.lon, node.lat))
+                if distance <= best_distance:
+                    best_id, best_distance = nid, distance
     return best_id
 
+
 def collect_split_nodes(model, op_snap_m):
-    counts=Counter(nid for way in model.ways for nid in way.node_ids); split={nid for nid,c in counts.items() if c>1}
-    for way in model.ways: split.update((way.node_ids[0],way.node_ids[-1]))
-    for nid,node in model.nodes.items():
-        if node.tags.get("railway") in SPLIT_NODE_VALUES and counts.get(nid): split.add(nid)
-    snaps={}
-    for nid,node in model.nodes.items():
-        if node.tags.get("railway") not in OP_NODE_VALUES: continue
-        target=nid if counts.get(nid) else nearest_rail_node(model,(node.lon,node.lat),op_snap_m)
-        if target is not None: split.add(target); snaps[nid]=target
-    return split,snaps
+    counts = Counter(nid for way in model.ways for nid in way.node_ids)
+    split = {nid for nid, count in counts.items() if count > 1}
+    for way in model.ways:
+        split.update((way.node_ids[0], way.node_ids[-1]))
+    for nid, node in model.nodes.items():
+        if node.tags.get("railway") in SPLIT_NODE_VALUES and counts.get(nid):
+            split.add(nid)
+
+    # Build once, then only inspect nearby cells for each station/halt node.
+    spatial_index = rail_node_spatial_index(model, node_ids=set(counts))
+    snaps = {}
+    for nid, node in model.nodes.items():
+        if node.tags.get("railway") not in OP_NODE_VALUES:
+            continue
+        target = nid if counts.get(nid) else nearest_rail_node(
+            model, (node.lon, node.lat), op_snap_m, spatial_index=spatial_index
+        )
+        if target is not None:
+            split.add(target)
+            snaps[nid] = target
+    return split, snaps
 
 def edge_segments(way, split_nodes):
     start=0

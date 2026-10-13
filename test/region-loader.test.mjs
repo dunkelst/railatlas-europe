@@ -5,13 +5,13 @@ const registry = {
   levels: [
     { id:'eu', min_zoom:4, max_zoom:6, bbox:[-25,34,45,72], graph:null },
     { id:'de', min_zoom:6, max_zoom:9, bbox:[5.5,47.0,15.5,55.2], graph:null },
-    { id:'de-bw-north', min_zoom:8, max_zoom:12, bbox:[8.8,48.9,10.2,50.1], graph:'reference.json' }
+    { id:'de-bw-stuttgart', min_zoom:8, max_zoom:12, bbox:[8.3,47.9,10.6,49.9], graph:'reference.json' }
   ]
 };
 
 assert.equal(regionsForZoom(registry, 5).map(r => r.id).includes('eu'), true);
-assert.equal(regionContaining(registry, 9.2, 49.14, 8)?.id, 'de-bw-north');
-assert.equal(graphRegionContaining(registry, 9.2, 49.14, 8)?.id, 'de-bw-north');
+assert.equal(regionContaining(registry, 9.2, 49.14, 8)?.id, 'de-bw-stuttgart');
+assert.equal(graphRegionContaining(registry, 9.2, 49.14, 8)?.id, 'de-bw-stuttgart');
 
 assert.equal(regionContaining(registry, 13.405, 52.52, 8)?.id, 'de');
 assert.equal(graphRegionContaining(registry, 13.405, 52.52, 8), null);

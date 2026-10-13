@@ -34,20 +34,21 @@
       ]
     },
     {
-      "id": "de-bw-north",
-      "label": "Nordbaden / Heilbronn",
+      "id": "de-bw-stuttgart",
+      "label": "Regierungsbezirk Stuttgart · OSM RailGraph",
       "kind": "region",
       "parent": "de",
       "min_zoom": 8,
       "max_zoom": 12,
-      "graph": "reference-heilbronn-wuerzburg.graph.json",
-      "status": "reference-fixture",
+      "graph": "de-bw-stuttgart.graph.json",
+      "status": "osm-derived",
       "bbox": [
-        8.8,
-        48.9,
-        10.2,
-        50.1
-      ]
+        8.3,
+        47.9,
+        10.6,
+        49.9
+      ],
+      "neighbors": []
     }
   ]
 }
