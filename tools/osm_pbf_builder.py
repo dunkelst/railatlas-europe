@@ -2,7 +2,7 @@
 """Build a RailAtlas graph bundle from OpenStreetMap railway data.
 
 Small .osm/.xml files are parsed with the Python standard library for regression
-fixtures. Real .osm.pbf extracts use pyosmium when installed.
+fixtures. Real .osm.pbf extracts use the osmium Python package when installed.
 
 The builder never creates a connection merely because two geometries cross.
 Connectivity follows shared OSM node IDs only.
