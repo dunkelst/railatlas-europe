@@ -1,1 +1,1 @@
-pyosmium>=4.0,<5
+osmium>=4.0,<5
