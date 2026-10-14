@@ -2,10 +2,16 @@ let registryPromise;
 
 export async function loadRegionRegistry() {
   if (!registryPromise) {
-    registryPromise = fetch('./data/regions.json').then(response => {
-      if (!response.ok) throw new Error(`Region registry could not be loaded: ${response.status}`);
-      return response.json();
-    });
+    registryPromise = Promise.all([
+      fetch('./data/regions.json').then(response => {
+        if (!response.ok) throw new Error(`Region registry could not be loaded: ${response.status}`);
+        return response.json();
+      }),
+      fetch('./data/bundles.json').then(response => {
+        if (!response.ok) throw new Error(`Bundle registry could not be loaded: ${response.status}`);
+        return response.json();
+      }),
+    ]).then(([regions, bundles]) => ({ ...regions, bundles: bundles.bundles ?? [] }));
   }
   return registryPromise;
 }
@@ -16,10 +22,12 @@ export function regionsForZoom(registry, zoom) {
   );
 }
 
-// Routing must not depend on the current map viewport. This list is the
-// canonical set of graph bundles available to a JourneyRequest.
+// Routing must not depend on the current map viewport. Production bundles are
+// preferred; legacy level graphs remain available as regression fixtures.
 export function graphRegions(registry) {
-  return (registry?.levels ?? []).filter(region => Boolean(region.graph));
+  const bundles = (registry?.bundles ?? []).filter(bundle => Boolean(bundle.graph));
+  const legacy = (registry?.levels ?? []).filter(region => Boolean(region.graph));
+  return [...bundles, ...legacy.filter(region => !bundles.some(bundle => bundle.id === region.id))];
 }
 
 export function regionContaining(registry, lon, lat, zoom, options = {}) {
@@ -38,6 +46,12 @@ export function regionContaining(registry, lon, lat, zoom, options = {}) {
 }
 
 export function graphRegionContaining(registry, lon, lat, zoom) {
+  const production = (registry?.bundles ?? []).filter(bundle => {
+    if (!bundle.graph || !bundle.bbox) return false;
+    const [west, south, east, north] = bundle.bbox;
+    return lon >= west && lon <= east && lat >= south && lat <= north;
+  });
+  if (production.length) return production[0];
   return regionContaining(registry, lon, lat, zoom, { requireGraph: true });
 }
 
