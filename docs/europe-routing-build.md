@@ -16,11 +16,13 @@ RailAtlas routing coverage is built as a reproducible Europe-wide dataset, not a
 
 Every production bundle must expose:
 
-- `id`, `country`, `bbox`, `graph`, `version`, `built_at`
+- `id`, `countries`, `bbox`, `graph`, `version`, `built_at`
 - `source.type`, `source.ref`, `source.timestamp`
 - `neighbours[]`
 - `portals[]` with stable `portal_id`, local `node_id`, neighbouring bundle and source identity
 - coverage counts for nodes, edges and operational points
+
+`countries` is always an array of ISO 3166-1 alpha-2 codes. A normal interior bundle has one country; a border bundle may contain multiple countries. This keeps the contract valid when topology crosses a national boundary.
 
 Portal identity must come from stable source/topology identity where possible. Coordinate proximity alone must not join bundles.
 
