@@ -1,0 +1,12 @@
+{
+  "schema": "railatlas.bundles/1",
+  "strategy": "europe-country-tile",
+  "description": "Routing bundle registry. Viewport regions remain separate in regions.json.",
+  "bundles": [],
+  "build": {
+    "source": "OpenStreetMap PBF",
+    "builder": "tools/osm_pbf_builder.py",
+    "graph_schema": "railatlas.graph/1",
+    "portal_contract": "railatlas.portal/1"
+  }
+}

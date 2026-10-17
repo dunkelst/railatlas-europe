@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"railatlas.bundles/1","title":"RailAtlas routing bundle registry","type":"object","required":["schema","strategy","bundles"],
+  "properties":{"schema":{"const":"railatlas.bundles/1"},"strategy":{"type":"string","minLength":1},"description":{"type":"string"},"build":{"type":"object"},"bundles":{"type":"array","items":{"type":"object","required":["id","graph","bbox","countries","version","built_at","status","source","coverage","neighbors","portals"],"properties":{
+    "id":{"type":"string","minLength":1},"graph":{"type":"string","minLength":1},"location_index":{"type":"string"},
+    "bbox":{"type":"array","minItems":4,"maxItems":4,"prefixItems":[{"type":"number","minimum":-180,"maximum":180},{"type":"number","minimum":-90,"maximum":90},{"type":"number","minimum":-180,"maximum":180},{"type":"number","minimum":-90,"maximum":90}]},
+    "countries":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","pattern":"^[A-Z]{2}$"}},"version":{"type":"string","minLength":1},"built_at":{"type":"string","format":"date-time"},"status":{"enum":["building","routable","degraded"]},
+    "source":{"type":"object","required":["type","ref","timestamp"],"properties":{"type":{"type":"string","minLength":1},"ref":{"type":"string","minLength":1},"timestamp":{"type":"string","format":"date-time"}},"additionalProperties":true},
+    "coverage":{"type":"object","required":["nodes","edges","operational_points"],"properties":{"nodes":{"type":"integer","minimum":0},"edges":{"type":"integer","minimum":0},"operational_points":{"type":"integer","minimum":0}},"additionalProperties":true},
+    "neighbors":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "portals":{"type":"array","items":{"type":"object","required":["portal_id","node_id","neighbour_bundle","source_ref"],"properties":{"portal_id":{"type":"string","minLength":1},"node_id":{"type":"string","minLength":1},"neighbour_bundle":{"type":"string","minLength":1},"source_ref":{"oneOf":[{"type":"string","minLength":1},{"type":"integer"}]},"location":{"type":"array","minItems":2,"maxItems":2,"items":{"type":"number"}}},"additionalProperties":true}}
+  },"additionalProperties":true}}},"additionalProperties":true
+}

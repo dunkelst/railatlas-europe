@@ -1,17 +1,15 @@
 function routableRegions(registry) {
-  return (registry?.levels ?? []).filter(region => region?.graph);
+  // Production registries use `bundles`; legacy viewport registries use `levels`.
+  // Keeping the fallback lets the Heilbronn fixture remain a regression test
+  // without coupling Europe routing back to viewport state.
+  return (registry?.bundles ?? registry?.levels ?? []).filter(region => region?.graph && region?.status !== 'building');
 }
 
 function regionMap(registry) {
   return new Map(routableRegions(registry).map(region => [region.id, region]));
 }
 
-/** Return the shortest declared bundle path between two routing regions.
- *
- * Regions declare `neighbors: [regionId, ...]`.  The graph is intentionally
- * tiny and metadata-only: it decides which rail bundles must be fetched, not
- * how trains run inside them.
- */
+/** Return the shortest declared bundle path between two routing regions. */
 export function resolveBundlePath(registry, fromId, toId) {
   if (!fromId || !toId) return null;
   const byId = regionMap(registry);

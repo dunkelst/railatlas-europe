@@ -1,1 +1,2 @@
-pyosmium>=4.0,<5
+osmium>=4.0,<5
+jsonschema[format]>=4.23,<5
