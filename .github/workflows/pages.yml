@@ -24,6 +24,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-builder.txt
+
+      - name: Validate production RailGraph data
+        run: python tools/validate_production_data.py
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
