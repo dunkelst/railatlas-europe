@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import statistics
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -17,6 +18,14 @@ import tile_graph_bundles
 def write_json(path: Path, value) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def percentile(values, fraction: float):
+    if not values:
+        return 0
+    ordered = sorted(values)
+    index = min(len(ordered) - 1, max(0, int((len(ordered) - 1) * fraction + 0.5)))
+    return ordered[index]
 
 
 def main(argv=None) -> int:
@@ -58,8 +67,19 @@ def main(argv=None) -> int:
             print(f"registry: {'.'.join(map(str, error.absolute_path)) or '<root>'}: {error.message}")
         return 3
 
+    bundle_metrics = []
     for bid, bundle in graphs.items():
-        write_json(bundle_dir / f"{bid}.graph.json", bundle)
+        path = bundle_dir / f"{bid}.graph.json"
+        write_json(path, bundle)
+        bundle_metrics.append({
+            "id": bid,
+            "nodes": len(bundle.get("nodes", [])),
+            "edges": len(bundle.get("edges", [])),
+            "operational_points": len(bundle.get("operational_points", [])),
+            "portals": len(portals.get(bid, [])),
+            "neighbors": len(neighbors.get(bid, [])),
+            "json_bytes": path.stat().st_size,
+        })
     write_json(registry_path, registry)
 
     locations = osm_pbf_builder.build_location_index(graph)
@@ -68,6 +88,21 @@ def main(argv=None) -> int:
 
     assigned = sum(bool(x.get("bundle_ids")) for x in locations.get("locations", []))
     portal_count = sum(len(x) for x in portals.values())
+    byte_values = [x["json_bytes"] for x in bundle_metrics]
+    edge_values = [x["edges"] for x in bundle_metrics]
+    node_values = [x["nodes"] for x in bundle_metrics]
+    bundle_summary = {
+        "count": len(graphs),
+        "portals": portal_count,
+        "json_bytes_total": sum(byte_values),
+        "json_bytes_median": int(statistics.median(byte_values)) if byte_values else 0,
+        "json_bytes_p95": percentile(byte_values, 0.95),
+        "nodes_median": int(statistics.median(node_values)) if node_values else 0,
+        "nodes_p95": percentile(node_values, 0.95),
+        "edges_median": int(statistics.median(edge_values)) if edge_values else 0,
+        "edges_p95": percentile(edge_values, 0.95),
+        "items": sorted(bundle_metrics, key=lambda x: x["id"]),
+    }
     manifest = {
         "schema": "railatlas.build-manifest/1",
         "built_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -76,7 +111,7 @@ def main(argv=None) -> int:
         "country": a.country,
         "tile_size_deg": a.tile_size_deg,
         "graph": {"nodes": qa["nodes"], "edges": qa["directed_edges"], "operational_points": qa["operational_points"], "components": qa["components"], "largest_component_pct": qa["largest_component_pct"]},
-        "bundles": {"count": len(graphs), "portals": portal_count},
+        "bundles": bundle_summary,
         "locations": {"total": len(locations.get("locations", [])), "assigned_to_bundle": assigned},
         "infrastructure_coverage_edges": qa["infrastructure_coverage_edges"],
         "artifacts": {"graph": graph_path.name, "qa": qa_path.name, "registry": registry_path.name, "locations": locations_path.name, "bundle_dir": bundle_dir.name},
