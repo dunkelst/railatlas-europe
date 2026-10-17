@@ -3,10 +3,12 @@
 
 This is deliberately a deployment gate, not another graph builder. It checks
 that the published registry is internally consistent with the graph shards
-that the browser will fetch.
+that the browser will fetch. Deployments can additionally require non-empty
+routing coverage via --require-coverage.
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -22,7 +24,15 @@ def load_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def main() -> int:
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Validate published RailAtlas routing bundles")
+    parser.add_argument(
+        "--require-coverage",
+        action="store_true",
+        help="fail when the production bundle registry contains no routable bundles",
+    )
+    args = parser.parse_args(argv)
+
     registry_path = DATA / "bundles.json"
     if not registry_path.exists():
         raise SystemExit("production gate: data/bundles.json is missing")
@@ -40,6 +50,10 @@ def main() -> int:
         return 2
 
     bundles = registry.get("bundles", [])
+    if args.require_coverage and not bundles:
+        print("production gate: no routable production bundles are published")
+        return 5
+
     by_id = {bundle["id"]: bundle for bundle in bundles}
     if len(by_id) != len(bundles):
         print("production gate: duplicate bundle ids")
