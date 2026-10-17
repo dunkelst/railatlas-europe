@@ -1,4 +1,5 @@
 let registryPromise;
+const graphPromises = new Map();
 
 export async function loadRegionRegistry() {
   if (!registryPromise) {
@@ -57,7 +58,21 @@ export function graphRegionContaining(registry, lon, lat, zoom) {
 
 export async function loadGraphForRegion(region) {
   if (!region?.graph) return null;
-  const response = await fetch(`./data/${region.graph}`);
-  if (!response.ok) throw new Error(`Graph bundle could not be loaded: ${response.status}`);
-  return response.json();
+  const key = region.graph;
+  if (!graphPromises.has(key)) {
+    graphPromises.set(key, fetch(`./data/${key}`).then(response => {
+      if (!response.ok) throw new Error(`Graph bundle could not be loaded: ${response.status}`);
+      return response.json();
+    }).catch(error => {
+      graphPromises.delete(key);
+      throw error;
+    }));
+  }
+  return graphPromises.get(key);
+}
+
+/** Load only the graph shards selected by the bundle metagraph path. */
+export async function loadGraphsForBundlePath(path) {
+  const regions = (path ?? []).filter(region => region?.graph);
+  return Promise.all(regions.map(loadGraphForRegion));
 }
