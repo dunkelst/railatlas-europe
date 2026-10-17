@@ -1,5 +1,5 @@
 import { resolveOperationalPoint } from './routing.js';
-import { graphRegions, loadGraphForRegion } from './region-loader.js';
+import { graphRegions, loadGraphForRegion, loadGraphsForBundlePath } from './region-loader.js';
 import { mergeJourneyBundles } from './bundle-graph.js';
 import { resolveBundlePathForLocations } from './bundle-router.js';
 
@@ -41,18 +41,31 @@ async function loadRegions(regions, cache) {
   return loaded;
 }
 
+async function loadBundleCorridor(regions, cache) {
+  const graphs = await loadGraphsForBundlePath(regions);
+  const loaded = [];
+  for (let index = 0; index < (regions ?? []).length; index += 1) {
+    const region = regions[index];
+    const graph = graphs[index];
+    if (!region || !graph) continue;
+    cache.set(region.id, graph);
+    loaded.push({ region, graph });
+  }
+  return loaded;
+}
+
 export async function resolveJourneyGraphSet(registry, fromValue, toValue, cache = new Map()) {
   const fromQuery = locationQuery(fromValue);
   const toQuery = locationQuery(toValue);
   if (!fromQuery || !toQuery) return null;
 
   // Indexed path: location selections define endpoint bundles; the bundle
-  // metagraph supplies any intermediate regions. This keeps European routing
-  // proportional to the corridor instead of the total number of bundles.
+  // metagraph supplies any intermediate regions. Fetch the selected corridor
+  // in parallel; the region loader deduplicates overlapping in-flight fetches.
   if (isLocation(fromValue) && isLocation(toValue)) {
     const corridor = resolveBundlePathForLocations(registry, fromValue, toValue);
     if (corridor?.length) {
-      const loaded = await loadRegions(corridor, cache);
+      const loaded = await loadBundleCorridor(corridor, cache);
       if (loaded.length !== corridor.length) return null;
       const graph = loaded.length === 1 ? loaded[0].graph : mergeJourneyBundles(loaded.map(item => item.graph));
       const from = resolveLocationInGraph(graph, fromValue);
