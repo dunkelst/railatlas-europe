@@ -12,6 +12,24 @@ function usage() {
   process.exit(2);
 }
 
+function percentile(values, p) {
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.min(sorted.length - 1, Math.ceil((p / 100) * sorted.length) - 1)];
+}
+
+function hydrate(files) {
+  const readStart = performance.now();
+  const texts = files.map(file => fs.readFileSync(file, 'utf8'));
+  const readMs = performance.now() - readStart;
+  const parseStart = performance.now();
+  const bundles = texts.map(text => JSON.parse(text));
+  const parseMs = performance.now() - parseStart;
+  const mergeStart = performance.now();
+  const graph = bundles.length === 1 ? bundles[0] : mergeJourneyBundles(bundles);
+  const mergeMs = performance.now() - mergeStart;
+  return { bundles, graph, readMs, parseMs, mergeMs, hydrationMs: readMs + parseMs + mergeMs };
+}
+
 const args = process.argv.slice(2);
 let from = null, to = null, repeat = 5, registryFile = null, locationsFile = null;
 let files = [];
@@ -54,20 +72,15 @@ if (registryFile) {
   unusedBundleCount = Math.max(0, (registry.bundles?.length ?? 0) - corridor.length);
   portalTransitions = corridor.slice(0, -1).map((bundle, i) => {
     const next = corridor[i + 1];
-    return {
-      from: bundle.id,
-      to: next.id,
-      portals: (bundle.portals ?? []).filter(portal => portal.neighbour_bundle === next.id).length,
-    };
+    return { from: bundle.id, to: next.id, portals: (bundle.portals ?? []).filter(portal => portal.neighbour_bundle === next.id).length };
   });
 }
 
 if (!files.length) usage();
 const bundleBytes = files.map(file => fs.statSync(file).size);
-const bundles = files.map(file => JSON.parse(fs.readFileSync(file, 'utf8')));
-const mergeStart = performance.now();
-const graph = bundles.length === 1 ? bundles[0] : mergeJourneyBundles(bundles);
-const mergeMs = performance.now() - mergeStart;
+const hydrationRuns = [];
+for (let i = 0; i < repeat; i += 1) hydrationRuns.push(hydrate(files));
+const { bundles, graph } = hydrationRuns[hydrationRuns.length - 1];
 const fromOp = indexedFrom?.node_id ? graph.operational_points?.find(op => op.node_id === indexedFrom.node_id) : resolveOperationalPoint(graph, from);
 const toOp = indexedTo?.node_id ? graph.operational_points?.find(op => op.node_id === indexedTo.node_id) : resolveOperationalPoint(graph, to);
 if (!fromOp || !toOp) {
@@ -75,28 +88,45 @@ if (!fromOp || !toOp) {
   process.exit(1);
 }
 
-const timings = [];
+const routeTimings = [];
 let route = null;
 for (let i = 0; i < repeat; i += 1) {
   const start = performance.now();
   route = dijkstra(graph, fromOp.node_id, toOp.node_id);
-  timings.push(performance.now() - start);
+  routeTimings.push(performance.now() - start);
 }
 if (!route) {
   console.error(JSON.stringify({ status: 'no_path', from_op: fromOp.id, to_op: toOp.id }, null, 2));
   process.exit(1);
 }
-const sorted = [...timings].sort((a, b) => a - b);
-const percentile = p => sorted[Math.min(sorted.length - 1, Math.ceil((p / 100) * sorted.length) - 1)];
+
+const readRuns = hydrationRuns.map(run => run.readMs);
+const parseRuns = hydrationRuns.map(run => run.parseMs);
+const mergeRuns = hydrationRuns.map(run => run.mergeMs);
+const hydrationTotals = hydrationRuns.map(run => run.hydrationMs);
+const pipelineRuns = hydrationTotals.map((ms, i) => ms + routeTimings[i]);
+const sourceNodes = bundles.reduce((sum, bundle) => sum + (bundle.nodes?.length ?? 0), 0);
+const sourceEdges = bundles.reduce((sum, bundle) => sum + (bundle.edges?.length ?? 0), 0);
 const result = {
-  schema: 'railatlas.corridor-benchmark/1',
-  status: 'ok',
+  schema: 'railatlas.corridor-benchmark/1', status: 'ok',
   from: { query: from, op_id: fromOp.id, node_id: fromOp.node_id },
   to: { query: to, op_id: toOp.id, node_id: toOp.node_id },
   selection: registryFile ? { registry: registryFile, locations: locationsFile, selected_bundle_ids: selectedBundleIds, unused_bundle_count: unusedBundleCount, portal_transitions: portalTransitions } : null,
   bundles: files.map((file, i) => ({ file, id: selectedBundleIds?.[i] ?? bundles[i].region ?? null, region: bundles[i].region ?? null, bytes: bundleBytes[i], nodes: bundles[i].nodes?.length ?? 0, edges: bundles[i].edges?.length ?? 0 })),
-  totals: { bundle_count: files.length, bytes: bundleBytes.reduce((a, b) => a + b, 0), merged_nodes: graph.nodes?.length ?? 0, merged_edges: graph.edges?.length ?? 0 },
+  totals: {
+    bundle_count: files.length, bytes: bundleBytes.reduce((a, b) => a + b, 0), source_nodes: sourceNodes, source_edges: sourceEdges,
+    merged_nodes: graph.nodes?.length ?? 0, merged_edges: graph.edges?.length ?? 0,
+    node_dedup_ratio: sourceNodes ? (graph.nodes?.length ?? 0) / sourceNodes : null,
+    edge_dedup_ratio: sourceEdges ? (graph.edges?.length ?? 0) / sourceEdges : null,
+  },
   route: { distance_m: route.distanceM, routing_cost: route.routingCost, nodes: route.nodeIds.length, edges: route.edgeIds.length },
-  timing_ms: { merge: mergeMs, route_runs: timings, route_median: percentile(50), route_p95: percentile(95) }
+  timing_ms: {
+    read_runs: readRuns, read_median: percentile(readRuns, 50), read_p95: percentile(readRuns, 95),
+    parse_runs: parseRuns, parse_median: percentile(parseRuns, 50), parse_p95: percentile(parseRuns, 95),
+    merge_runs: mergeRuns, merge_median: percentile(mergeRuns, 50), merge_p95: percentile(mergeRuns, 95),
+    hydration_runs: hydrationTotals, hydration_median: percentile(hydrationTotals, 50), hydration_p95: percentile(hydrationTotals, 95),
+    route_runs: routeTimings, route_median: percentile(routeTimings, 50), route_p95: percentile(routeTimings, 95),
+    pipeline_runs: pipelineRuns, pipeline_median: percentile(pipelineRuns, 50), pipeline_p95: percentile(pipelineRuns, 95),
+  }
 };
 console.log(JSON.stringify(result, null, 2));
