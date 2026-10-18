@@ -39,6 +39,25 @@ function operationalPointsWithCoordinates(graph) {
   });
 }
 
+async function nearestFallback(registry, location, cache, maxAccessDistanceMeters, loadGraph) {
+  if (!coordinates(location)) return null;
+  const access = await nearestRailAccess(registry, location, cache, {
+    maxDistanceMeters: maxAccessDistanceMeters,
+    loadGraph
+  });
+  if (access.status !== 'routable') return null;
+  return {
+    ...access,
+    location: {
+      ...access.location,
+      graph_match_method: 'nearest-operational-point',
+      catalog_location_name: location.name ?? null
+    },
+    matchMethod: 'nearest-operational-point',
+    accessFallback: true
+  };
+}
+
 /** Bind a selected catalog item to a routable graph OP without loading unrelated Europe bundles. */
 export async function resolveLocationToGraph(registry, location, cache = new Map(), {
   maxMatchDistanceMeters = 1500,
@@ -63,6 +82,8 @@ export async function resolveLocationToGraph(registry, location, cache = new Map
     ? explicitCandidates
     : point ? available.filter(region => bboxNear(region, point.lon, point.lat, maxMatchDistanceMeters)) : [];
   if (!candidates.length) {
+    const fallback = await nearestFallback(registry, location, cache, maxAccessDistanceMeters, loadGraph);
+    if (fallback) return fallback;
     return { status: 'catalog_only', location, reason: explicitIds.length ? 'bundle-not-available' : 'no-nearby-graph-bundle' };
   }
 
@@ -86,7 +107,11 @@ export async function resolveLocationToGraph(registry, location, cache = new Map
     else if (!unique.get(key).regions.some(region => region.id === match.region.id)) unique.get(key).regions.push(match.region);
   }
 
-  if (!unique.size) return { status: 'catalog_only', location, reason: 'no-operational-point-match' };
+  if (!unique.size) {
+    const fallback = await nearestFallback(registry, location, cache, maxAccessDistanceMeters, loadGraph);
+    if (fallback) return fallback;
+    return { status: 'catalog_only', location, reason: 'no-operational-point-match' };
+  }
   if (unique.size > 1) {
     return { status: 'ambiguous', location, candidates: [...unique.values()].map(match => ({ id: match.op.id, name: match.op.name, regionId: match.region.id, distanceMeters: match.distanceMeters })) };
   }
