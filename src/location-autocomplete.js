@@ -16,6 +16,11 @@ export function bindLocationAutocomplete(input, source, { limit = 6, onSelect } 
   list.hidden = true;
   host.appendChild(list);
 
+  const feedback = document.createElement('div');
+  feedback.className = 'location-feedback';
+  feedback.hidden = true;
+  host.appendChild(feedback);
+
   let selected = null;
   let activeIndex = -1;
   let matches = [];
@@ -27,6 +32,12 @@ export function bindLocationAutocomplete(input, source, { limit = 6, onSelect } 
     return searchLocations(source, query, { limit });
   }
 
+  function setFeedback(text, state = 'info') {
+    feedback.textContent = text;
+    feedback.dataset.state = state;
+    feedback.hidden = !text;
+  }
+
   function close() {
     list.hidden = true;
     list.innerHTML = '';
@@ -34,33 +45,51 @@ export function bindLocationAutocomplete(input, source, { limit = 6, onSelect } 
     matches = [];
   }
 
+  function clearSelection({ clearFeedback = false } = {}) {
+    selected = null;
+    delete input.dataset.locationId;
+    delete input.dataset.bundleIds;
+    if (clearFeedback) setFeedback('');
+  }
+
   function choose(location) {
     selected = location;
     input.value = location.name;
     input.dataset.locationId = location.id;
     input.dataset.bundleIds = (location.bundle_ids ?? []).join(',');
+    setFeedback(`✓ Gefunden: ${labelFor(location)}`, 'selected');
     close();
     onSelect?.(location);
   }
 
-  async function render() {
+  async function render({ fromInput = false } = {}) {
     const token = ++renderToken;
     const query = input.value.trim();
-    delete input.dataset.locationId;
-    delete input.dataset.bundleIds;
-    selected = null;
-    if (query.length < 2) {
-      close();
+
+    if (selected && query === selected.name && !fromInput) {
+      setFeedback(`✓ Gefunden: ${labelFor(selected)}`, 'selected');
       return;
     }
 
+    if (fromInput && selected && query !== selected.name) clearSelection();
+
+    if (query.length < 2) {
+      close();
+      setFeedback('');
+      return;
+    }
+
+    setFeedback('Suche Orte und Bahnhöfe…', 'searching');
     try {
       const result = await find(query);
       if (token !== renderToken) return;
       matches = result;
     } catch (error) {
       console.error('RailAtlas location search failed', error);
-      if (token === renderToken) close();
+      if (token === renderToken) {
+        close();
+        setFeedback('Ortssuche fehlgeschlagen', 'error');
+      }
       return;
     }
 
@@ -68,9 +97,11 @@ export function bindLocationAutocomplete(input, source, { limit = 6, onSelect } 
     activeIndex = -1;
     if (!matches.length) {
       close();
+      setFeedback(`Kein Ort für „${query}“ gefunden`, 'error');
       return;
     }
 
+    setFeedback(`${matches.length} Treffer gefunden – bitte auswählen`, 'matches');
     matches.forEach((location, index) => {
       const button = document.createElement('button');
       button.type = 'button';
@@ -86,8 +117,8 @@ export function bindLocationAutocomplete(input, source, { limit = 6, onSelect } 
     list.hidden = false;
   }
 
-  input.addEventListener('input', render);
-  input.addEventListener('focus', render);
+  input.addEventListener('input', () => render({ fromInput: true }));
+  input.addEventListener('focus', () => render({ fromInput: false }));
   input.addEventListener('blur', () => setTimeout(close, 120));
   input.addEventListener('keydown', event => {
     const items = [...list.querySelectorAll('.location-suggestion')];
@@ -110,9 +141,7 @@ export function bindLocationAutocomplete(input, source, { limit = 6, onSelect } 
   return {
     getSelected: () => selected,
     clear: () => {
-      selected = null;
-      delete input.dataset.locationId;
-      delete input.dataset.bundleIds;
+      clearSelection({ clearFeedback: true });
       close();
     }
   };
