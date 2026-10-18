@@ -19,6 +19,14 @@ assert.equal(station.location.node_id, 'n-hn');
 assert.deepEqual(station.location.bundle_ids, ['hn']);
 assert.equal(station.matchMethod, 'name+distance');
 
+const zob = await resolveLocationToGraph(registry, { id: 'catalog:hn-zob', name: 'Heilbronn ZOB', type: 'bus_station', location: [9.2077, 49.1425], identifiers: {} }, cache, { loadGraph });
+assert.equal(zob.status, 'routable');
+assert.equal(zob.location.node_id, 'n-hn');
+assert.equal(zob.matchMethod, 'nearest-operational-point');
+assert.equal(zob.accessFallback, true);
+assert.equal(zob.operationalPoint.name, 'Heilbronn Hbf');
+assert.ok(zob.distanceMeters < 100);
+
 const amsterdam = await resolveLocationToGraph(registry, { id: 'catalog:ams', name: 'Amsterdam Centraal', location: [4.9, 52.37], identifiers: {} }, cache, { loadGraph });
 assert.equal(amsterdam.status, 'catalog_only');
 assert.equal(amsterdam.reason, 'no-operational-point-match');
