@@ -1,4 +1,4 @@
-const CACHE_NAME = 'railatlas-europe-v0.5';
+const CACHE_NAME = 'railatlas-europe-v0.6';
 const APP_SHELL = ['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./src/routing.js','./src/region-loader.js','./src/journey-graph.js','./src/bundle-graph.js','./src/bundle-router.js','./src/location-index.js','./src/location-catalog.js','./src/location-autocomplete.js','./src/rail-access.js','./src/location-graph-resolver.js','./data/regions.json','./data/location-index.json','./data/location-catalog.json'];
 
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));self.skipWaiting();});
