@@ -1,0 +1,94 @@
+name: Build real RailGraph extract
+
+on:
+  workflow_dispatch:
+    inputs:
+      extract_url:
+        description: "OSM PBF/XML extract URL"
+        required: true
+        default: "https://download.geofabrik.de/europe/germany-latest.osm.pbf"
+      region:
+        description: "RailAtlas source region id"
+        required: true
+        default: "de"
+      country:
+        description: "ISO alpha-2 country (single-country extracts only)"
+        required: false
+        default: "DE"
+      tile_size_deg:
+        description: "Spatial bundle size in degrees"
+        required: true
+        default: "2.0"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      EXTRACT_URL: ${{ inputs.extract_url }}
+      REGION: ${{ inputs.region }}
+      COUNTRY: ${{ inputs.country }}
+      TILE_SIZE: ${{ inputs.tile_size_deg }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install builder dependencies
+        run: python -m pip install -r requirements-builder.txt
+
+      - name: Download source extract
+        run: |
+          mkdir -p /tmp/railatlas
+          curl --fail --location --retry 3 --retry-delay 5 \
+            "$EXTRACT_URL" --output /tmp/railatlas/source.osm.pbf
+          ls -lh /tmp/railatlas/source.osm.pbf
+
+      - name: Build RailAtlas routing bundles
+        run: |
+          args=(
+            /tmp/railatlas/source.osm.pbf
+            build/real-railgraph
+            --region "$REGION"
+            --source-url "$EXTRACT_URL"
+            --tile-size-deg "$TILE_SIZE"
+          )
+          if [ -n "$COUNTRY" ]; then
+            args+=(--country "$COUNTRY")
+          fi
+          python tools/build_europe.py "${args[@]}"
+
+      - name: Print production QA summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('build/real-railgraph/build-manifest.json')
+          m = json.loads(p.read_text(encoding='utf-8'))
+          print(json.dumps({
+              'region': m['region'],
+              'graph': m['graph'],
+              'bundles': m['bundles'],
+              'locations': m['locations'],
+              'infrastructure_coverage_edges': m['infrastructure_coverage_edges'],
+          }, indent=2))
+          if not m['bundles']['count']:
+              raise SystemExit('No routing bundles were produced')
+          if not m['graph']['edges']:
+              raise SystemExit('No routing edges were produced')
+          PY
+
+      - name: Upload RailGraph build
+        uses: actions/upload-artifact@v4
+        with:
+          name: railatlas-${{ env.REGION }}-railgraph
+          path: build/real-railgraph/
+          if-no-files-found: error
+          retention-days: 7
