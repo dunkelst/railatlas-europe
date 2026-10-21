@@ -41,7 +41,7 @@ export function transportProduct(product,walking=false,notes=[]){
  if(cls&(1|2|4|8|16|4096))return {mode:'train',modeLabel:cls&(1|2|4|8|4096)?'Fernverkehr':'Regionalzug'};
  return {mode:'unknown',modeLabel:cat||'Öffentlicher Verkehr'};
 }
-export function plainText(value){return String(value||'').replace(/<br\s*\/?\s*>|<\/(?:p|div|li)>/gi,'\n').replace(/<[^>]*>/g,'').replace(/&#(x[\da-f]+|\d+);/gi,(_,n)=>{const c=n[0].toLowerCase()==='x'?parseInt(n.slice(1),16):Number(n);return c>0&&c<=0x10ffff?String.fromCodePoint(c):'';}).replace(/&(amp|lt|gt|quot|apos|nbsp);/g,(_,n)=>({amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' '})[n]).trim();}
+export function plainText(value){return String(value||'').replace(/<br\s*\/?\s*>|<\/(?:p|div|li)>/gi,'\n').replace(/<[^>]*>/g,'').replace(/&#(x[\da-f]+|\d+);/gi,(_,n)=>{const c=n[0].toLowerCase()==='x'?parseInt(n.slice(1),16):Number(n);return c>0&&c<=0x10ffff?String.fromCodePoint(c):'';}).replace(/&(amp|lt|gt|quot|apos|nbsp|auml|ouml|uuml|Auml|Ouml|Uuml|szlig|bdquo|ldquo|ndash|hellip);/g,(_,n)=>({amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' ',auml:'ä',ouml:'ö',uuml:'ü',Auml:'Ä',Ouml:'Ö',Uuml:'Ü',szlig:'ß',bdquo:'„',ldquo:'“',ndash:'–',hellip:'…'})[n]).trim();}
 function period(o,fromDate,fromTime,toDate,toTime){return {from:hafasTime(o[fromDate],o[fromTime]||'000000'),until:hafasTime(o[toDate],o[toTime]||'235959')};}
 function overlaps(p,start,end){return (!p.from||Date.parse(p.from)<=Date.parse(end))&&(!p.until||Date.parse(p.until)>=Date.parse(start));}
 export function noticeReferences(objects){

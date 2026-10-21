@@ -36,3 +36,20 @@ Für eine nachweislich umfassende Sperrungsberücksichtigung wären weitere verl
 - Die Abfrage ist auf die konkrete Reisezeit und den Produktfilter 7167 begrenzt. Fehlschläge des Zusatzfeeds werden nicht als störungsfrei interpretiert; die Abdeckung bleibt ausdrücklich partiell.
 - Reale veröffentlichte Störungsantwort vom 21.10.2026 nachgewiesen: Wels Hbf → Linz/Donau Hbf lieferte REX 50 (5909), 08:06–08:24, vollständige Geometrie und genau einen gültigen Hinweis zum außer Betrieb befindlichen Personenlift in Wels Hbf (ÖBB-Gültigkeit 09.09.–06.11.2026).
 - Doppelte Darstellung desselben Hinweises aus Fahrt- und Stationsfeed anhand von Titel, bereinigtem Meldungstext, Ort und Gültigkeit verhindert.
+
+## Ergänzung 21.10.2026: VRR / EFA
+
+- 24 Node-Regressionen bestanden; TypeScript-Prüfung und Sites-Produktionsbuild erfolgreich.
+- VRR OpenService als explizit auswählbare zweite Fahrplanquelle angebunden. Nutzung für die private Hobby-Anwendung, kein zugesicherter Produktivserver. Die Oberfläche nennt diese Grenze vor der Suche und beim Ergebnis. Zugangsbedingungen: https://www.opendata-oepnv.de/ht/de/api und /ht/de/standards/nutzungsvereinbarung-api. Einzelne Live-Anfragen, keine systematische Fahrplandatenübernahme.
+- Echte VRR-Antwort vom 21.10.2026 für Düsseldorf Hbf → Heinrich-Heine-Allee am 22.10.2026, ab 09:00: U77 09:02:30–09:06:00, 70 gelieferte Koordinaten. Eine frühere U75 wird wegen Abfahrt vor der Anfragezeit ausgeschlossen.
+- Dieselbe echte Antwort enthält U79-Meldungen mit „nicht berücksichtigt“ im Routinghinweis, darunter Nordstraße U (gesperrter Ein-/Ausstieg). Der U79-Vorschlag wird konservativ verworfen. Die zeitlich gültigen Ausschlussgründe bleiben als Meldungen zum verworfenen Vorschlag sichtbar. Keine aus dem Störungstext erfundene Ersatzverbindung.
+- Regressionen decken diese tatsächlichen Störungsdaten, deren Ende der Gültigkeit, abgesagte/unmögliche Fahrten, falsche Endpunkte, Zeitkonflikte und fehlende Geometrie ab. Mutationen dieser Quelle sind als Regressionen zu verstehen, nicht als zusätzliche Live-Nachweise.
+- VRR-Produktidentitäten und Station-/Steig-IDs werden getrennt von DB-/ÖBB-IDs übernommen. Ein geliefertes Schätzzeitfeld allein genügt nicht als Nachweis einer live überwachten Fahrt.
+- Interne Browser-Vorschau: Vorschläge für Hameln und Bad Münder funktionieren; der ausgehende ÖBB-Aufruf scheiterte in dieser Vorschau. Produktionsnachweise müssen an der privaten Veröffentlichung erfolgen.
+- EFA-BW, die konkrete efa.de-Instanz und Trainline Partner Solutions sind nicht freigeschaltet oder integriert. Es wurden keine Zugänge beantragt und keine Kontaktformulare versandt.
+
+### Katalogkennung Bad Münder – zusätzliche Regression
+
+Der genau im Screenshot gewählte Eintrag „Bahnhof Bad Münder am Deister“ besitzt die lokale sechsstellige Katalogkennung 265126; diese ist keine unmittelbar nutzbare ÖBB/EVA-ID. Eine echte ÖBB-LocGeoPos-Antwort liefert den gleichnamigen Bahnhof Bad Münder(Deister), EVA 8000725, in 168 Metern Entfernung. Der Resolver übergibt die lokale Kennung nicht mehr als EVA-ID. Er akzeptiert eine Zuordnung nur mit passendem Stationsnamen und Lage innerhalb desselben kleinen Bahnhofskomplexes; die Zuordnung erscheint ausdrücklich im Reiseergebnis. Der benachbarte, anders benannte Bus-Halt „Am Deisterbahnhof“ wird im Regressionstest nicht auf den Bahnhof umgebogen.
+
+25 Regressionen bestanden. TypeScript-Prüfung und Produktionsbuild wurden nach dieser Korrektur erneut ausgeführt.

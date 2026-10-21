@@ -17,8 +17,9 @@ function NoticeCard({notice:n}:{notice:Notice}){return <article className={'noti
 export function JourneyAlerts({parts,notices=[]}:{parts:Journey[];notices?:Notice[]}){
  const warnings=[...new Map([...notices,...parts.flatMap(p=>p.notices||[])].filter(n=>n.severity==='warning').map(n=>[n.id,n])).values()];
  const endpointFeed=parts.length>0&&parts.every(p=>p.disruptionCheck==='trip-and-station-alerts');
+ const sources=[...new Set(parts.map(p=>p.source))].join(' · ')||'Die gewählte Auskunft';
  return <div className="journey-alerts" aria-label="Störungen und Datenabdeckung">
-  <div className="coverage-note"><AlertTriangle size={15}/><div><b>{warnings.length?`${warnings.length} Betriebs- oder Sperrhinweis${warnings.length===1?'':'e'}`:'Störungslage nicht vollständig bestätigt'}</b><p>ÖBB / Scotty berücksichtigt die dort erfassten Fahrplanänderungen. {endpointFeed?'Reise- und Start-/Zielmeldungen wurden für die Reisezeit geprüft. ':''}Ausfälle und nicht erreichbare Verbindungen werden ausgeschlossen. Weitere, auch kurzfristige Sperrungen können fehlen.</p></div></div>
+  <div className="coverage-note"><AlertTriangle size={15}/><div><b>{warnings.length?`${warnings.length} Betriebs- oder Sperrhinweis${warnings.length===1?'':'e'}`:'Störungslage nicht vollständig bestätigt'}</b><p>{sources}: Gelieferte Betriebs- und Sperrhinweise werden für die Reisezeit geprüft. {endpointFeed?'Zusätzliche Start-/Zielmeldungen wurden abgefragt. ':''}Ausfälle und nicht erreichbare Verbindungen werden ausgeschlossen. Weitere, auch kurzfristige Sperrungen können fehlen.</p>{[...new Set(parts.map(p=>p.sourceWarning).filter(Boolean))].map(w=><p key={w}>{w}</p>)}</div></div>
   {warnings.map(n=><NoticeCard key={n.id} notice={n}/>)}
  </div>;
 }

@@ -11,7 +11,11 @@ export function sameStation(a,b){
  // Large stations have separate IDs for platforms, levels and S-Bahn stops.
  // Accept these only with matching names and verified physical proximity.
  const base=s=>normalize(s.replace(/\([^)]*\)/g,'').replace(/\bHauptbahnhof\b/gi,'Hbf'));
- return base(a.name)===base(b.name)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<0.8;
+ if(base(a.name)===base(b.name)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<0.8)return true;
+ // Some catalogue entries carry a local, six-digit key rather than an EVA ID.
+ // Match station-name variants only inside the same small station complex.
+ const stationKey=s=>normalize(s.name).replace(/\b(hauptbahnhof|hbf|bahnhof|am)\b/g,'').replace(/[^a-z0-9]/g,'');
+ return (!/^\d{7,9}$/.test(a.dbId||'')||!/^\d{7,9}$/.test(b.dbId||''))&&stationKey(a).length>3&&stationKey(a)===stationKey(b)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<.3;
 }
 export function parseJourneys(data,from,to,requested){
  const parsed=[];
@@ -39,7 +43,13 @@ const hafasProfile={lang:'de',client:{type:'IPH',id:'OEBB',v:'6030600',name:'oeb
 async function hafas(method,req,signal){const body=await fetchJSON('https://fahrplan.oebb.at/bin/mgate.exe',{method:'POST',headers:{'Content-Type':'application/json','User-Agent':'RailAtlas-Europa/1.0 (+https://railatlas-europa.cocoaamber33.chatgpt.site)'},body:JSON.stringify({...hafasProfile,svcReqL:[{cfg:{polyEnc:'GPA'},meth:method,req}]})},signal,22000);const service=body.svcResL?.[0];if(body.err!=='OK'||service?.err!=='OK')throw new Error(service?.errTxt||body.errTxt||'Keine passende Fahrplanauskunft verfügbar.');return service.res;}
 async function hafasMany(requests,signal){const body=await fetchJSON('https://fahrplan.oebb.at/bin/mgate.exe',{method:'POST',headers:{'Content-Type':'application/json','User-Agent':'RailAtlas-Europa/1.0 (+https://railatlas-europa.cocoaamber33.chatgpt.site)'},body:JSON.stringify({...hafasProfile,svcReqL:requests.map(({method,req})=>({cfg:{polyEnc:'GPA'},meth:method,req}))})},signal,22000);if(body.err!=='OK')throw new Error(body.errTxt||'Der Störungsdienst ist nicht erreichbar.');return (body.svcResL||[]).map(service=>service?.err==='OK'?service.res:null);}
 export async function findOnlineStations(query,signal){const key=normalize(query);if(stationsCache.has(key))return stationsCache.get(key);const data=await hafas('LocMatch',{input:{field:'S',loc:{type:'S',name:query+'?'},maxLoc:12}},signal);const locs=data.common?.locL||data.match?.locL||[];const result=locs.filter(s=>s.type==='S').map(s=>({...parseStation(s),lid:s.lid}));if(stationsCache.size>200)stationsCache.clear();stationsCache.set(key,result);return result;}
-async function resolveLid(station,signal){if(station.dbId)return `A=1@O=${station.name.replace(/[@$]/g,' ')}@X=${Math.round(station.lon*1e6)}@Y=${Math.round(station.lat*1e6)}@L=${station.dbId}@`;const matches=await findOnlineStations(station.name,signal);const sorted=matches.map(s=>({...s,distance:distanceKm(station,s)})).sort((a,b)=>a.distance-b.distance);const match=sorted[0];if(!match||match.distance>5)throw new Error(`„${station.name}“ wird im Fahrplandienst nicht eindeutig gefunden. Bitte einen nahegelegenen Bahnhof wählen.`);return match.lid;}
+export async function resolveLid(station,signal){
+ if(/^\d{7,9}$/.test(station.dbId||''))return `A=1@O=${station.name.replace(/[@$]/g,' ')}@X=${Math.round(station.lon*1e6)}@Y=${Math.round(station.lat*1e6)}@L=${station.dbId}@`;
+ const data=await hafas('LocGeoPos',{ring:{cCrd:{x:Math.round(station.lon*1e6),y:Math.round(station.lat*1e6)},minDist:0,maxDist:800},getStops:true,getPOIs:false,maxLoc:20},signal);
+ const match=(data.locL||[]).filter(s=>s.type==='S').map(s=>({...parseStation(s),lid:s.lid})).find(s=>sameStation(station,s));
+ if(!match)throw new Error(`„${station.name}“ ist im Katalog erfasst, aber in dieser Fahrplanauskunft nicht eindeutig zugeordnet. Bitte einen Halt aus den Online-Vorschlägen oder die andere Auskunft wählen.`);
+ return match.lid;
+}
 function platform(s,prefix,planned=false){const p=planned?(s[prefix+'PltfS']?.txt||s[prefix+'PlatfS']):(s[prefix+'PltfR']?.txt||s[prefix+'PlatfR']||s[prefix+'PltfS']?.txt||s[prefix+'PlatfS']);return typeof p==='string'?p:undefined;}
 function endpointDisabled(raw,common,kind){return noticeReferences([raw]).some(ref=>ref.type==='REM'&&['text.realtime.stop.entry.exit.disabled',`text.realtime.stop.${kind}.disabled`].includes(common.remL?.[ref.remX]?.code));}
 export function parseHafasJourneys(data,from,to,requested){
@@ -100,4 +110,5 @@ export async function getJourney(from,to,departure,signal){const [start,end]=awa
   error.notices=mergeNotices([parseNotices(refs,common,locations,departure,until,from.name+' → '+to.name).filter(n=>n.severity==='warning'),extra.notices]);throw error;
  }
  const journey=results[0],extra=await endpointNotices(from,to,journey,journey.departure,journey.arrival,signal);
+ journey.endpointMappings=[[from,journey.legs[0].from],[to,journey.legs.at(-1).to]].filter(([asked])=>!/^\d{7,9}$/.test(asked.dbId||'')).map(([asked,resolved])=>`„${asked.name}“ wurde anhand von Name und Lage dem Bahnhof „${resolved.name}“ zugeordnet.`);
  journey.notices=mergeNotices([journey.notices,extra.notices]);journey.disruptionCheck=extra.checked?'trip-and-station-alerts':'trip-only';return journey;}

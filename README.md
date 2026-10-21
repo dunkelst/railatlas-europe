@@ -4,11 +4,11 @@ Interaktiver Eisenbahnatlas für Europa – als moderne Weiterentwicklung der Id
 
 ## Aktueller Sites-Stand
 
-Die funktionierende, privat betriebene Website liegt unter [RailAtlas Europa](https://railatlas-europa.cocoaamber33.chatgpt.site). Ihr vollständiger Quellstand befindet sich unter [`sites/railatlas-europa`](sites/railatlas-europa), einschließlich Serverauskunft, 54.114 Stations-/Haltestelleneinträgen, Zwischenzielen, echten gelieferten Streckenverläufen, ÖPNV-Produkten und zeitbezogenen Störungsmeldungen.
+Die funktionierende, privat betriebene Website liegt unter [RailAtlas Europa](https://railatlas-europa.cocoaamber33.chatgpt.site). Ihr vollständiger Quellstand befindet sich unter [`sites/railatlas-europa`](sites/railatlas-europa), einschließlich auswählbarer ÖBB-/VRR-EFA-Serverauskunft, 54.114 Stations-/Haltestelleneinträgen, Zwischenzielen, echten gelieferten Streckenverläufen, ÖPNV-Produkten und zeitbezogenen Störungsmeldungen.
 
-Der Sync übernimmt Sites-Version **8** aus Quellcommit `c3dc4c8ae65aa380363fbadc601f31f5b1e50c0b`. Die [Dateiliste mit Prüfsummen](docs/sites-source-manifest.json) macht den Abgleich nachvollziehbar; generierte TypeScript-Zwischendaten, lokale Zugangsdaten, Buildausgaben und Arbeitsdateien gehören nicht zum Snapshot. [Prüfergebnisse und Datenlücken](sites/railatlas-europa/QA.md) sowie [Start-/Buildanleitung](docs/sites-source-sync.md) stehen im Repository.
+Der aktuelle Abgleich übernimmt Sites-Version **10** aus Quellcommit `8a33978826e2ff0379363acb471196a8777c8154`. Die [Dateiliste mit Prüfsummen](docs/sites-source-manifest.json) macht den Abgleich nachvollziehbar; generierte TypeScript-Zwischendaten, lokale Zugangsdaten, Buildausgaben und Arbeitsdateien gehören nicht zum Snapshot. [Prüfergebnisse und Datenlücken](sites/railatlas-europa/QA.md) sowie [Start-/Buildanleitung](docs/sites-source-sync.md) stehen im Repository.
 
-Das GitHub-Repository behält seine bestehende Sichtbarkeit. Der hier abgelegte Quellcode ist unabhängig von der Eigentümeranmeldung der laufenden Sites-Website. Dieser Sync enthält keinen Sites-Deploy und wird über einen Pull Request bereitgestellt. Die vorhandene Graph-/OSM-Pipeline und ihre Tests bleiben erhalten.
+Das GitHub-Repository behält seine bestehende Sichtbarkeit. Der hier abgelegte Quellcode ist unabhängig von der Eigentümeranmeldung der laufenden Sites-Website. Die Sites-Version wurde privat bereitgestellt; der Quellabgleich wird auf `main` übernommen. Die vorhandene Graph-/OSM-Pipeline und ihre Tests bleiben erhalten.
 
 ## Bisheriger statischer Atlas und Graph-Pipeline
 
@@ -40,4 +40,6 @@ RailAtlas Europe soll Infrastrukturkarte, Streckenplanung und Fahrplan kombinier
 
 ## GitHub Pages
 
-Der Workflow `.github/workflows/pages.yml` veröffentlicht den Inhalt von `main` automatisch als GitHub Pages Site.
+Die Adresse [RailAtlas auf GitHub Pages](https://dunkelst.github.io/railatlas-europe/) führt automatisch zur aktuellen privaten Sites-App. GitHub Pages führt keinen Servercode aus und zeigt deshalb keinen zweiten Fahrplanplaner. Der Pages-Workflow veröffentlicht ausschließlich diesen Einstieg aus `.pages-dist`; Quellcode, Testdaten und interne Builddateien werden nicht als Website-Artefakt hochgeladen. Der bisherige statische Atlas und die Graph-Pipeline bleiben im Repository erhalten.
+
+Die aktuelle App kann über `npm run install:app`, `npm run dev`, `npm run build` und `npm run test:app` vom Repository-Stamm aus bedient werden. Siehe [Startanleitung](docs/sites-source-sync.md).

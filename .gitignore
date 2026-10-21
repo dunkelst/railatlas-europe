@@ -8,3 +8,4 @@ __pycache__/
 
 # Generated state for the synchronized Sites source.
 /sites/railatlas-europa/tsconfig.tsbuildinfo
+/.pages-dist/
