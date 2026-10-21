@@ -24,16 +24,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.12"
+          node-version: 22
 
-      - name: Install validation dependencies
-        run: python -m pip install -r requirements-builder.txt
-
-      - name: Validate published RailGraph registry
-        run: python tools/validate_production_data.py
+      - name: Prepare entry to the current private application
+        run: node tools/build-pages-entry.mjs
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -41,7 +38,7 @@ jobs:
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: ".pages-dist"
 
       - name: Deploy
         id: deployment
