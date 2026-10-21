@@ -5,3 +5,6 @@ data/build/
 *.pbf
 __pycache__/
 *.pyc
+
+# Generated state for the synchronized Sites source.
+/sites/railatlas-europa/tsconfig.tsbuildinfo

@@ -1,0 +1,2 @@
+import {findOnlineStations} from '@/lib/journey.mjs';
+export async function GET(request:Request){const q=new URL(request.url).searchParams.get('q')?.trim()||'';if(q.length<2||q.length>120)return Response.json({stations:[]});try{return Response.json({stations:await findOnlineStations(q,request.signal)},{headers:{'Cache-Control':'private, max-age=3600'}});}catch(e){console.warn('[RailAtlas] Stationsabfrage',e instanceof Error?e.message:'unknown');return Response.json({stations:[],error:'Die ergänzende Online-Suche ist gerade nicht erreichbar.'},{status:502});}}
