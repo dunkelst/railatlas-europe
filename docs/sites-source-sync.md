@@ -1,6 +1,6 @@
 # Gemeinsame App für Sites und GitHub Pages
 
-`sites/railatlas-europa` enthält den vollständigen Quellstand der Sites-Version 11, Commit `0da7f1aa0ad19afaf83f476a1a23435ef581e67b`. 153 Dateien sind bytegleich übernommen; ausschließlich das generierte `tsconfig.tsbuildinfo` ist ausgenommen. `sites-source-manifest.json` enthält Herkunft und SHA-256-Prüfsummen. `node tools/verify-sites-source.mjs` prüft sie in CI und vor jeder Pages-Veröffentlichung.
+`sites/railatlas-europa` enthält den vollständigen Quellstand der Sites-Version 12, Commit `4487d1c3111ef4a0678a48c92d224bfd99bf0e74`. 153 Dateien sind bytegleich übernommen; ausschließlich das generierte `tsconfig.tsbuildinfo` ist ausgenommen. `sites-source-manifest.json` enthält Herkunft und SHA-256-Prüfsummen. `node tools/verify-sites-source.mjs` prüft sie in CI und vor jeder Pages-Veröffentlichung.
 
 ## Laufzeit
 

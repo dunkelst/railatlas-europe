@@ -6,7 +6,7 @@ Die GitHub-Seite führt die vollständige RailAtlas-Oberfläche selbst aus: euro
 
 ## Ein gemeinsamer Quellstand
 
-`sites/railatlas-europa/app/page.tsx`, die Komponenten, Styles und Daten werden sowohl für GitHub Pages als auch für [Sites](https://railatlas-europa.cocoaamber33.chatgpt.site) gebaut. Der vollständige Stand entspricht Sites-Version **11**, Quellcommit `0da7f1aa0ad19afaf83f476a1a23435ef581e67b`. Die [Dateiliste mit Prüfsummen](docs/sites-source-manifest.json) und `node tools/verify-sites-source.mjs` prüfen den Abgleich.
+`sites/railatlas-europa/app/page.tsx`, die Komponenten, Styles und Daten werden sowohl für GitHub Pages als auch für [Sites](https://railatlas-europa.cocoaamber33.chatgpt.site) gebaut. Der vollständige Stand entspricht Sites-Version **12**, Quellcommit `4487d1c3111ef4a0678a48c92d224bfd99bf0e74`. Die [Dateiliste mit Prüfsummen](docs/sites-source-manifest.json) und `node tools/verify-sites-source.mjs` prüfen den Abgleich.
 
 GitHub Pages liefert HTML, JavaScript und Daten aus diesem Repository. Die Oberfläche ruft für die Live-Auskunft die gemeinsame Sites-API (`/api/stations`, `/api/journeys`) auf. GitHub Pages kann keinen Worker ausführen; die angebundenen Anbieter erlauben keine direkten Browserabfragen. Die API ist für öffentliche Tests freigegeben und erlaubt Browseranfragen vom GitHub-Ursprung ohne Anmeldeinformationen. Es gibt keine versteckte Weiterleitung, fest eingebauten Beispielverbindungen oder erfundene Ersatzrouten.
 

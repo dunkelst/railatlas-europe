@@ -30,4 +30,4 @@ export function localBerlinISO(s){
  if(berlinInput(guess).slice(0,16)!==p)throw new Error('Diese Uhrzeit gibt es bei der Zeitumstellung nicht.');
  return new Date(guess).toISOString();
 }
-export function dbLink(from,to,departure){const p=new URLSearchParams({so:from.name,zo:to.name,hd:berlinInput(departure).slice(0,16),hza:'D',kl:'2',r:'13:16:KLASSENLOS:1'});if(from.dbId)p.set('soei',from.dbId);if(to.dbId)p.set('zoei',to.dbId);return 'https://www.bahn.de/buchung/fahrplan/suche#'+p;}
+export function dbLink(from,to,departure){const p=new URLSearchParams({so:from.name,zo:to.name,hd:berlinInput(departure).slice(0,16),hza:'D',kl:'2',r:'13:16:KLASSENLOS:1'});if(/^\d{7,9}$/.test(from.dbId||''))p.set('soei',from.dbId);if(/^\d{7,9}$/.test(to.dbId||''))p.set('zoei',to.dbId);return 'https://www.bahn.de/buchung/fahrplan/suche#'+p;}

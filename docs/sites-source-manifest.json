@@ -1,6 +1,6 @@
 {
-  "site_version": 11,
-  "site_source_commit": "0da7f1aa0ad19afaf83f476a1a23435ef581e67b",
+  "site_version": 12,
+  "site_source_commit": "4487d1c3111ef4a0678a48c92d224bfd99bf0e74",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.cocoaamber33.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -32,9 +32,9 @@
     {
       "path": "QA.md",
       "mode": "100644",
-      "git_blob": "e608a51c7dd1c3ab58c000481a163df127d6a5a3",
-      "sha256": "dd61993b51e112b28b93848c2b2107ba2351a0574b476deeac9a8a4405c260a8",
-      "bytes": 7762
+      "git_blob": "aa051c5a74d6686695e2af6ef2e137059dfef21d",
+      "sha256": "3de8d0919de79d4099213b2afef00391403e67e828b677e0ac4429144bf48b7a",
+      "bytes": 8994
     },
     {
       "path": "README.md",
@@ -711,9 +711,9 @@
     {
       "path": "lib/rail.mjs",
       "mode": "100644",
-      "git_blob": "a1de44972079174e971fe27649f56b19476e8b01",
-      "sha256": "05dbdf8e0720ca1d57fe17c8ca578fad216f5e9572c55e27ffc4e5210e82718c",
-      "bytes": 3709
+      "git_blob": "3f6017baa69fd233971801998f80d1263ba97595",
+      "sha256": "61bff7e6afede355382e585bc16ff373d1a796abc5f9b39235f109d92d936080",
+      "bytes": 3753
     },
     {
       "path": "lib/stations.ts",
@@ -1026,9 +1026,9 @@
     {
       "path": "tests/rail.test.mjs",
       "mode": "100644",
-      "git_blob": "8ee1c9442cfa343163290d1a7942e6ded3d57273",
-      "sha256": "ea4d8f93ddbdbc73363cfe96b4ef2ac85f43dc7e2d875609203ab97beaa0c727",
-      "bytes": 6906
+      "git_blob": "a02cc601379c731f658f4dbff27edf35811f34b8",
+      "sha256": "9d407f38ec35684eb3dde28c554aa5484a0e3b10db81c7b8fcf7cb01732dc259",
+      "bytes": 7334
     },
     {
       "path": "tests/transit.test.mjs",

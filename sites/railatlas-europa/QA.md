@@ -62,3 +62,12 @@ Der genau im Screenshot gewählte Eintrag „Bahnhof Bad Münder am Deister“ b
 - GitHub Pages verwendet die bestehende Sites-Serverauskunft. Für genau `https://dunkelst.github.io` sind CORS-JSON-Antworten und OPTIONS freigegeben; keine Zugangsdaten im Browser oder Repository.
 - 29 Node-Regressionen bestanden, darunter neue Prüfungen für beide URL-Kontexte, CORS-Preflight, unzulässige Browser-Ursprünge und lesbare API-Fehler. TypeScript-Prüfung und beide Produktionsbuilds erfolgreich.
 - Neue Live- und Browser-Prüfungen der GitHub-Veröffentlichung werden im GitHub-Repository unter `docs/github-pages-qa.md` dokumentiert. Dieser Quellstand behauptet diese noch nicht als ausgeführt.
+
+### Praktische GitHub-Prüfung und DB-Prüflink
+
+Die veröffentlichte GitHub-Seite blieb bei allen folgenden Formularabfragen unter `https://dunkelst.github.io/railatlas-europe/`. Der Katalog und die Karte wurden lokal von GitHub geladen; Live-Auskunft und Online-Vorschläge funktionierten über die gemeinsame öffentliche API.
+
+- Heilbronn–Würzburg am 23.10.2026: RE8 (19072), 14:48–16:20, Arverio, Gleise 3 → 2.
+- Hameln → genau der Katalogeintrag „Bahnhof Bad Münder am Deister“ am 24.10.2026: S5 (34540), 09:20–09:27. Namens-/Lagezuordnung zum echten EVA-Bahnhof sichtbar.
+- Bern–Amsterdam–Berlin am 24./25.10.2026: Bern 09:04 → Amsterdam 17:50 (ICE 372/918/124), Weiterfahrt 20:40 über Duisburg mit IC 60403 und ICE 1541, Berlin 05:39. Gewünschter Aufenthalt 60 Min., tatsächlicher Aufenthalt 2 Std. 50 Min.; Zeitumstellung korrekt berücksichtigt. Dasselbe Ergebnis auf Sites geprüft.
+- Der externe DB-Prüflink enthielt bei Bad Münder noch die lokale sechsstellige Katalogkennung. Der gemeinsame Link-Generator übergibt jetzt ausschließlich echte sieben- bis neunstellige EVA-Kennungen; sonst bleibt die Bahnhofssuche über den Namen erhalten. Zusätzliche Regression bestanden, insgesamt 30.

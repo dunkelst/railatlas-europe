@@ -1,10 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {unpack,searchStations,nearestStations,localBerlinISO,berlinInput,validateChain,normalize} from '../lib/rail.mjs';
+import {unpack,searchStations,nearestStations,localBerlinISO,berlinInput,validateChain,normalize,dbLink} from '../lib/rail.mjs';
 import {parseJourneys,resolveLid,sameStation} from '../lib/journey.mjs';
 const stations=unpack(JSON.parse(fs.readFileSync(new URL('../public/data/stations.json',import.meta.url))));
 const station=id=>stations.find(s=>s.dbId===id);
+test('DB check links never pass six-digit local catalogue keys as EVA station IDs',()=>{
+ const params=new URLSearchParams(new URL(dbLink(station('8000148'),station('265126'),'2026-10-24T07:20:00Z')).hash.slice(1));
+ assert.equal(params.get('soei'),'8000148');assert.equal(params.get('zoei'),null);
+ assert.equal(params.get('zo'),'Bahnhof Bad Münder am Deister');
+ assert.equal(params.get('hd'),'2026-10-24T09:20');
+});
 test('Six-digit catalogue key for Bahnhof Bad Münder is resolved against a real nearby source station, never sent as EVA ID',async t=>{
  const raw=JSON.parse(fs.readFileSync(new URL('./fixtures/oebb-badmuender-nearby.json',import.meta.url)));
  const original=globalThis.fetch;let calls=0;
