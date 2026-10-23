@@ -35,11 +35,11 @@ jobs:
           version: 11.25.0
           run_install: false
 
-      - name: Install the shared application
-        run: npm run install:app
-
       - name: Verify shared Sites source
         run: node tools/verify-sites-source.mjs
+
+      - name: Install the shared application
+        run: npm run install:app
 
       - name: Build the actual application for Pages
         run: npm run build:pages
