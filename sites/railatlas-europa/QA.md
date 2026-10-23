@@ -53,3 +53,12 @@ Für eine nachweislich umfassende Sperrungsberücksichtigung wären weitere verl
 Der genau im Screenshot gewählte Eintrag „Bahnhof Bad Münder am Deister“ besitzt die lokale sechsstellige Katalogkennung 265126; diese ist keine unmittelbar nutzbare ÖBB/EVA-ID. Eine echte ÖBB-LocGeoPos-Antwort liefert den gleichnamigen Bahnhof Bad Münder(Deister), EVA 8000725, in 168 Metern Entfernung. Der Resolver übergibt die lokale Kennung nicht mehr als EVA-ID. Er akzeptiert eine Zuordnung nur mit passendem Stationsnamen und Lage innerhalb desselben kleinen Bahnhofskomplexes; die Zuordnung erscheint ausdrücklich im Reiseergebnis. Der benachbarte, anders benannte Bus-Halt „Am Deisterbahnhof“ wird im Regressionstest nicht auf den Bahnhof umgebogen.
 
 25 Regressionen bestanden. TypeScript-Prüfung und Produktionsbuild wurden nach dieser Korrektur erneut ausgeführt.
+
+
+## Ergänzung 23.10.2026: identische Oberfläche auf GitHub Pages
+
+- Öffentliche Testnutzung ist vom Eigentümer freigegeben. Die UI kennzeichnet sich als Testversion; die VRR-Auskunft bleibt ein Testzugang ohne Verfügbarkeitsgarantie.
+- Der statische Vite-Build importiert dieselbe `app/page.tsx`, dieselben Komponenten und Styles wie Sites. Keine Weiterleitung und keine zweite Routing-Implementierung. Der Stationskatalog und Leaflet werden mit dem Repository-Präfix geladen.
+- GitHub Pages verwendet die bestehende Sites-Serverauskunft. Für genau `https://dunkelst.github.io` sind CORS-JSON-Antworten und OPTIONS freigegeben; keine Zugangsdaten im Browser oder Repository.
+- 29 Node-Regressionen bestanden, darunter neue Prüfungen für beide URL-Kontexte, CORS-Preflight, unzulässige Browser-Ursprünge und lesbare API-Fehler. TypeScript-Prüfung und beide Produktionsbuilds erfolgreich.
+- Neue Live- und Browser-Prüfungen der GitHub-Veröffentlichung werden im GitHub-Repository unter `docs/github-pages-qa.md` dokumentiert. Dieser Quellstand behauptet diese noch nicht als ausgeführt.

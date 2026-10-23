@@ -1,45 +1,41 @@
-# RailAtlas Europe
+# RailAtlas Europa
 
-Interaktiver Eisenbahnatlas für Europa – als moderne Weiterentwicklung der Idee eines klassischen Bahnatlas.
+[**App auf GitHub Pages öffnen**](https://dunkelst.github.io/railatlas-europe/)
 
-## Aktueller Sites-Stand
+Die GitHub-Seite führt die vollständige RailAtlas-Oberfläche selbst aus: europäische Bahnhofssuche mit Eingabevorschlägen, 54.114 Katalogeinträge, Karten-/Standortauswahl, Zwischenziele mit Aufenthalt, Bahn und ÖPNV sowie verfügbare zeitbezogene Störungsmeldungen. Sie bleibt unter der GitHub-Adresse und leitet nicht zu einer anderen Website weiter.
 
-Die funktionierende, privat betriebene Website liegt unter [RailAtlas Europa](https://railatlas-europa.cocoaamber33.chatgpt.site). Ihr vollständiger Quellstand befindet sich unter [`sites/railatlas-europa`](sites/railatlas-europa), einschließlich auswählbarer ÖBB-/VRR-EFA-Serverauskunft, 54.114 Stations-/Haltestelleneinträgen, Zwischenzielen, echten gelieferten Streckenverläufen, ÖPNV-Produkten und zeitbezogenen Störungsmeldungen.
+## Ein gemeinsamer Quellstand
 
-Der aktuelle Abgleich übernimmt Sites-Version **10** aus Quellcommit `8a33978826e2ff0379363acb471196a8777c8154`. Die [Dateiliste mit Prüfsummen](docs/sites-source-manifest.json) macht den Abgleich nachvollziehbar; generierte TypeScript-Zwischendaten, lokale Zugangsdaten, Buildausgaben und Arbeitsdateien gehören nicht zum Snapshot. [Prüfergebnisse und Datenlücken](sites/railatlas-europa/QA.md) sowie [Start-/Buildanleitung](docs/sites-source-sync.md) stehen im Repository.
+`sites/railatlas-europa/app/page.tsx`, die Komponenten, Styles und Daten werden sowohl für GitHub Pages als auch für [Sites](https://railatlas-europa.cocoaamber33.chatgpt.site) gebaut. Der vollständige Stand entspricht Sites-Version **11**, Quellcommit `0da7f1aa0ad19afaf83f476a1a23435ef581e67b`. Die [Dateiliste mit Prüfsummen](docs/sites-source-manifest.json) und `node tools/verify-sites-source.mjs` prüfen den Abgleich.
 
-Das GitHub-Repository behält seine bestehende Sichtbarkeit. Der hier abgelegte Quellcode ist unabhängig von der Eigentümeranmeldung der laufenden Sites-Website. Die Sites-Version wurde privat bereitgestellt; der Quellabgleich wird auf `main` übernommen. Die vorhandene Graph-/OSM-Pipeline und ihre Tests bleiben erhalten.
+GitHub Pages liefert HTML, JavaScript und Daten aus diesem Repository. Die Oberfläche ruft für die Live-Auskunft die gemeinsame Sites-API (`/api/stations`, `/api/journeys`) auf. GitHub Pages kann keinen Worker ausführen; die angebundenen Anbieter erlauben keine direkten Browserabfragen. Die API ist für öffentliche Tests freigegeben und erlaubt Browseranfragen vom GitHub-Ursprung ohne Anmeldeinformationen. Es gibt keine versteckte Weiterleitung, fest eingebauten Beispielverbindungen oder erfundene Ersatzrouten.
 
-## Bisheriger statischer Atlas und Graph-Pipeline
+## Ausführen und prüfen
 
-- OpenStreetMap Basiskarte
-- OpenRailwayMap Overlay
-- iPad-taugliches responsives Layout
-- Referenzroute Heilbronn Hbf → Würzburg Hbf
-- Atlas-/Route-/Zeitplan-Tabs
-- interaktive Zeitachse mit Positionsmarker
-- PWA-Manifest und Service Worker
-- automatisches Deployment über GitHub Pages
+Linux, Node.js ab 22.13 und pnpm 11.25.0/Corepack sind erforderlich.
 
-> Hinweis: Route und Uhrzeiten sind in v0.1 noch Demo-/UI-Daten. Sie sind kein Live-Fahrplan.
+```bash
+npm run install:app
+npm run dev          # vollständige App mit lokaler Serverauskunft
+npm run test:app     # Fahrplan-/Stations-/Geometrie-/CORS-Regressionen
+npm run build       # Sites-Worker und Client
+npm run build:pages # dieselbe UI als statische GitHub-Seite
+```
 
-## Zielarchitektur
+[Start-/Buildanleitung](docs/sites-source-sync.md), [bisherige Live-Prüfungen und Grenzen](sites/railatlas-europa/QA.md).
 
-RailAtlas Europe soll Infrastrukturkarte, Streckenplanung und Fahrplan kombinieren. Geplant sind offene bzw. lizenzierbare Datenquellen wie OSM/OpenRailwayMap, ERA/RINF sowie GTFS/NeTEx-/nationale Fahrplandaten.
+## Auskunft und Datenabdeckung
 
-## Roadmap
+- ÖBB / Scotty: europäische Auskunft einschließlich gelieferter DB-Verbindungen und ÖPNV-Produkte. Keine gesonderte direkte DB-/VBB/Fahrinfo-Anbindung.
+- VRR / EFA OpenService: auswählbarer Testzugang für ÖPNV-Verbindungen, ohne zugesicherte Produktivverfügbarkeit. EFA-BW und Trainline Partner Solutions sind nicht freigeschaltet.
+- Verbindungen und Streckengeometrie kommen aus tatsächlichen Anbieterantworten. Fehlende Geometrie bleibt offen. Ausfälle und ausdrücklich nicht berücksichtigte Sperrungen führen zum Ausschluss des betreffenden Vorschlags; verfügbare Gründe bleiben sichtbar.
+- Echtzeit- und Sperrungsabdeckung bleiben **partiell**. Eine leere Meldungsliste bestätigt keine störungsfreie Fahrt.
+- Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenz unter `sites/railatlas-europa/public/data`.
 
-1. echter Rail-Graph statt Demo-Geometrie
-2. Betriebsstellen- und Infrastrukturdaten
-3. DELFI/GTFS für Deutschland
-4. ERA/RINF und Länderadapter für Europa
-5. grenzüberschreitendes Routing
-6. historische Strecken
-7. Echtzeitdaten
-8. Offline-/PWA-Ausbau
+Die öffentliche Testnutzung wurde vom Eigentümer freigegeben. Es gibt keine Nutzerkonten oder gespeicherten persönlichen Reiseprofile.
 
-## GitHub Pages
+## Infrastruktur- und Graph-Werkzeuge
 
-Die Adresse [RailAtlas auf GitHub Pages](https://dunkelst.github.io/railatlas-europe/) führt automatisch zur aktuellen privaten Sites-App. GitHub Pages führt keinen Servercode aus und zeigt deshalb keinen zweiten Fahrplanplaner. Der Pages-Workflow veröffentlicht ausschließlich diesen Einstieg aus `.pages-dist`; Quellcode, Testdaten und interne Builddateien werden nicht als Website-Artefakt hochgeladen. Der bisherige statische Atlas und die Graph-Pipeline bleiben im Repository erhalten.
+Die bestehende OSM-/Graph-Pipeline, Katalog-/Crosswalk-Logik, Daten unter `data/` und ihre Regressionen bleiben erhalten. `npm test` führt diese Node-/Python-Prüfungen aus; Python-Abhängigkeiten stehen in `requirements-builder.txt`. Die alten Root-Dateien des statischen Atlas werden nicht als aktuelle Pages-App veröffentlicht.
 
-Die aktuelle App kann über `npm run install:app`, `npm run dev`, `npm run build` und `npm run test:app` vom Repository-Stamm aus bedient werden. Siehe [Startanleitung](docs/sites-source-sync.md).
+Der Pages-Workflow veröffentlicht ausschließlich `sites/railatlas-europa/dist-pages`. Ein früherer Service Worker wird ohne Navigation abgelöst; Live-Fahrpläne werden nicht als Offline-Ergebnisse gespeichert.

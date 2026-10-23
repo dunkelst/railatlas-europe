@@ -1,9 +1,10 @@
 "use client";
 import {useEffect,useRef,useState} from 'react';
 import type {Station,Journey} from '@/lib/types';
+import {assetUrl} from '@/lib/urls.mjs';
 declare global {interface Window {L:any}}
 let leaflet:Promise<any>|undefined;
-function loadLeaflet(){if(window.L)return Promise.resolve(window.L);if(!leaflet)leaflet=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/vendor/leaflet.js';script.onload=()=>resolve(window.L);script.onerror=()=>{leaflet=undefined;reject(new Error('Die Karte konnte nicht geladen werden.'));};document.head.appendChild(script);});return leaflet;}
+function loadLeaflet(){if(window.L)return Promise.resolve(window.L);if(!leaflet)leaflet=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=assetUrl('vendor/leaflet.js');script.onload=()=>resolve(window.L);script.onerror=()=>{leaflet=undefined;reject(new Error('Die Karte konnte nicht geladen werden.'));};document.head.appendChild(script);});return leaflet;}
 export default function RailMap({stations,parts,picking,onPick,overlay,setOverlay}:{stations:Station[];parts:Journey[];picking:string|null;onPick:(lat:number,lon:number)=>void;overlay:boolean;setOverlay:(v:boolean)=>void}){
  const container=useRef<HTMLDivElement>(null),map=useRef<any>(null),layers=useRef<any>(null),railway=useRef<any>(null),pickRef=useRef(onPick),modeRef=useRef(picking);const [error,setError]=useState('');
  pickRef.current=onPick;modeRef.current=picking;
