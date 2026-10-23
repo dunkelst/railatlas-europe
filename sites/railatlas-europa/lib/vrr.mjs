@@ -107,7 +107,7 @@ export function parseVrrJourneys(data, from, to, requested) {
   // EFA can explicitly say that a disruption was NOT considered by its router.
   // Such a connection cannot be presented as usable, even if it has valid times.
   if(notices.some(n=>n.routingUncertain||/Blocking$/i.test(n.code))){excludedNotices.push(...notices.map(n=>({...n,scope:'Verworfener Verbindungsvorschlag ('+legs.map(l=>l.line).join(' / ')+'): '+n.scope})));continue;}
-  journeys.push({departure,arrival,legs,notices,disruptionCoverage:'partial',disruptionCheck:'trip-only',routingStatus:'provider-checked',transfers:Math.max(0,legs.filter(l=>!l.walking).length-1),source:VRR_SOURCE,sourceWarning:'Privater VRR-Hobbyzugang. Der Anbieter kann diesen Server für Tests verwenden; Ergebnisse und Verfügbarkeit sind nicht garantiert.',fetchedAt:new Date().toISOString()});
+  journeys.push({departure,arrival,legs,notices,disruptionCoverage:'partial',disruptionCheck:'trip-only',routingStatus:'provider-checked',transfers:Math.max(0,legs.filter(l=>!l.walking).length-1),source:VRR_SOURCE,sourceWarning:'VRR-Testzugang. Der Anbieter kann diesen Server für Tests verwenden; Ergebnisse und Verfügbarkeit sind nicht garantiert.',fetchedAt:new Date().toISOString()});
  }catch{/* Reject malformed source journeys. */}
  journeys.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));
  if(journeys.length)journeys[0].notices=mergeNotices([journeys[0].notices,excludedNotices]);

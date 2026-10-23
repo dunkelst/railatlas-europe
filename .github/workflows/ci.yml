@@ -29,3 +29,23 @@ jobs:
         run: npm test
       - name: Run published Sites transport regressions
         run: node --test sites/railatlas-europa/tests/*.test.mjs
+      - name: Verify shared Sites source
+        run: node tools/verify-sites-source.mjs
+
+  build-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - run: npm run install:app
+      - name: Check application types
+        working-directory: sites/railatlas-europa
+        run: node node_modules/typescript/bin/tsc --noEmit --incremental false
+      - name: Build the same UI for Pages
+        run: npm run build:pages
