@@ -60,7 +60,7 @@ export async function resolveLid(station,signal){
  const matches=(data.locL||[]).filter(s=>s.type==='S').map(s=>({...parseStation(s),lid:s.lid})).filter(s=>sameStation(station,s));
  if(typeof station.id==='string'&&station.id.startsWith('osm:'))matches.sort((a,b)=>distanceKm(station,a)-distanceKm(station,b));
  const match=matches[0];
- if(!match)throw new Error(`„${station.name}“ ist im Katalog erfasst, aber in dieser Fahrplanauskunft nicht eindeutig zugeordnet. Bitte einen Halt aus den Online-Vorschlägen oder die andere Auskunft wählen.`);
+ if(!match){const error=new Error(`„${station.name}“ ist im Katalog erfasst, aber in dieser Fahrplanauskunft nicht eindeutig zugeordnet. Bitte einen Halt aus den Online-Vorschlägen oder die andere Auskunft wählen.`);error.code='STATION_NOT_FOUND';throw error;}
  return match.lid;
 }
 function platform(s,prefix,planned=false){const p=planned?(s[prefix+'PltfS']?.txt||s[prefix+'PlatfS']):(s[prefix+'PltfR']?.txt||s[prefix+'PlatfR']||s[prefix+'PltfS']?.txt||s[prefix+'PlatfS']);return typeof p==='string'?p:undefined;}

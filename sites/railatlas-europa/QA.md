@@ -99,3 +99,31 @@ Die veröffentlichte GitHub-Seite blieb bei allen folgenden Formularabfragen unt
 - Eine Karte ohne messbare Zeichenfläche meldet nun ein Darstellungsproblem und fragt keine ungültige Bounding Box ab. Unveränderte Stationsauswahl wird bei sonstigen Seitenzustandsänderungen nicht neu erzeugt.
 - Die externe CSS-Sperre wurde als Cloudflare 1010 eingeordnet: https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/. Es wurden keine Sicherheitsregeln abgeschaltet oder Ersatz-URLs zur Umgehung eingebaut.
 - Die Overpass-Quelle war auch bei einer winzigen Diagnoseabfrage nicht rechtzeitig erreichbar. Der tatsächliche Download neuer OSM-Netze und die vollständige visuelle Kartenabnahme bleiben offen. Keine Umdeklarierung der Parser-/HTTP-Prüfungen zu bestandenen Live-Kartentests.
+
+
+## Ergänzung 24.10.2026: regionale EFA-Halte
+
+- 52 App-Regressionen, TypeScript-Prüfung und Sites-, Pages- sowie eigenständiger Clientbuild erfolgreich.
+
+- Öffis' öffentliche Stationssuche und deren EFA-Frontend lieferten die konkrete
+  Instanz https://www.efa.de/efa/. Deren StopFinder bestätigt Rohdental mit
+  DHID `de:03252:2320`, Koordinate 52.200076 / 9.249135 und Gemeinde
+  Hessisch Oldendorf. ÖBB lieferte für dieselbe Namenssuche unpassende Treffer.
+- Echte EFA-Fahrtantworten für den 26.10.2026 ab 08:00 Europe/Berlin:
+  Rohdental → Hessisch Oldendorf Bahnhof, Bus 27, 08:18–08:32, 232 Quellkoordinaten;
+  Heilbronn Finanzamt → Rohdental, 09:25–15:17, S4 / Fußweg / RE 8 / ICE 682 /
+  RE2 / RB77 / Bus 27. Alle sieben Abschnitte enthalten vollständige Quellgeometrie,
+  dazu vier deduplizierte Betriebshinweise in der gesamten Verbindung.
+- Derselbe Such- und Routenpfad wurde live durch den eigenständigen Node-Server
+  über `/api/stations` und `/api/journeys` ausgeführt: jeweils HTTP 200, Fahrten
+  mit `Cache-Control: no-store`. Rohdental erscheint in der Standardsuche.
+- Die EFA-Fixtures enthalten echte erste Verbindungen, keine erfundenen Fahrten;
+  weitere Alternativen wurden weggelassen (siehe `tests/fixtures/EFA.md`).
+- Neue Regressionen prüfen automatische Quellwahl, fremde Namensvorschläge,
+  eigene Anbieter-ID-Räume, Abbruch und Anbieterfehler, Zeit-/Endpunktkontrolle
+  und die räumlich begrenzte Übernahme von OSM-Halten. Frühere Bahn-, VRR-,
+  Zwischenziel-, Karten- und eigenständige Serverregressionen bleiben erhalten.
+- Browserprüfung dieser Änderung noch nicht bestätigt: Die verwaltete Vorschau
+  meldet ihren laufenden Zustand, der Cloud-Browser erhält am exakt ausgegebenen
+  Vorschau-URL jedoch `ERR_CONNECTION_REFUSED`. Keine Änderung am Anwendungscode
+  zur Umgehung dieser Infrastrukturgrenze.

@@ -1,4 +1,5 @@
-export type Station={id:string;name:string;country:string;lat:number;lon:number;dbId:string;main:boolean;vrrId?:string;networkMode?:string;aliases?:string;distance?:number;search?:string;key?:string};
+export type TimetableSource='auto'|'oebb'|'vrr'|'efa';
+export type Station={id:string;name:string;country:string;lat:number;lon:number;dbId:string;main:boolean;vrrId?:string;efaId?:string;networkMode?:string;aliases?:string;distance?:number;search?:string;key?:string};
 export type Notice={id:string;title:string;text:string;code:string;kind:'closure'|'cancellation'|'delay'|'notice';severity:'warning'|'info';validFrom?:string|null;validUntil?:string|null;periods:{from:string|null;until:string|null}[];validity:'dated'|'unspecified';scope:string;source:string};
 export type Geometry={status:'complete'|'partial'|'missing';segments:[number,number][][];source:string};
 export type Stopover={station:Station;departure:string|null;arrival:string|null;plannedDeparture:string|null;plannedArrival:string|null;platform?:string;cancelled:boolean;notices:Notice[]};

@@ -1,5 +1,5 @@
-import {findOnlineStations, getJourney} from './journey.mjs';
-import {findVrrStations, getVrrJourney, validVrrId} from './vrr.mjs';
+import {findTimetableStations, getTimetableJourney, timetableSources} from './timetable.mjs';
+import {validVrrId} from './vrr.mjs';
 import {apiJson, apiOptions, rejectOrigin} from './api-cors.mjs';
 import {fetchNetwork} from './network.mjs';
 
@@ -21,21 +21,21 @@ export async function handleApi(request) {
     catch (e) {return json({error: e.message || 'Die Netzebenen konnten nicht geladen werden.'}, {status: 502});}
   }
   if (path === '/api/stations') {
-    const q = url.searchParams.get('q')?.trim() || '', source = url.searchParams.get('source') || 'oebb';
-    if (!['oebb', 'vrr'].includes(source)) return json({error: 'Unbekannte Auskunft.'}, {status: 400});
+    const q = url.searchParams.get('q')?.trim() || '', source = url.searchParams.get('source') || 'auto';
+    if (!timetableSources.includes(source)) return json({error: 'Unbekannte Auskunft.'}, {status: 400});
     if (q.length < 2 || q.length > 120) return json({stations: []});
-    try {return json({stations: await (source === 'vrr' ? findVrrStations : findOnlineStations)(q, request.signal)}, {headers: {'Cache-Control': source === 'vrr' ? 'private, no-store' : 'private, max-age=3600'}});}
-    catch {return json({stations: [], error: 'Die ergänzende Online-Suche ist gerade nicht erreichbar.'}, {status: 502});}
+    try {return json({stations: await findTimetableStations(q, source, request.signal)}, {headers: {'Cache-Control': source === 'oebb' ? 'private, max-age=3600' : 'private, no-store'}});}
+    catch (e) {return json({stations: [], error: e.message || 'Die ergänzende Online-Suche ist gerade nicht erreichbar.'}, {status: 502});}
   }
   try {
     const text = await request.text();
     if (text.length > 20000) return json({error: 'Die Anfrage ist zu groß.'}, {status: 400});
     let input; try {input = JSON.parse(text);} catch {return json({error: 'Die Anfrage enthält kein gültiges JSON.'}, {status: 400});}
-    const {from, to, departure, source = 'oebb'} = input || {};
-    if (!['oebb', 'vrr'].includes(source) || [from, to].some(s => s?.vrrId !== undefined && !validVrrId(s.vrrId))) return json({error: 'Bitte eine gültige Auskunft und Haltestelle wählen.'}, {status: 400});
+    const {from, to, departure, source = 'auto'} = input || {};
+    if (!timetableSources.includes(source) || [from, to].some(s => ['vrrId', 'efaId'].some(key => s?.[key] !== undefined && !validVrrId(s[key])))) return json({error: 'Bitte eine gültige Auskunft und Haltestelle wählen.'}, {status: 400});
     if (!validStation(from) || !validStation(to) || typeof departure !== 'string' || !/(Z|[+-]\d\d:\d\d)$/.test(departure) || !Number.isFinite(Date.parse(departure))) return json({error: 'Bitte gültige Bahnhöfe, Datum und Abfahrtszeit wählen.'}, {status: 400});
     if (Date.parse(departure) < Date.now() - 5 * 60000) return json({error: 'Die Abfahrt liegt in der Vergangenheit. Bitte Datum oder Uhrzeit anpassen.'}, {status: 400});
     if (Date.parse(departure) > Date.now() + 365 * 86400000) return json({error: 'Bitte eine Abfahrt innerhalb der nächsten zwölf Monate wählen.'}, {status: 400});
-    return json({journey: await (source === 'vrr' ? getVrrJourney : getJourney)(from, to, departure, request.signal)});
+    return json({journey: await getTimetableJourney(from, to, departure, source, request.signal)});
   } catch (e) {return json({error: e instanceof Error ? e.message : 'Die Fahrplanabfrage ist fehlgeschlagen.', notices: Array.isArray(e?.notices) ? e.notices : []}, {status: 502});}
 }

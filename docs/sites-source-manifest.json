@@ -1,6 +1,6 @@
 {
-  "site_version": 15,
-  "site_source_commit": "bcc597d12e51b92b3c50a416a6747a1befb43185",
+  "site_version": 16,
+  "site_source_commit": "9831ceba1cced650f08df8db40f6d5b137fa5eda",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.cocoaamber33.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -32,16 +32,16 @@
     {
       "path": "QA.md",
       "mode": "100644",
-      "git_blob": "c8c1addc89650783b6f4414d9ea74614de018a1c",
-      "sha256": "cee5d3449176776733be2d15e4a6dca89e1e2b78c5cca040e7d13f7f0939d274",
-      "bytes": 15026
+      "git_blob": "9405b98bcd7570cb0ba7b5786dfb7690060bbcda",
+      "sha256": "3e53674f029175137b5e37119cc6aa73870e05003692e7aa00d7b76fcfa7a9c6",
+      "bytes": 16900
     },
     {
       "path": "README.md",
       "mode": "100644",
-      "git_blob": "6bf54dea8fa9d2c39387013a8b916c5b72d01200",
-      "sha256": "532d998cec1e56dc2c4b7d564fb661af186caae8f321c7fda0cbd9cadc459d21",
-      "bytes": 7933
+      "git_blob": "194a6c6f53e55a329f02656fe5c21919c98b4ced",
+      "sha256": "0f0d66eed2824c46e72528a30d42fde9f4243c3c0b57cf88c1fab399ebf809b7",
+      "bytes": 9285
     },
     {
       "path": "app/api/health/route.ts",
@@ -95,9 +95,9 @@
     {
       "path": "app/page.tsx",
       "mode": "100644",
-      "git_blob": "d60758d272bc855deba1315e24c78010d953c83e",
-      "sha256": "d415b4ea61ca283138a2a9b8de0d8814386873e5834e567f528e02238c272df1",
-      "bytes": 24877
+      "git_blob": "975f5bcbe557c3e6fcf5b45ac70f080510e340c0",
+      "sha256": "cee10b0b1c5f24cfa5fbdc58578099ee48cf5d1d018c3ca2da1b007b42e2453a",
+      "bytes": 25438
     },
     {
       "path": "build/connector-preview-plugin.mjs",
@@ -690,9 +690,9 @@
     {
       "path": "lib/api.mjs",
       "mode": "100644",
-      "git_blob": "8556341c3f3366e7f891eda61772e59eff518495",
-      "sha256": "ebbcefeb6ff3d49aed779a05ac29e78392be72dc7bbcd9a1120607778d25c3dc",
-      "bytes": 3871
+      "git_blob": "da8caf056b27f3451c38d0983d21eb753cfb97ed",
+      "sha256": "e2bdaa26daae582e277eedbfcd2ec9a1bd7bd00b4eb7b58cd400f25e6349ffe8",
+      "bytes": 3874
     },
     {
       "path": "lib/connector-context.ts",
@@ -732,9 +732,9 @@
     {
       "path": "lib/journey.mjs",
       "mode": "100644",
-      "git_blob": "0f305c8fffb7f9d708aa17e5d4695b56ec038cfe",
-      "sha256": "4915d16cb2c233ecbb2fb92d6a7ed85bba273058f3741ab47fc3be489021331f",
-      "bytes": 17928
+      "git_blob": "266c004125f729fede57d8550676482548b91671",
+      "sha256": "b71ba060eb34ff1a0aab8f288fdfe9427758b3df4bf0f181a0832ae47cc3a721",
+      "bytes": 17979
     },
     {
       "path": "lib/network.mjs",
@@ -758,6 +758,13 @@
       "bytes": 461
     },
     {
+      "path": "lib/timetable.mjs",
+      "mode": "100644",
+      "git_blob": "b5de11645ba957b30ac76b4a416bb5bf9804ca2d",
+      "sha256": "ccf111ce19e0aa829993e3cef0c90809756d76b53a68c824095112ad8844215a",
+      "bytes": 2232
+    },
+    {
       "path": "lib/transit.mjs",
       "mode": "100644",
       "git_blob": "6818a864280a57e0af69e890471f4ce672183ec2",
@@ -767,9 +774,9 @@
     {
       "path": "lib/types.ts",
       "mode": "100644",
-      "git_blob": "6e9ed7adea6fb82a8ceac83e4d933cffdcc804c9",
-      "sha256": "ae0778d4e59c42d63a69d36e99a4950574fd4929a0c358ed09d1a45f554757cb",
-      "bytes": 1615
+      "git_blob": "ca5084d5ac8c864a07f5b2fd5514846a520e4771",
+      "sha256": "6d20faf7f1e32362f50b81c9d5144260b4235fc46bea8e2a66f9086f9ca153b8",
+      "bytes": 1684
     },
     {
       "path": "lib/urls.mjs",
@@ -788,9 +795,9 @@
     {
       "path": "lib/vrr.mjs",
       "mode": "100644",
-      "git_blob": "62e2253cb6d487a4018bc825a00c2d01627ed729",
-      "sha256": "3d851babe582f7555991797f56f384359f1d0b3416b5fa07e967a101a2a094a9",
-      "bytes": 11649
+      "git_blob": "4d5063441b2835893363ddc6b8e253fb320fb6e7",
+      "sha256": "7520634f6292118234bc451d7e08be5e9a36436c787a079f2b9eb1618a15dcef",
+      "bytes": 13839
     },
     {
       "path": "next.config.ts",
@@ -1003,6 +1010,13 @@
       "bytes": 1530
     },
     {
+      "path": "tests/fixtures/EFA.md",
+      "mode": "100644",
+      "git_blob": "a3a5db63c20520e2cc22e61d0c7e234803a2f5b2",
+      "sha256": "ce3881f46b68972f5f8e895a890bdc24f06e1fb153ac8658489dd3f75a345fe0",
+      "bytes": 985
+    },
+    {
       "path": "tests/fixtures/db-amsterdam-berlin.json",
       "mode": "100644",
       "git_blob": "cf32ccef8723c4cc468427c4b2505247415a7ccc",
@@ -1022,6 +1036,41 @@
       "git_blob": "2be18af19b080b88051b8a29efdf47ac97a5902b",
       "sha256": "2e847a7ad9c70bcf094023faa40b8f0b6233c2dbc42c16b5cfc5e574f0ff9bde",
       "bytes": 20793
+    },
+    {
+      "path": "tests/fixtures/efa-heilbronn-rohdental-trip.json.gz",
+      "mode": "100644",
+      "git_blob": "6ea1ff5843e176c383f7f811ee556cd6d390b213",
+      "sha256": "9bb48f3d72cb2db4fb1341b33e6c2ff09169a8f4783a771b886471be34e75dee",
+      "bytes": 53735
+    },
+    {
+      "path": "tests/fixtures/efa-rohdental-local-trip.json.gz",
+      "mode": "100644",
+      "git_blob": "37f9759ebd91578e4655ef4d8fc61c86d6b9e7dd",
+      "sha256": "73d9e76090d864d5a983f6db29555f12361a3524725f7fdf4903e61345342325",
+      "bytes": 3268
+    },
+    {
+      "path": "tests/fixtures/efa-stops-heilbronn-finanzamt.json",
+      "mode": "100644",
+      "git_blob": "edf85c03e266081b58d5e7d9368f4e5bbaafcf38",
+      "sha256": "b16d17fbab9718422cba56fc519abd8e9fff2d5e114e489767e3ff9b275b10d1",
+      "bytes": 764
+    },
+    {
+      "path": "tests/fixtures/efa-stops-hessisch-oldendorf-bahnhof.json",
+      "mode": "100644",
+      "git_blob": "ded63754b8fa47bf4d8fd2f98482b2b0688ebc8a",
+      "sha256": "83ff14c0ed5ad691805e41f2df85059e08b1bf4d8d64ee11981318f90074ea89",
+      "bytes": 828
+    },
+    {
+      "path": "tests/fixtures/efa-stops-rohdental.json",
+      "mode": "100644",
+      "git_blob": "331d3062100e0c4391fe88762bc0f8642b0cdb6b",
+      "sha256": "3f2b30c884a187ba91d7c5e764ca2038b7562e5fea6ce125e56f8495875766e7",
+      "bytes": 744
     },
     {
       "path": "tests/fixtures/oebb-badmuender-nearby.json",
@@ -1085,6 +1134,13 @@
       "git_blob": "57106310a94b12b0a7cb7846ce3b38da43ee20a0",
       "sha256": "0c54bfd71bdafdca66786f76b6062eeed7685dcb6c7168e3966d5689cd65abcd",
       "bytes": 3708
+    },
+    {
+      "path": "tests/timetable.test.mjs",
+      "mode": "100644",
+      "git_blob": "d6fe8fa708398f53c51d056184f4282e2fd6cbfe",
+      "sha256": "b1032a3f432f692ad85b043224e2c0a4c23a78711cd1cd4aceabf3abe46e836c",
+      "bytes": 6675
     },
     {
       "path": "tests/transit.test.mjs",
