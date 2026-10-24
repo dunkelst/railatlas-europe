@@ -75,3 +75,33 @@ Rohdental → Hessisch Oldendorf Bahnhof (Bus 27, 08:18–08:32) sowie
 Heilbronn Finanzamt → Rohdental (09:25–15:17, zuletzt Bus 27).
 Die unveränderten ersten Quellverbindungen samt Geometrie und Meldungen liegen
 komprimiert als Regressionen vor; Einzelheiten stehen in `tests/fixtures/EFA.md`.
+
+
+### Automatische multimodale Planung
+
+Die Hauptansicht plant Bus, Bahn, S-/U-Bahn, Tram und Fußwege gemeinsam.
+ÖBB und EFA liefern vollständige Reisealternativen; der gemeinsame Handler
+vergleicht diese, ohne Abschnitte fremder Vorschläge zusammenzusetzen.
+Die Anbieterwahl bleibt in den erweiterten Einstellungen erhalten.
+
+Bei einer direkten Reise sind die gelieferten Alternativen mit Zeiten,
+Linienfolge, Umstiegen und Gehzeit auswählbar. Eine andere Auswahl ändert
+Karte und Reiseverlauf. Die Sortierung nach frühester Ankunft, weniger
+Umstiegen oder weniger Fußwegen wirkt auf die verfügbaren Verbindungen.
+Unbekannte Gehzeit wird ausdrücklich offen gelassen. Zwischenziele mit
+Aufenthalt bleiben als aufeinanderfolgende Teilreisen erhalten.
+
+Die automatische Suche ergänzt die Fahrplankataloge mit OSM-Bushalten über
+Photon. Die API erlaubt Suchvorschläge unter angemessener Last; deshalb werden
+Anfragen verzögert, begrenzt und Stationsantworten maximal einen Tag gehalten.
+Anbieterfehler führen zu einer Pause. Keine Nominatim-Autovervollständigung,
+keine Serienabfragen und kein Fahrplanersatz durch OSM.
+Quellen: https://github.com/komoot/photon und dessen docs/api-v1.md.
+Ein gefundener OSM-Halt ist noch kein Nachweis seiner Fahrplanabdeckung.
+
+Echte Suchantworten aus Großbritannien, den Niederlanden, Norwegen, Tschechien,
+Frankreich, Spanien und der Schweiz liegen als Parserregression vor.
+Die Zürcher Busverbindung Milchbuck → Bucheggplatz wurde von den bisherigen
+Fahrplanquellen nicht bestätigt; daraus wird keine nutzbare Fahrt erfunden.
+EFA-Produktklasse 97 wird als Durchbindung behandelt: bei „nicht umsteigen“
+bleibt man im Fahrzeug, die folgende Buslinie zählt nicht als neuer Umstieg.

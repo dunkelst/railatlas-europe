@@ -1,6 +1,6 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **16**, Quellcommit `9831ceba1cced650f08df8db40f6d5b137fa5eda`. **169** Dateien aus diesem Commit liegen bytegleich unter `sites/railatlas-europa`; das generierte `tsconfig.tsbuildinfo` ist ausgenommen. Das Herkunftsmanifest enthält alle SHA-256-Prüfsummen und Git-Blobs. Die GitHub-Paritätsprüfung läuft vor der Installation.
+Sites-Version **17**, Quellcommit `c77852ce8782fb3b2b0c5d66e05b553b9172ee5a`. **173** Dateien aus diesem Commit liegen bytegleich unter `sites/railatlas-europa`; das generierte `tsconfig.tsbuildinfo` ist ausgenommen. Das Herkunftsmanifest enthält alle SHA-256-Prüfsummen und Git-Blobs. Die GitHub-Paritätsprüfung läuft vor der Installation.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
 | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ Die neue Kartenprüfung ist wegen blockierter CSS und bisher fehlgeschlagener Ov
 
 ## Aktuelle Fortsetzung
 
-52 App-Tests, TypeScript und drei Builds bestanden. Die Zuordnung von OSM-Kartennamen zu ÖBB-/VRR-Halten ist enger geprüft, einschließlich des echten aufgezeichneten VRR-Namens mit U-Zusatz und des Stations-/Bahnsteigabstands. Ein Live-ÖBB-Test des unabhängigen Node-Pfads mit simulierten Kartennamen funktioniert. Die unabhängige Ausgabe liefert ihre tatsächlichen Styles und Leaflet-Dateien korrekt über HTTP aus. Ein neuer OSM-Netzdownload und die visuelle Live-Abnahme sind weiterhin nicht bestätigt. Der Overpass-Abruf berücksichtigt jetzt Wartezeit und Verarbeitung getrennt von einem bewussten Nutzerabbruch.
+58 App-Tests, TypeScript und drei Builds bestanden. Die Zuordnung von OSM-Kartennamen zu ÖBB-/VRR-Halten ist enger geprüft, einschließlich des echten aufgezeichneten VRR-Namens mit U-Zusatz und des Stations-/Bahnsteigabstands. Ein Live-ÖBB-Test des unabhängigen Node-Pfads mit simulierten Kartennamen funktioniert. Die unabhängige Ausgabe liefert ihre tatsächlichen Styles und Leaflet-Dateien korrekt über HTTP aus. Ein neuer OSM-Netzdownload und die visuelle Live-Abnahme sind weiterhin nicht bestätigt. Der Overpass-Abruf berücksichtigt jetzt Wartezeit und Verarbeitung getrennt von einem bewussten Nutzerabbruch.
 
 
 
@@ -52,7 +52,7 @@ ein gemischter ÖBB-/EFA-Endpunkt wird anhand von Name und Lage neu zugeordnet.
 ÖBB-Ausfälle und fehlende Fahrten bewirken keinen stillen Quellenwechsel.
 Die echte Verbindung Heilbronn Finanzamt → Rohdental für 26.10.2026,
 09:25–15:17, endet mit Bus 27. Alle sieben Abschnitte haben Quellgeometrie.
-52 App-Tests und drei Builds sind bestanden. Die neue Browserprüfung der
+58 App-Tests und drei Builds sind bestanden. Die neue Browserprüfung der
 verwalteten Vorschau scheitert an ERR_CONNECTION_REFUSED; die API-Prüfung ist
 live erfolgreich. Kein Overpass-Livenachweis wird dadurch behauptet.
 
@@ -65,3 +65,29 @@ vollständige Quellgeometrie und vier Betriebshinweise. Die Namenszuordnung des
 ÖBB-Starts zum EFA-Halt erscheint im Ergebnis. Die Browserprüfung bleibt offen;
 die verwaltete Vorschau ist nicht erreichbar und eine spätere Tab-Übergabe wurde
 durch die Browser-Sicherheitsrichtlinie blockiert.
+
+
+
+## Automatische multimodale Fortsetzung (Version 17)
+
+58 App-Tests, TypeScript, Sites-, Pages- und eigenständiger Clientbuild bestanden.
+Die Suche verwendet ÖBB, EFA und einen begrenzten OSM/Photon-Haltestellenabruf.
+Der gemeinsame Handler vergleicht vollständige Fahrten aus den angebundenen
+Auskünften. Die Quellen werden für eine Verbindung nicht aus Einzelabschnitten
+zusammengesetzt. Bis zu sechs verfügbare Alternativen lassen sich anhand von
+Ankunft, Umstiegen oder Gehzeit ordnen; fehlende Gehzeit bleibt offen.
+
+Der Live-Node-Pfad bestätigt internationale Halte und mehrere EFA-Verbindungen
+Rohdental → Heilbronn Finanzamt am 26.10.2026. „Nicht umsteigen“ (EFA-Klasse 97)
+zählt nicht als zusätzliche Fahrt oder als weiterer Umstieg.
+OSM-Daten belegen keine Bedienung. Die getestete Zürcher Busverbindung ist eine
+nachgewiesene Fahrplanlücke; eine europaweit vollständige Betreiberabdeckung
+wird nicht behauptet. Die neue visuelle Browserabnahme bleibt technisch offen.
+
+
+Die Veröffentlichung von Version 17 ist nativ bestätigt. Die öffentlichen
+Site-Endpunkte liefern live HTTP 200 für Cibeles/Madrid, Aldwych/London,
+Rohdental und Heilbronn Finanzamt. Die automatische Rohdental-Reise für
+26.10.2026 ab 06:00 Europe/Berlin liefert drei echte Verbindungen; die erste
+fährt 06:53–13:43 mit Bus 27 → Bus 20 (im Fahrzeug bleiben), S5, ICE 785,
+RE 8, Fußweg und S4, vier Umstiege. Es wurde keine manuelle Auskunft vorgegeben.

@@ -32,10 +32,10 @@ test('Automatic API search ignores unrelated ÖBB suggestions and routes mixed e
  t.mock.method(globalThis,'fetch',async (url,init)=>{
   calls.push(String(url));
   if(String(url).includes('mgate.exe')){
-   const method=JSON.parse(init.body).svcReqL[0].meth;assert.equal(method,'LocMatch');
+   const method=JSON.parse(init.body).svcReqL[0].meth;if(method==='LocGeoPos'){assert.ok(!init.body.includes('de:03252:2320'));return Response.json({err:'OK',svcResL:[{err:'OK',res:{locL:[]}}]});}assert.equal(method,'LocMatch');
    return Response.json({err:'OK',svcResL:[{err:'OK',res:{common:{locL:[{type:'S',name:'Rothenthurn',extId:'8100152',crd:{x:13400000,y:46800000}}]}}}]});
   }
-  const u=new URL(url);assert.equal(u.origin,'https://www.efa.de');
+  const u=new URL(url);if(u.hostname==='photon.komoot.io')return Response.json(fixture('photon-bus-stops').Rohdental);assert.equal(u.origin,'https://www.efa.de');
   if(u.pathname.endsWith('XML_STOPFINDER_REQUEST'))return Response.json(fixture('efa-stops-'+(u.searchParams.get('name_sf')==='Heilbronn Finanzamt'?'heilbronn-finanzamt':'rohdental')));
   assert.equal(u.pathname,'/efa/XML_TRIP_REQUEST2');assert.equal(u.searchParams.get('name_origin'),from.efaId);assert.equal(u.searchParams.get('name_destination'),rohdental.efaId);
   assert.equal(u.searchParams.get('itdDate'),'20261026');assert.equal(u.searchParams.get('itdTime'),'0800');
@@ -46,13 +46,13 @@ test('Automatic API search ignores unrelated ÖBB suggestions and routes mixed e
  const selectedOebb={...from,id:'oebb-finanzamt',name:'Heilbronn Finanzamt',dbId:'8002733'};delete selectedOebb.efaId;
  const journey=await getTimetableJourney(selectedOebb,stations[0],departure);
  assert.equal(journey.source,EFA_SOURCE);assert.equal(journey.legs.at(-1).line,'27');
- assert.equal(calls.filter(c=>c.includes('mgate.exe')).length,1,'The selected EFA stop never becomes an ÖBB route ID');
+ assert.equal(calls.filter(c=>c.includes('mgate.exe')).length,2,'Comparison resolves the EFA destination by coordinates, never by a foreign ID');
 });
 test('Provider outage remains an error; automatic routing preserves ÖBB failures and user aborts',async t=>{
  t.mock.method(globalThis,'fetch',async()=>{throw Error('test outage');});
  await assert.rejects(findTimetableStations('missing-local-stop-123','auto'),/teilweise erreichbar/);
  const rail={...from,dbId:'8000157',efaId:undefined};
- await assert.rejects(getTimetableJourney(rail,{...rail,dbId:'8000260'},departure),/gerade nicht erreichbar/);
+ await assert.rejects(getTimetableJourney(rail,{...rail,dbId:'8000260'},departure,'oebb'),/gerade nicht erreichbar/);
  const controller=new AbortController();controller.abort();
  await assert.rejects(findTimetableStations('Rohdental','auto',controller.signal),{name:'AbortError'});
  await assert.rejects(getTimetableJourney(from,rohdental,departure,'auto',controller.signal),{name:'AbortError'});
@@ -77,5 +77,5 @@ test('Unresolved OSM stops use EFA only after name and nearby coordinates agree'
  const map=(s,name)=>({...s,id:'osm:node/'+s.efaId,efaId:undefined,name,networkMode:'bus'});
  const journey=await getTimetableJourney(map(rohdental,'Rohdental'),map(bahnhof,'Hess. Oldendorf, Bahnhof'),departure);
  assert.equal(journey.source,EFA_SOURCE);assert.equal(journey.legs[0].line,'27');assert.ok(hosts.includes('fahrplan.oebb.at'));assert.ok(hosts.includes('www.efa.de'));
- await assert.rejects(getTimetableJourney(map(rohdental,'Rohdental'),map({...bahnhof,lat:bahnhof.lat+.1},'Hess. Oldendorf, Bahnhof'),departure),/nicht eindeutig zugeordnet/);
+ await assert.rejects(getTimetableJourney(map(rohdental,'Rohdental'),map({...bahnhof,lat:bahnhof.lat+.1},'Hess. Oldendorf, Bahnhof'),departure),/keine nutzbare Verbindung/);
 });

@@ -127,3 +127,33 @@ Die veröffentlichte GitHub-Seite blieb bei allen folgenden Formularabfragen unt
   meldet ihren laufenden Zustand, der Cloud-Browser erhält am exakt ausgegebenen
   Vorschau-URL jedoch `ERR_CONNECTION_REFUSED`. Keine Änderung am Anwendungscode
   zur Umgehung dieser Infrastrukturgrenze.
+
+
+## Ergänzung 24.10.2026: automatische Verkehrsmittelkombination
+
+- Sites-, Pages- und eigenständiger Clientbuild erfolgreich.
+
+- 58 App-Regressionen und TypeScript bestanden. Echte Photon-Suchantworten
+  bestätigen Aldwych (GB), Buikslotermeerplein (NL), Carl Berners plass (NO),
+  Vychovatelna (CZ), Place d’Italie (FR), Cibeles (ES) und Milchbuck (CH).
+  OSM-IDs und Länder werden erhalten, falsche Typen/Koordinaten und fuzzy
+  Rosental-Treffer für Rohdental ausgeschlossen.
+- Gemeinsamer Node-HTTP-Pfad: automatische Suche liefert u.a. London,
+  Amsterdam, Prag, Madrid, Zürich und Rohdental. Nach einer beobachteten
+  Suchpause wurde die Warteschlange statt eines sofortigen Fehlers eingebaut;
+  Madrid und Amsterdam sind danach wieder mit HTTP 200 bestätigt.
+- Die automatische API plant Rohdental → Heilbronn Finanzamt für 26.10.2026
+  ab 06:00 Europe/Berlin und liefert mehrere echte EFA-Alternativen, darunter
+  Bus 27 / Bus 20 / S5 / ICE / RE 8 / Fußweg / S4. Die reale Antwort enthält
+  Produktklasse 97, „nicht umsteigen“: der Bus-Linienwechsel bleibt im Fahrzeug.
+  Diese Durchbindung zählt korrekt als vier statt sechs Umstiege.
+- Auswahl und Sortierung beruhen auf vollständigen Quellenverbindungen.
+  Fehlende Gehzeit gilt beim Sortieren nicht als null Minuten.
+  Frühere Bahn-, Zwischenziel-, VRR-, Karten- und Serverregressionen bleiben erhalten.
+- Fahrplanlücke tatsächlich sichtbar: Zürich Milchbuck und Bucheggplatz werden
+  gefunden, die getestete Verbindung ist mit den bisherigen Auskünften nicht
+  bestätigt (HTTP 502). Keine Behauptung einer vollständigen europäischen
+  Bus-Fahrplanabdeckung. OSM-Halte werden entsprechend gekennzeichnet.
+- Die visuelle Abnahme der neuen Auswahlliste ist offen. Die verwaltete Vorschau
+  war in dieser Sitzung nicht erreichbar, die Browser-Übergabe wurde zusätzlich
+  durch die Browser-Sicherheitsrichtlinie blockiert. Keine erneute Umgehung.

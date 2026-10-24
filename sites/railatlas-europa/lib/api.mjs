@@ -1,4 +1,4 @@
-import {findTimetableStations, getTimetableJourney, timetableSources} from './timetable.mjs';
+import {findTimetableStations, getTimetableJourneys, journeyPreferences, timetableSources} from './timetable.mjs';
 import {validVrrId} from './vrr.mjs';
 import {apiJson, apiOptions, rejectOrigin} from './api-cors.mjs';
 import {fetchNetwork} from './network.mjs';
@@ -31,11 +31,11 @@ export async function handleApi(request) {
     const text = await request.text();
     if (text.length > 20000) return json({error: 'Die Anfrage ist zu groß.'}, {status: 400});
     let input; try {input = JSON.parse(text);} catch {return json({error: 'Die Anfrage enthält kein gültiges JSON.'}, {status: 400});}
-    const {from, to, departure, source = 'auto'} = input || {};
-    if (!timetableSources.includes(source) || [from, to].some(s => ['vrrId', 'efaId'].some(key => s?.[key] !== undefined && !validVrrId(s[key])))) return json({error: 'Bitte eine gültige Auskunft und Haltestelle wählen.'}, {status: 400});
+    const {from, to, departure, source = 'auto', preference = 'arrival'} = input || {};
+    if (!timetableSources.includes(source) || !journeyPreferences.includes(preference) || [from, to].some(s => ['vrrId', 'efaId'].some(key => s?.[key] !== undefined && !validVrrId(s[key])))) return json({error: 'Bitte eine gültige Auskunft und Haltestelle wählen.'}, {status: 400});
     if (!validStation(from) || !validStation(to) || typeof departure !== 'string' || !/(Z|[+-]\d\d:\d\d)$/.test(departure) || !Number.isFinite(Date.parse(departure))) return json({error: 'Bitte gültige Bahnhöfe, Datum und Abfahrtszeit wählen.'}, {status: 400});
     if (Date.parse(departure) < Date.now() - 5 * 60000) return json({error: 'Die Abfahrt liegt in der Vergangenheit. Bitte Datum oder Uhrzeit anpassen.'}, {status: 400});
     if (Date.parse(departure) > Date.now() + 365 * 86400000) return json({error: 'Bitte eine Abfahrt innerhalb der nächsten zwölf Monate wählen.'}, {status: 400});
-    return json({journey: await getTimetableJourney(from, to, departure, source, request.signal)});
+    const journeys=await getTimetableJourneys(from,to,departure,source,request.signal,preference);return json({journey:journeys[0],journeys});
   } catch (e) {return json({error: e instanceof Error ? e.message : 'Die Fahrplanabfrage ist fehlgeschlagen.', notices: Array.isArray(e?.notices) ? e.notices : []}, {status: 502});}
 }

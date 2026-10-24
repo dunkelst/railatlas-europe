@@ -28,7 +28,8 @@ export function JourneyLeg({leg:l,previous}:{leg:Leg;previous?:Leg}){
  const wait=previous?minutes(previous.arrival,l.departure):0;
  const unspecifiedWalk=l.walking&&l.departure===l.arrival;
  return <>
- {previous&&!l.walking&&wait>0&&<div className="transfer-wait"><Clock size={12}/>{wait} Min. {previous.walking?'bis zur Weiterfahrt':'Umsteigezeit'}</div>}
+ {l.throughService&&<div className="transfer-wait"><BusFront size={12}/>Im Fahrzeug bleiben · Linienwechsel ohne Umstieg</div>}
+ {previous&&!l.walking&&!l.throughService&&wait>0&&<div className="transfer-wait"><Clock size={12}/>{wait} Min. {previous.walking?'bis zur Weiterfahrt':'Umsteigezeit'}</div>}
  <div className={'leg '+(l.walking?'walking':'')}>
   <div className="leg-times"><b>{time(l.departure)}</b><span className="leg-track"/><b>{time(l.arrival)}</b></div>
   <div className="leg-content">

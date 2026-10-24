@@ -2,7 +2,23 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Stand entspricht Sites-Version **16**, Quellcommit `9831ceba1cced650f08df8db40f6d5b137fa5eda`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Stand entspricht Sites-Version **17**, Quellcommit `c77852ce8782fb3b2b0c5d66e05b553b9172ee5a`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Automatische Reiseplanung mit Bus, Bahn und Nahverkehr
+
+Start, Ziel und Zeit genügen; die Hauptansicht vergleicht vollständige ÖBB-/EFA-
+Verbindungen automatisch. Mehrere verfügbare Alternativen zeigen Linienfolge,
+Umstiege, Gehzeit und Abfahrt/Ankunft. Auswahl und Sortierung nach frühester
+Ankunft, weniger Umstiegen oder weniger Fußwegen steuern Karte und Reiseverlauf.
+Die manuelle Anbieterwahl bleibt in den erweiterten Einstellungen verfügbar.
+Zwischenziele mit Aufenthalt bleiben erhalten.
+
+Die allgemeine Bushaltestellensuche ergänzt die Kataloge durch OSM/Photon.
+Echte Suchantworten aus GB, NL, NO, CZ, FR, ES und CH sind geprüft. Ein OSM-Halt
+bestätigt noch keinen verfügbaren Fahrplan: Zürich Milchbuck → Bucheggplatz
+wurde von den bisherigen Quellen nicht bestätigt und bleibt eine Datenlücke.
+Die reale EFA-Durchbindung Bus 27 → 20 wird als „im Fahrzeug bleiben“ behandelt,
+mit korrekter Umstiegszählung.
 
 ## Regionale Halte und automatische Auskunft
 
@@ -49,14 +65,14 @@ Die bestehende [Pages-Veröffentlichung](https://dunkelst.github.io/railatlas-eu
 - Der gebaute eigenständige Server liefert App-CSS, Leaflet-CSS und Leaflet-JS mit HTTP 200, korrekten MIME-Typen und bytegleichem Inhalt. Die externe visuelle Abnahme bleibt offen.
 
 
-- **52 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
+- **58 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
 - Neuer echter lokaler HTTP-Servertest einschließlich Dateien, Health, CORS, JSON-, Datums- und Größenfehlern.
 - Veröffentlichte ÖBB-Auskunft: Wien Karlsplatz → Stephansplatz am 24.10.2026, U1 18:27–18:29, Wiener Linien, einschließlich eines gelieferten Bauhinweises.
 - Die neue Kartenoberfläche ist funktional eingebaut. Ihre vollständige visuelle Live-Abnahme ist offen: CSS-Anfragen werden der Prüfumgebung mit HTTP 403 / Cloudflare 1010 verweigert; die CSS-Dateien sind im Paket vorhanden. Neue Overpass-Livedaten waren hier noch nicht erfolgreich bestätigt. Quellenfehler werden nicht mit Beispieldaten verdeckt.
 - Sperrungs-/Echtzeitabdeckung bleibt partiell. VRR / EFA ist ein Testzugang ohne garantierte Verfügbarkeit. EFA-BW, direkter DB-/VBB-Zugang und Trainline Partner Solutions sind nicht angeschlossen.
 - [Gemeinsamer Prüfstand](sites/railatlas-europa/QA.md) · [Fortführungsstand](docs/continuation-2026-10-24.md)
 
-`node tools/verify-sites-source.mjs` prüft die 169 übernommenen Dateien gegen das Herkunftsmanifest. `npm run test:app` führt die aktuellen App-Regressionen aus. Die bestehende OSM-/Graph-Pipeline, ihre Daten und Regressionen bleiben erhalten; `npm test` führt deren Node-/Python-Prüfungen aus. Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenzen liegen unter `sites/railatlas-europa/public`.
+`node tools/verify-sites-source.mjs` prüft die 173 übernommenen Dateien gegen das Herkunftsmanifest. `npm run test:app` führt die aktuellen App-Regressionen aus. Die bestehende OSM-/Graph-Pipeline, ihre Daten und Regressionen bleiben erhalten; `npm test` führt deren Node-/Python-Prüfungen aus. Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenzen liegen unter `sites/railatlas-europa/public`.
 
 
 
@@ -68,3 +84,29 @@ vollständige Quellgeometrie und vier Betriebshinweise. Die Namenszuordnung des
 ÖBB-Starts zum EFA-Halt erscheint im Ergebnis. Die Browserprüfung bleibt offen;
 die verwaltete Vorschau ist nicht erreichbar und eine spätere Tab-Übergabe wurde
 durch die Browser-Sicherheitsrichtlinie blockiert.
+
+
+
+## Automatische multimodale Fortsetzung (Version 17)
+
+58 App-Tests, TypeScript, Sites-, Pages- und eigenständiger Clientbuild bestanden.
+Die Suche verwendet ÖBB, EFA und einen begrenzten OSM/Photon-Haltestellenabruf.
+Der gemeinsame Handler vergleicht vollständige Fahrten aus den angebundenen
+Auskünften. Die Quellen werden für eine Verbindung nicht aus Einzelabschnitten
+zusammengesetzt. Bis zu sechs verfügbare Alternativen lassen sich anhand von
+Ankunft, Umstiegen oder Gehzeit ordnen; fehlende Gehzeit bleibt offen.
+
+Der Live-Node-Pfad bestätigt internationale Halte und mehrere EFA-Verbindungen
+Rohdental → Heilbronn Finanzamt am 26.10.2026. „Nicht umsteigen“ (EFA-Klasse 97)
+zählt nicht als zusätzliche Fahrt oder als weiterer Umstieg.
+OSM-Daten belegen keine Bedienung. Die getestete Zürcher Busverbindung ist eine
+nachgewiesene Fahrplanlücke; eine europaweit vollständige Betreiberabdeckung
+wird nicht behauptet. Die neue visuelle Browserabnahme bleibt technisch offen.
+
+
+Die Veröffentlichung von Version 17 ist nativ bestätigt. Die öffentlichen
+Site-Endpunkte liefern live HTTP 200 für Cibeles/Madrid, Aldwych/London,
+Rohdental und Heilbronn Finanzamt. Die automatische Rohdental-Reise für
+26.10.2026 ab 06:00 Europe/Berlin liefert drei echte Verbindungen; die erste
+fährt 06:53–13:43 mit Bus 27 → Bus 20 (im Fahrzeug bleiben), S5, ICE 785,
+RE 8, Fußweg und S4, vier Umstiege. Es wurde keine manuelle Auskunft vorgegeben.

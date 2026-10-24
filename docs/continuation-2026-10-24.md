@@ -10,7 +10,7 @@ Bestehendes Projekt fortführen. GitHub soll denselben funktionsfähigen Quellst
 
 ## Aktueller Stand
 
-Sites-Version **16**, Quellcommit `9831ceba1cced650f08df8db40f6d5b137fa5eda`, 169 Dateien bytegleich auf GitHub. Unabhängige Kartenebenen für Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus; Linien und Halte separat schaltbar, Bahn voreingeschaltet. Der Node-Server nutzt dieselbe Oberfläche, denselben API-Handler und dieselben Anbieterparser. Der Pages-Build hat keine voreingestellte ChatGPT-API.
+Sites-Version **17**, Quellcommit `c77852ce8782fb3b2b0c5d66e05b553b9172ee5a`, 173 Dateien bytegleich auf GitHub. Unabhängige Kartenebenen für Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus; Linien und Halte separat schaltbar, Bahn voreingeschaltet. Der Node-Server nutzt dieselbe Oberfläche, denselben API-Handler und dieselben Anbieterparser. Der Pages-Build hat keine voreingestellte ChatGPT-API.
 
 Neue Korrekturen: OSM-Kartennamen dürfen den Stadtpräfix der Fahrplanquelle und U-/S-Gruppen weglassen, jedoch nur bei passendem Namen und höchstens 250 Metern Entfernung. Andere Namenszusätze bleiben erhalten. Die übernommene Ebene wird für die Prüfung ausdrücklich anders gekennzeichneter Verkehrsmittel mitgeführt. Die aufgezeichnete VRR-Antwort mit „Heinrich-Heine-Allee U“ und Stations-/Bahnsteigabstand wird unterstützt.
 
@@ -32,7 +32,7 @@ als Regressionen konserviert, niemals als Laufzeitfahrplan.
 
 ## Nachgewiesen
 
-- 52 App-Regressionen, TypeScript, Sites-/Pages-/Standalone-Clientbuild bestanden.
+- 58 App-Regressionen, TypeScript, Sites-/Pages-/Standalone-Clientbuild bestanden.
 - Neuer Live-ÖBB-Test über den unabhängigen Node-Pfad: synthetische Kartenformate „Karlsplatz“ → „Stephansplatz“ mit live geladenen Quellkoordinaten liefern U1 am 24.10.2026, 19:57–19:59. Dies ist kein tatsächlicher OSM-Netzdownload.
 - Tatsächlich gebaute Styles und Leaflet-Dateien über den eigenständigen HTTP-Server: HTTP 200, korrekte MIME-Typen und bytegleiche Inhalte.
 - Veröffentlichung dieser Sites-Version nativ bestätigt.
@@ -57,3 +57,29 @@ vollständige Quellgeometrie und vier Betriebshinweise. Die Namenszuordnung des
 ÖBB-Starts zum EFA-Halt erscheint im Ergebnis. Die Browserprüfung bleibt offen;
 die verwaltete Vorschau ist nicht erreichbar und eine spätere Tab-Übergabe wurde
 durch die Browser-Sicherheitsrichtlinie blockiert.
+
+
+
+## Automatische multimodale Fortsetzung (Version 17)
+
+58 App-Tests, TypeScript, Sites-, Pages- und eigenständiger Clientbuild bestanden.
+Die Suche verwendet ÖBB, EFA und einen begrenzten OSM/Photon-Haltestellenabruf.
+Der gemeinsame Handler vergleicht vollständige Fahrten aus den angebundenen
+Auskünften. Die Quellen werden für eine Verbindung nicht aus Einzelabschnitten
+zusammengesetzt. Bis zu sechs verfügbare Alternativen lassen sich anhand von
+Ankunft, Umstiegen oder Gehzeit ordnen; fehlende Gehzeit bleibt offen.
+
+Der Live-Node-Pfad bestätigt internationale Halte und mehrere EFA-Verbindungen
+Rohdental → Heilbronn Finanzamt am 26.10.2026. „Nicht umsteigen“ (EFA-Klasse 97)
+zählt nicht als zusätzliche Fahrt oder als weiterer Umstieg.
+OSM-Daten belegen keine Bedienung. Die getestete Zürcher Busverbindung ist eine
+nachgewiesene Fahrplanlücke; eine europaweit vollständige Betreiberabdeckung
+wird nicht behauptet. Die neue visuelle Browserabnahme bleibt technisch offen.
+
+
+Die Veröffentlichung von Version 17 ist nativ bestätigt. Die öffentlichen
+Site-Endpunkte liefern live HTTP 200 für Cibeles/Madrid, Aldwych/London,
+Rohdental und Heilbronn Finanzamt. Die automatische Rohdental-Reise für
+26.10.2026 ab 06:00 Europe/Berlin liefert drei echte Verbindungen; die erste
+fährt 06:53–13:43 mit Bus 27 → Bus 20 (im Fahrzeug bleiben), S5, ICE 785,
+RE 8, Fußweg und S4, vier Umstiege. Es wurde keine manuelle Auskunft vorgegeben.

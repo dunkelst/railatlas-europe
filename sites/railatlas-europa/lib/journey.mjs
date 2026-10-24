@@ -114,14 +114,16 @@ async function endpointNotices(from,to,journey,start,end,signal){
   return {notices:parseHimSearchNotices(data,path,start,end),checked:true};
  }catch(e){console.warn('[RailAtlas] Störungsabfrage',e?.message);return {notices:[],checked:false};}
 }
-export async function getJourney(from,to,departure,signal){const [start,end]=await Promise.all([resolveLid(from,signal),resolveLid(to,signal)]),local=berlinInput(departure);let data;try{data=await hafas('TripSearch',{depLocL:[{type:'S',lid:start}],arrLocL:[{type:'S',lid:end}],outDate:local.slice(0,10).replaceAll('-',''),outTime:local.slice(11,19).replaceAll(':',''),outFrwd:true,getPT:true,getIV:false,getPasslist:true,getPolyline:true,ushrp:false,numF:3,jnyFltrL:[{type:'PROD',mode:'INC',value:'7167'}]},signal);}catch(e){console.warn('[RailAtlas] Fahrplanabfrage',e?.message);throw new Error('Der Fahrplandienst ist gerade nicht erreichbar. Bitte die Suche erneut starten.',{cause:e});}
+export async function getJourney(from,to,departure,signal,all=false){const [start,end]=await Promise.all([resolveLid(from,signal),resolveLid(to,signal)]),local=berlinInput(departure);let data;try{data=await hafas('TripSearch',{depLocL:[{type:'S',lid:start}],arrLocL:[{type:'S',lid:end}],outDate:local.slice(0,10).replaceAll('-',''),outTime:local.slice(11,19).replaceAll(':',''),outFrwd:true,getPT:true,getIV:false,getPasslist:true,getPolyline:true,ushrp:false,numF:3,jnyFltrL:[{type:'PROD',mode:'INC',value:'7167'}]},signal);}catch(e){console.warn('[RailAtlas] Fahrplanabfrage',e?.message);throw new Error('Der Fahrplandienst ist gerade nicht erreichbar. Bitte die Suche erneut starten.',{cause:e});}
  const results=parseHafasJourneys(data,from,to,departure);if(!results.length){
   const common=data.common||{},locations=(common.locL||[]).map(s=>parseStation(s));
   const refs=(data.outConL||[]).flatMap(t=>noticeReferences([t,t.dep,t.arr,...(t.secL||[]).flatMap(l=>[l,l.dep,l.arr,l.jny,l.gis,...(l.jny?.stopL||[])])]));
   const error=new Error(`Keine nutzbare Verbindung für ${from.name} → ${to.name} gefunden. Ausgefallene oder nicht erreichbare Fahrten werden nicht übernommen. Bitte eine andere Abfahrt oder Haltestelle versuchen. Die Fahrplanabdeckung ist je Land unterschiedlich.`);
+  error.code='NO_JOURNEY';
   const until=new Date(Date.parse(departure)+24*3600000).toISOString(),extra=await endpointNotices(from,to,null,departure,until,signal);
   error.notices=mergeNotices([parseNotices(refs,common,locations,departure,until,from.name+' → '+to.name).filter(n=>n.severity==='warning'),extra.notices]);throw error;
  }
- const journey=results[0],extra=await endpointNotices(from,to,journey,journey.departure,journey.arrival,signal);
+ const journeys=all?results.slice(0,3):results.slice(0,1);await Promise.all(journeys.map(async journey=>{const extra=await endpointNotices(from,to,journey,journey.departure,journey.arrival,signal);
  journey.endpointMappings=[[from,journey.legs[0].from],[to,journey.legs.at(-1).to]].filter(([asked])=>!/^\d{7,9}$/.test(asked.dbId||'')).map(([asked,resolved])=>`„${asked.name}“ wurde anhand von Name und Lage dem Bahnhof „${resolved.name}“ zugeordnet.`);
- journey.notices=mergeNotices([journey.notices,extra.notices]);journey.disruptionCheck=extra.checked?'trip-and-station-alerts':'trip-only';return journey;}
+ journey.notices=mergeNotices([journey.notices,extra.notices]);journey.disruptionCheck=extra.checked?'trip-and-station-alerts':'trip-only';}));return all?journeys:journeys[0];}
+export const getJourneys=(from,to,departure,signal)=>getJourney(from,to,departure,signal,true);
