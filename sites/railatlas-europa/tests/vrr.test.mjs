@@ -35,3 +35,16 @@ test('VRR autocomplete ranks actual stop matches; product classes remain distinc
  assert.equal(parseVrrStations({locations})[0].vrrId,to.vrrId);
  for(const [cls,mode] of [[0,'train'],[1,'suburban'],[2,'subway'],[4,'tram'],[5,'bus'],[100,'walk']])assert.equal(vrrProduct({product:{class:cls}}).mode,mode);
 });
+
+test('VRR map-stop matching preserves the same strict proximity and mode checks',async()=>{
+ const {sameVrrStation}=await import('../lib/vrr.mjs');
+ const map={id:'osm:node/test',name:'Heinrich-Heine-Allee',dbId:'',networkMode:'subway',lat:51.2264,lon:6.7763};
+ const source={id:'vrr:test',vrrId:'de:05111:18235',name:'Düsseldorf, Heinrich-Heine-Allee',lat:51.2265,lon:6.7764};
+ assert.equal(sameVrrStation(map,source),true);
+ assert.equal(sameVrrStation(map,{...source,lat:51.2300}),false);
+ assert.equal(sameVrrStation(map,{...source,name:'Düsseldorf, Königsallee'}),false);
+ const mapDestination={...to,id:'osm:platform/test',vrrId:undefined,name:'Heinrich-Heine-Allee',networkMode:'subway',lat:raw.destination.coord[0],lon:raw.destination.coord[1]};
+ assert.equal(sameVrrStation(mapDestination,to),true,'Actual EFA U suffix and station/platform offset are supported');
+ assert.equal(parseVrrJourneys(fixture(),from,mapDestination,requested)[0].legs[0].line,'U77');
+ assert.equal(sameVrrStation({...mapDestination,networkMode:'bus'},to),false);
+});

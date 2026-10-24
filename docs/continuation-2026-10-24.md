@@ -6,24 +6,29 @@ Repository: https://github.com/dunkelst/railatlas-europe
 
 ## Verbindlicher Auftrag
 
-Am vorhandenen Projekt weiterarbeiten. GitHub soll denselben funktionsfähigen Quellstand enthalten und eigenständig betrieben werden können; eine Weiterleitung oder notwendige ChatGPT-Site-Abhängigkeit genügt nicht. Öffentliche Testnutzung ist erlaubt.
+Bestehendes Projekt fortführen. GitHub soll denselben funktionsfähigen Quellstand enthalten und eigenständig betrieben werden können. Öffentliche Testnutzung ist erlaubt. Eine notwendige ChatGPT-Site-Abhängigkeit genügt nicht.
 
-## Umgesetzter Stand
+## Aktueller Stand
 
-Version 14 / `31171b052fd0f815f6eddf40f3014cb8f7ca6219`: getrennte Netzebenen mit separaten Linien-/Halteschaltern für Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus. Bahn voreingeschaltet. Kleine OSM-Ausschnitte ab Zoom 12; eigene Reisegeometrie bleibt unabhängig. OSM-Halte können in den vorhandenen Planungsfluss übernommen werden. Leere/fehlerhafte/abgebrochene Anbieterantworten erzeugen keine erfundenen Netze.
+Sites-Version **15**, Quellcommit `bcc597d12e51b92b3c50a416a6747a1befb43185`, 161 Dateien bytegleich auf GitHub. Unabhängige Kartenebenen für Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus; Linien und Halte separat schaltbar, Bahn voreingeschaltet. Der Node-Server nutzt dieselbe Oberfläche, denselben API-Handler und dieselben Anbieterparser. Der Pages-Build hat keine voreingestellte ChatGPT-API.
 
-Ein standardmäßiger Node-Server liefert denselben Client und denselben API-Handler mit denselben ÖBB-/VRR-Modulen. Build- und Startskripte sind vorhanden. Kein fester ChatGPT-API-Ursprung im neuen Pages-Build.
+Neue Korrekturen: OSM-Kartennamen dürfen den Stadtpräfix der Fahrplanquelle und U-/S-Gruppen weglassen, jedoch nur bei passendem Namen und höchstens 250 Metern Entfernung. Andere Namenszusätze bleiben erhalten. Die übernommene Ebene wird für die Prüfung ausdrücklich anders gekennzeichneter Verkehrsmittel mitgeführt. Die aufgezeichnete VRR-Antwort mit „Heinrich-Heine-Allee U“ und Stations-/Bahnsteigabstand wird unterstützt.
+
+Der Netzdatenabruf erlaubt 40 Sekunden für Warteschlange, Verarbeitung und Transfer. Zeitablauf erhält eine lesbare Meldung und 30 Sekunden Pause; Nutzerabbruch bleibt davon getrennt. Ohne messbare Kartenfläche wird kein ungültiger Ausschnitt abgefragt.
 
 ## Nachgewiesen
 
-42 App-Tests, TypeScript und drei Produktionsbuilds bestanden. Lokaler echter HTTP-Server geprüft. Sites-Veröffentlichung nativ bestätigt. Im veröffentlichten Formular U1 Wien Karlsplatz → Stephansplatz am 24.10., 18:27–18:29, einschließlich eines Anbieter-Bauhinweises.
+- 46 App-Regressionen, TypeScript, Sites-/Pages-/Standalone-Clientbuild bestanden.
+- Neuer Live-ÖBB-Test über den unabhängigen Node-Pfad: synthetische Kartenformate „Karlsplatz“ → „Stephansplatz“ mit live geladenen Quellkoordinaten liefern U1 am 24.10.2026, 19:57–19:59. Dies ist kein tatsächlicher OSM-Netzdownload.
+- Tatsächlich gebaute Styles und Leaflet-Dateien über den eigenständigen HTTP-Server: HTTP 200, korrekte MIME-Typen und bytegleiche Inhalte.
+- Veröffentlichung dieser Sites-Version nativ bestätigt.
 
 ## Noch offen
 
-- Vollständige visuelle Kartenabnahme: interne Vorschau nicht erreichbar, Stylesheets im externen Prüfbrowser HTTP 403 / Cloudflare 1010. Dateien sind im Bereitstellungspaket vorhanden; kein Umgehungscode eingebaut.
-- Tatsächliche OSM-Netzdaten: Hauptinstanz HTTP 521, Entwicklungsabruf der dokumentierten globalen private.coffee-Instanz HTTP 429; neue veröffentlichte Anfrage noch ohne bestätigtes Datenergebnis. Rate-Limit-/Serverfehler werden mit Abfragepause behandelt.
-- Direkte Übernahme eines angezeigten OSM-Halts und die räumliche Zeichnung aller fünf Modi im Browser noch praktisch abnehmen.
-- Eigener öffentlicher HTTPS-Auskunftsserver für eine neue autarke Pages-Veröffentlichung. Der Quellstand ist startbar; hier wurde kein externes Hostingkonto eingerichtet. Die bisherige Pages-Version 12 bleibt bis zum bewussten Rollout bestehen.
-- Geräte-GPS nicht neu geprüft; Echtzeit-/Sperrungsabdeckung bleibt partiell.
+- Neue OSM-Netzdaten: die ausgewählte öffentliche Overpass-Instanz antwortete hier selbst auf eine winzige Diagnoseabfrage nicht rechtzeitig. Rate-Limit-/Fehlerpausen werden respektiert. Keine Daten oder Live-Nachweise erfinden.
+- Vollständige visuelle Kartenabnahme: interne Vorschau war nicht erreichbar; externe CSS-Anfragen wurden mit Cloudflare 1010 blockiert. Sicherheitsregeln wurden nicht abgeschaltet, keine Umgehungs-URLs eingeführt.
+- Direkter Klick auf einen tatsächlich geladenen OSM-Kartenhalt noch praktisch abnehmen. Die Parser-/Namens-/Routingtests ersetzen diesen visuellen Test nicht.
+- Eigener öffentlicher HTTPS-Auskunftsserver für den neuen autarken Pages-Rollout fehlt. Der Quellstand ist startbar. Die bisherige Pages-Version 12 bleibt bis zum bewussten Rollout erhalten.
+- Geräte-GPS nicht neu geprüft. Echtzeit-/Sperrungsabdeckung bleibt partiell.
 
-Nicht anhand alter Prüftexte behaupten, neue Live-Nachweise seien bestanden. Nächste Änderungen nur an diesem Projekt und auf dieser gemeinsamen Source-Basis ausführen.
+Nächste Änderungen nur an diesem Projekt und an der gemeinsamen Source-Basis ausführen. Bei Fortsetzung aktuelle Source lesen; frühere Prüfstände nicht als neue Abnahme ausgeben.

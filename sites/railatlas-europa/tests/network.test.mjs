@@ -37,3 +37,25 @@ test('an upstream rate limit pauses further requests instead of retrying on ever
  await assert.rejects(fetchNetwork(bbox,['subway']),/ausgelastet/);
  assert.equal(upstream.mock.callCount(),1);
 });
+
+test('queued requests are not cut off at 25 seconds; timeout is readable and pauses new calls',async t=>{
+ const {fetchNetwork:request}=await import('../lib/network.mjs?timeout-regression');
+ t.mock.timers.enable({apis:['setTimeout']});
+ let signal;
+ const upstream=t.mock.method(globalThis,'fetch',(_url,init)=>new Promise((_resolve,reject)=>{signal=init.signal;signal.addEventListener('abort',()=>reject(new DOMException('upstream aborted','AbortError')),{once:true});}));
+ const result=assert.rejects(request(bbox,['subway']),/nicht rechtzeitig/);
+ t.mock.timers.tick(25000);assert.equal(signal.aborted,false);
+ t.mock.timers.tick(15000);await result;
+ await assert.rejects(request(bbox,['bus']),/ausgelastet/);
+ assert.equal(upstream.mock.callCount(),1);
+});
+test('user cancellation stays a cancellation and does not impose a provider cooldown',async t=>{
+ const {fetchNetwork:request}=await import('../lib/network.mjs?cancel-regression');
+ const controller=new AbortController();
+ const upstream=t.mock.method(globalThis,'fetch',(_url,init)=>new Promise((_resolve,reject)=>{init.signal.addEventListener('abort',()=>reject(new DOMException('upstream aborted','AbortError')),{once:true});}));
+ const first=assert.rejects(request(bbox,['subway'],controller.signal),{name:'AbortError'});controller.abort();await first;
+ upstream.mock.mockImplementation(async()=>Response.json({elements:[]}));
+ assert.equal((await request(bbox,['subway'])).layers.subway.lines.length,0);
+ await assert.rejects(request(bbox,['subway'],controller.signal),{name:'AbortError'});
+ assert.equal(upstream.mock.callCount(),2,'Already cancelled calls do not fetch, even with cached data');
+});

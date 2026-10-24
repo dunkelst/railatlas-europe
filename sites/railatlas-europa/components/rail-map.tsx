@@ -23,7 +23,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
   journeyLayer.current=L.layerGroup().addTo(m);
   if(controls.current){L.DomEvent.disableClickPropagation(controls.current);L.DomEvent.disableScrollPropagation(controls.current);}
   m.on('click',(e:any)=>{if(modeRef.current)pickRef.current(e.latlng.lat,e.latlng.lng);});
-  const updateView=()=>{const b=m.getBounds();setView({zoom:m.getZoom(),bounds:[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map((n:number)=>Number(n.toFixed(5)))});};
+  const updateView=()=>{if(!container.current?.clientWidth||!container.current.clientHeight){setView(null);setError('Die Kartendarstellung konnte nicht vollständig geladen werden. Bitte die Seite erneut öffnen.');return;}setError('');const b=m.getBounds();setView({zoom:m.getZoom(),bounds:[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map((n:number)=>Number(n.toFixed(5)))});};
   m.on('moveend',updateView);updateView();
   const resize=new ResizeObserver(()=>m.invalidateSize());resize.observe(container.current);m._railResize=resize;setReady(true);
  }).catch(e=>{if(active)setError(e.message);});return()=>{active=false;if(map.current){map.current._railResize?.disconnect();map.current.remove();map.current=null;journeyLayer.current=null;networkGroups.current={};}};},[]);
@@ -56,7 +56,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
   for(const mode of NETWORK_MODES){const group=networkGroups.current[mode.id];group?.clearLayers();const data=network?.layers[mode.id],enabled=layerState[mode.id];if(!data||!group)continue;
    if(enabled.lines&&mode.id!=='rail')for(const line of data.lines){const node=document.createElement('div');node.className='map-popup';node.textContent=mode.label+' · '+line.name;for(const segment of line.segments)L.polyline(segment,{color:mode.color,weight:mode.id==='bus'?3:4,opacity:.8,bubblingMouseEvents:false}).bindPopup(node).addTo(group);}
    if(enabled.stops)for(const stop of data.stops){const node=document.createElement('div');node.className='map-popup network-popup';const heading=document.createElement('b');heading.textContent=stop.name;node.appendChild(heading);const text=document.createElement('small');text.textContent=mode.label+(stop.lines.length?' · '+stop.lines.join(', '):'')+' · OpenStreetMap';node.appendChild(text);
-    const station:Station={id:'osm:'+stop.id,dbId:'',name:stop.name,lat:stop.lat,lon:stop.lon,country:'',main:false};
+    const station:Station={id:'osm:'+stop.id,dbId:'',name:stop.name,lat:stop.lat,lon:stop.lon,country:'',main:false,networkMode:mode.id};
     for(const [target,label] of [['start','Als Start'],['end','Als Ziel'],['via','Als Zwischenziel']] as const){const button=document.createElement('button');button.type='button';button.textContent=label;button.onclick=()=>{map.current?.closePopup();stopRef.current(station,target);};node.appendChild(button);}
     const marker=L.circleMarker([stop.lat,stop.lon],{radius:mode.id==='rail'?5:4,color:mode.color,fillColor:'#ffffff',fillOpacity:1,weight:2,bubblingMouseEvents:false}).bindPopup(node).bindTooltip(stop.name,{direction:'top'}).addTo(group);
     marker.on('click',()=>{if(modeRef.current){map.current?.closePopup();stopRef.current(station);}});

@@ -8,6 +8,8 @@ export const NETWORK_MODES = [
 ];
 export const defaultNetworkLayers = () => Object.fromEntries(NETWORK_MODES.map(m => [m.id, {lines: m.id === 'rail', stops: m.id === 'rail'}]));
 export const NETWORK_MIN_ZOOM = 12;
+// Allow the provider's documented queue (up to 15 s), execution (20 s), and transfer.
+export const NETWORK_TIMEOUT_MS = 40000;
 // Public worldwide instance listed by OpenStreetMap; the main instance is overloaded.
 export const OVERPASS_URL = 'https://overpass.private.coffee/api/interpreter';
 
@@ -104,10 +106,12 @@ export function parseNetwork(data, bounds, modes) {
 const cache = new Map();
 let nextRequestAt = 0;
 export async function fetchNetwork(bounds, modes, signal) {
+  if(signal?.aborted)throw new DOMException('Abgebrochen', 'AbortError');
   const query = networkQuery(bounds, modes), key = query, found = cache.get(key);
   if (found && Date.now() - found.at < 300000) return found.data;
   if (Date.now() < nextRequestAt) throw Error('Die Kartendatenquelle ist ausgelastet. Bitte in etwa einer Minute erneut laden.');
-  const controller = new AbortController(), abort = () => controller.abort(), timer = setTimeout(abort, 25000);
+  let timedOut = false;
+  const controller = new AbortController(), abort = () => controller.abort(), timer = setTimeout(() => {timedOut = true; controller.abort();}, NETWORK_TIMEOUT_MS);
   signal?.addEventListener('abort', abort, {once: true});
   try {
     if (signal?.aborted) controller.abort();
@@ -124,5 +128,9 @@ export async function fetchNetwork(bounds, modes, signal) {
     if (signal?.aborted) throw new DOMException('Abgebrochen', 'AbortError');
     if (cache.size >= 8) cache.delete(cache.keys().next().value);
     cache.set(key, {data: result, at: Date.now()}); return result;
+  } catch (error) {
+    if (signal?.aborted) throw new DOMException('Abgebrochen', 'AbortError');
+    if (timedOut) {nextRequestAt = Date.now() + 30000; throw Error('Die Kartendatenquelle hat nicht rechtzeitig geantwortet. Bitte später erneut laden oder näher heranzoomen.');}
+    throw error;
   } finally {clearTimeout(timer); signal?.removeEventListener('abort', abort);}
 }

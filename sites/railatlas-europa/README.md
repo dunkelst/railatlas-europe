@@ -48,3 +48,9 @@ Danach `http://127.0.0.1:3000` öffnen. Der Node-Server liefert die gebaute Ober
 Bei einem eigenen HTTPS-Reverse-Proxy `HOST=0.0.0.0` und `PUBLIC_ORIGIN=https://dein-server.example` setzen. `PUBLIC_ORIGIN` gibt den öffentlichen Ursprung für die gleiche CORS-Prüfung vor. TLS wird am Reverse-Proxy terminiert. Für eine separate GitHub-Pages-Oberfläche ist ausschließlich der bestehende GitHub-Ursprung freigegeben.
 
 `npm run build:pages` erzeugt die statische Oberfläche. Sie hat keine voreingestellte ChatGPT-Serveradresse. Für Live-Auskunft in „Live-Auskunft einrichten“ den eigenen HTTPS-Server verbinden; `/api/health` prüft die Kompatibilität. Alternativ beim Build `RAILATLAS_API_ORIGIN` setzen. Die Serveradresse wird nur im eigenen Browser gespeichert; sie enthält keine Zugangsdaten. Ohne Server bleiben Karte, OSM-Netzebenen und lokaler Stationskatalog nutzbar. GitHub Pages allein kann die serverseitige Fahrplanauskunft nicht ausführen.
+
+### Übernahme von Kartenhalten
+
+OSM-Namen und Fahrplannamen können sich durch den Stadtpräfix oder U-/S-Zusätze unterscheiden. Der vorhandene Stationsresolver berücksichtigt diese Abweichung bei Kartenpunkten nur mit passendem Namen und enger räumlicher Übereinstimmung (maximal 250 Meter). Die konkrete Zuordnung wird im Reiseergebnis angezeigt. Kartenpunkte werden weiterhin nicht ungeprüft als bestätigte Anbieterhaltestellen behandelt.
+
+Die unabhängige Kartenabfrage erlaubt zusätzlich zur Verarbeitungszeit die Warteschlange der Quelle. Nach Zeitablauf oder Anbieterfehler wird pausiert; ein Nutzerabbruch bleibt jederzeit möglich. Die neue Routing-/Abbruchlogik ist automatisiert geprüft, der eigenständige Pfad zusätzlich live gegen ÖBB. Die vollständige visuelle OSM-Netzprüfung ist weiterhin offen; Details stehen in `QA.md`.

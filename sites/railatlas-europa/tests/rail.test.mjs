@@ -33,3 +33,18 @@ test('Multi-part route validates required dwell, overnight travel and complete s
 test('Actual Amsterdam–Berlin response accepts platform group IDs and overnight arrival',()=>{const raw=JSON.parse(fs.readFileSync(new URL('./fixtures/db-amsterdam-berlin.json',import.meta.url)));const journeys=parseJourneys(raw,station('8400058'),station('8011160'),'2026-10-21T16:05:00Z');assert.ok(journeys.length);assert.ok(['8089522','8098160','8011160'].includes(journeys[0].legs.at(-1).to.dbId));assert.ok(journeys[0].arrival.startsWith('2026-10-22'));assert.ok(journeys[0].legs.some(l=>l.walking));});
 test('Actual ÖBB/Scotty response parses European journeys, clocks and platform changes',async()=>{const {parseHafasJourneys,hafasTime}=await import('../lib/journey.mjs');const raw=JSON.parse(fs.readFileSync(new URL('./fixtures/oebb-bern-amsterdam.json',import.meta.url)));const j=parseHafasJourneys(raw,station('8507000'),station('8400058'),'2026-10-21T06:00:00Z');assert.ok(j.length);assert.equal(j[0].source,'ÖBB / Scotty');assert.equal(j[0].legs[0].from.dbId,'8507000');assert.equal(j[0].legs.at(-1).to.dbId,'8400058');assert.ok(j[0].legs.every(l=>Number.isFinite(l.from.lat)));assert.ok(j[0].legs.some(l=>l.walking));assert.equal(hafasTime('20261021','01063000',120),'2026-10-22T04:30:00.000Z');for(const trip of raw.outConL)trip.secL[0].dep.dCncl=true;assert.equal(parseHafasJourneys(raw,station('8507000'),station('8400058'),'2026-10-21T06:00:00Z').length,0);});
 test('ÖBB local reference returns the actual Heilbronn–Würzburg direct train',async()=>{const {parseHafasJourneys}=await import('../lib/journey.mjs');const raw=JSON.parse(fs.readFileSync(new URL('./fixtures/oebb-heilbronn-wuerzburg.json',import.meta.url)));const j=parseHafasJourneys(raw,station('8000157'),station('8000260'),'2026-10-21T06:00:00Z');assert.ok(j.length>=3);assert.equal(j[0].legs.length,1);assert.equal(j[0].departure,'2026-10-21T06:48:00.000Z');assert.equal(j[0].arrival,'2026-10-21T08:20:00.000Z');});
+
+test('map stops accept provider city prefixes only with verified close coordinates',async t=>{
+ const wanted={id:'osm:node/test',name:'Karlsplatz',networkMode:'subway',dbId:'',lat:48.2005,lon:16.3699};
+ const source={id:'1390461',dbId:'1390461',name:'Wien Karlsplatz (U1)',lat:48.2006,lon:16.3700};
+ assert.equal(sameStation(wanted,source),true);
+ assert.equal(sameStation(source,wanted),true);
+ assert.equal(sameStation({...wanted,id:'local:test'},source),false,'The new rule applies only to map stops');
+ assert.equal(sameStation(wanted,{...source,lat:48.2050}),false,'A distant namesake is not the selected stop');
+ assert.equal(sameStation(wanted,{...source,name:'Wien Karlsplatz (Oper)'}),false,'Meaningful qualifiers must survive');
+ assert.equal(sameStation({...wanted,networkMode:'bus'},source),false,'A bus stop cannot become an explicitly marked U-Bahn stop');
+ assert.equal(sameStation(wanted,{...source,name:'Wien Stephansplatz (U1)'}),false);
+ const response={err:'OK',svcResL:[{err:'OK',res:{locL:[{type:'S',name:source.name,lid:'A=1@O=Wien Karlsplatz (U1)@L=1390461@',extId:source.dbId,crd:{x:16370000,y:48200600}}]}}]};
+ t.mock.method(globalThis,'fetch',async()=>Response.json(response));
+ assert.match(await resolveLid(wanted),/@L=1390461@/);
+});

@@ -7,6 +7,17 @@ function attr(lid,key){return new RegExp('(?:^|@)'+key+'=([^@]+)').exec(lid||'')
 export function parseStation(raw,fallbacks=[]){const o=raw?.ort||raw?.station||raw||{},lid=o.lid||o.id||'',id=String(o.extId||attr(lid,'L')||'');const old=fallbacks.find(s=>s.dbId===id||s.name===o.name);const lat=Number(o.lat??o.latitude??o.coordinate?.x??(o.crd?.y!==undefined?o.crd.y/1e6:undefined)??(attr(lid,'Y')?Number(attr(lid,'Y'))/1e6:old?.lat)),lon=Number(o.lon??o.longitude??o.coordinate?.y??(o.crd?.x!==undefined?o.crd.x/1e6:undefined)??(attr(lid,'X')?Number(attr(lid,'X'))/1e6:old?.lon));return {id:id||o.name||'unknown',dbId:id,name:o.name||attr(lid,'O')||old?.name||'Halt',country:o.country||old?.country||countryCodes[id.slice(0,2)]||'',lat:Number.isFinite(lat)?lat:null,lon:Number.isFinite(lon)?lon:null,main:false};}
 function notes(o){return [...(o.risNotizen||[]),...(o.himMeldungen||[]),...(o.priorisierteMeldungen||[])].map(n=>n.text||n.value||n.ueberschrift||n.titel||n.kurzText||'').filter(t=>typeof t==='string'&&t.length).map(t=>t.replace(/<[^>]*>/g,'').slice(0,1500)).slice(0,8);}
 export function sameStation(a,b){
+ // OSM stops often omit the city prefix supplied by the timetable provider.
+ // Restrict this rule to map selections and a small station complex (250 m).
+ if([a,b].some(s=>typeof s?.id==='string'&&s.id.startsWith('osm:'))){
+  if(![a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)||distanceKm(a,b)>.25)return false;
+  const marker=/(?:\((?:U|S)\s*\d*\)|\s+(?:U|S))\s*$/i;
+  const name=s=>normalize(s.name.replace(marker,'')).replace(/[^a-z0-9]+/g,' ').trim();
+  const first=name(a),second=name(b),shorter=first.length<=second.length?first:second,longer=first.length>second.length?first:second;
+  // Do not confuse an explicitly marked metro stop with a neighbouring bus/tram.
+  for(const [map,provider] of [[a,b],[b,a]])if(typeof map.id==='string'&&map.id.startsWith('osm:')&&['bus','tram'].includes(map.networkMode)&&marker.test(provider.name))return false;
+  return (!!first&&first===second)||(shorter.length>=5&&longer.endsWith(' '+shorter));
+ }
  if(a.dbId&&a.dbId===b.dbId)return true;
  // Large stations have separate IDs for platforms, levels and S-Bahn stops.
  // Accept these only with matching names and verified physical proximity.
@@ -46,7 +57,9 @@ export async function findOnlineStations(query,signal){const key=normalize(query
 export async function resolveLid(station,signal){
  if(/^\d{7,9}$/.test(station.dbId||''))return `A=1@O=${station.name.replace(/[@$]/g,' ')}@X=${Math.round(station.lon*1e6)}@Y=${Math.round(station.lat*1e6)}@L=${station.dbId}@`;
  const data=await hafas('LocGeoPos',{ring:{cCrd:{x:Math.round(station.lon*1e6),y:Math.round(station.lat*1e6)},minDist:0,maxDist:800},getStops:true,getPOIs:false,maxLoc:20},signal);
- const match=(data.locL||[]).filter(s=>s.type==='S').map(s=>({...parseStation(s),lid:s.lid})).find(s=>sameStation(station,s));
+ const matches=(data.locL||[]).filter(s=>s.type==='S').map(s=>({...parseStation(s),lid:s.lid})).filter(s=>sameStation(station,s));
+ if(typeof station.id==='string'&&station.id.startsWith('osm:'))matches.sort((a,b)=>distanceKm(station,a)-distanceKm(station,b));
+ const match=matches[0];
  if(!match)throw new Error(`„${station.name}“ ist im Katalog erfasst, aber in dieser Fahrplanauskunft nicht eindeutig zugeordnet. Bitte einen Halt aus den Online-Vorschlägen oder die andere Auskunft wählen.`);
  return match.lid;
 }

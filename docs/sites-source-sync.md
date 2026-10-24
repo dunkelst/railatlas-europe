@@ -1,6 +1,6 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **14**, Quellcommit `31171b052fd0f815f6eddf40f3014cb8f7ca6219`. **161** Dateien aus diesem Commit liegen bytegleich unter `sites/railatlas-europa`; das generierte `tsconfig.tsbuildinfo` ist ausgenommen. Das Herkunftsmanifest enthält alle SHA-256-Prüfsummen und Git-Blobs. Die GitHub-Paritätsprüfung läuft vor der Installation.
+Sites-Version **15**, Quellcommit `bcc597d12e51b92b3c50a416a6747a1befb43185`. **161** Dateien aus diesem Commit liegen bytegleich unter `sites/railatlas-europa`; das generierte `tsconfig.tsbuildinfo` ist ausgenommen. Das Herkunftsmanifest enthält alle SHA-256-Prüfsummen und Git-Blobs. Die GitHub-Paritätsprüfung läuft vor der Installation.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
 | --- | --- | --- | --- |
@@ -36,3 +36,7 @@ Die bisherige Pages-Veröffentlichung wird in diesem Schritt erhalten. Eine neue
 5. Verifizierte Live-Ergebnisse und offene Grenzen getrennt dokumentieren.
 
 Die neue Kartenprüfung ist wegen blockierter CSS und bisher fehlgeschlagener Overpass-Abrufe unvollständig. Dieser Source-Abgleich behauptet keine bestandene visuelle Abnahme der Netzebenen oder ein bereits vorhandenes eigenes öffentliches API-Hosting.
+
+## Aktuelle Fortsetzung
+
+46 App-Tests, TypeScript und drei Builds bestanden. Die Zuordnung von OSM-Kartennamen zu ÖBB-/VRR-Halten ist enger geprüft, einschließlich des echten aufgezeichneten VRR-Namens mit U-Zusatz und des Stations-/Bahnsteigabstands. Ein Live-ÖBB-Test des unabhängigen Node-Pfads mit simulierten Kartennamen funktioniert. Die unabhängige Ausgabe liefert ihre tatsächlichen Styles und Leaflet-Dateien korrekt über HTTP aus. Ein neuer OSM-Netzdownload und die visuelle Live-Abnahme sind weiterhin nicht bestätigt. Der Overpass-Abruf berücksichtigt jetzt Wartezeit und Verarbeitung getrennt von einem bewussten Nutzerabbruch.

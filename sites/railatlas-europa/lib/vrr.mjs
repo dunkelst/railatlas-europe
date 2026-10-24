@@ -28,6 +28,7 @@ export async function findVrrStations(query, signal) {
  return parseVrrStations(await request('XML_STOPFINDER_REQUEST',{type_sf:'any',name_sf:query,anyObjFilter_sf:'2',locationServerActive:'1',anyMaxSizeHitList:'15',deleteAssignedStops_sf:'1'},signal));
 }
 export function sameVrrStation(a,b) {
+ if([a,b].some(s=>typeof s?.id==='string'&&s.id.startsWith('osm:')))return sameStation(a,b);
  if(a.vrrId && b.vrrId) return a.vrrId===b.vrrId;
  const key=s=>normalize(s.name).replace(/\b(hauptbahnhof|hbf|bahnhof|station)\b/g,'').replace(/[^a-z0-9]/g,'');
  return sameStation(a,b)||key(a)===key(b)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<.8;
@@ -35,6 +36,7 @@ export function sameVrrStation(a,b) {
 async function resolveStation(station, signal) {
  if(validVrrId(station.vrrId))return station;
  const matches=await findVrrStations(station.name,signal);
+ if(typeof station.id==='string'&&station.id.startsWith('osm:'))matches.sort((a,b)=>distanceKm(station,a)-distanceKm(station,b));
  const match=matches.find(s=>sameVrrStation(station,s));
  if(!match)throw Error('Bitte „'+station.name+'“ aus den Online-Vorschlägen der VRR-Auskunft auswählen. Der gewählte Halt ist dort nicht eindeutig zugeordnet.');
  return match;
