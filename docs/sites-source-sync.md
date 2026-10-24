@@ -1,47 +1,38 @@
-# Gemeinsame App für Sites und GitHub Pages
+# Gemeinsamer RailAtlas-Quellstand
 
-`sites/railatlas-europa` enthält den vollständigen Quellstand der Sites-Version 12, Commit `4487d1c3111ef4a0678a48c92d224bfd99bf0e74`. 153 Dateien sind bytegleich übernommen; ausschließlich das generierte `tsconfig.tsbuildinfo` ist ausgenommen. `sites-source-manifest.json` enthält Herkunft und SHA-256-Prüfsummen. `node tools/verify-sites-source.mjs` prüft sie in CI und vor jeder Pages-Veröffentlichung.
+Sites-Version **14**, Quellcommit `31171b052fd0f815f6eddf40f3014cb8f7ca6219`. **161** Dateien aus diesem Commit liegen bytegleich unter `sites/railatlas-europa`; das generierte `tsconfig.tsbuildinfo` ist ausgenommen. Das Herkunftsmanifest enthält alle SHA-256-Prüfsummen und Git-Blobs. Die GitHub-Paritätsprüfung läuft vor der Installation.
 
-## Laufzeit
+| Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
+| --- | --- | --- | --- |
+| Oberfläche | gemeinsame React-Dateien | dieselben Dateien | dieselben Dateien |
+| Styles/Katalog/Leaflet | lokale Assets | lokale Assets | Assets mit Repository-Präfix |
+| API | `lib/api.mjs` | derselbe Handler | eigener Server, ausdrücklich konfiguriert |
+| Anbieterparser | gemeinsame Module | dieselben Module | über den eigenen Server |
+| OSM-Netzebenen | API zur OSM-Quelle | derselbe API-Pfad | eigene API oder direkter OSM-Abruf |
 
-| Bestandteil | Sites | GitHub Pages |
-| --- | --- | --- |
-| React-Oberfläche | `app/page.tsx` und gemeinsame Komponenten | dieselben Dateien, über `github-pages/entry.tsx` eingebunden |
-| Styles, Katalog, Leaflet | lokale öffentliche Dateien unter `/` | dieselben Dateien unter `/railatlas-europe/` |
-| Bahnhofssuche und Routen | eigene `/api/stations` und `/api/journeys` | Aufruf derselben Sites-API, kein Seitenwechsel |
-| Fahrplan und Sperrungslogik | `lib/journey.mjs`, `transit.mjs`, `vrr.mjs` | dieselbe Serverlogik über die API |
-
-Die getrennten Builds sind nötig, weil GitHub Pages ausschließlich statische Dateien ausführt. Es gibt keine zweite UI- oder Routing-Implementierung. `lib/urls.mjs` berücksichtigt den jeweiligen Asset-Pfad und API-Ursprung. Die statische Build-Konfiguration enthält nur öffentliche URLs, keine Tokens. Die Sites-API liefert CORS-Header für `https://dunkelst.github.io`; Fehler und OPTIONS sind eingeschlossen. CORS ist eine Browserfreigabe, keine Anmeldung oder Zugangssicherung des öffentlichen Testservers.
-
-## Starten und bauen
-
-Voraussetzungen: Linux, Node.js ab 22.13, pnpm 11.25.0 oder Corepack, GNU timeout und flock. Das Lockfile und der pnpm-Stand sind verbindlich.
+## Eigenständig ausführen
 
 ```bash
 npm run install:app
 npm run test:app
-node tools/verify-sites-source.mjs
-cd sites/railatlas-europa
-node node_modules/typescript/bin/tsc --noEmit --incremental false
-npm run build:pages
-npm run build
-npm run dev
+npm run build:standalone
+npm run start:standalone
 ```
 
-Ohne checkout-lokales Sites-Profil nutzen die Framework-Skripte den portablen Vinext-Modus. Die lokale Entwicklungsumgebung stellt keine Zugriffssicherung für Internetbetrieb dar. Der öffentliche Testbetrieb verwendet die vom Hosting bereitgestellte Worker-Laufzeit.
+Danach http://127.0.0.1:3000 öffnen. Node ab 22.13, pnpm 11.25.0. Für den eigenständigen Server sind keine Sites-/Cloudflare-/ChatGPT-Dienste erforderlich. Er nutzt nur die Anbieter- und Kartendatenquellen. Bei HTTPS über einen eigenen Reverse-Proxy `PUBLIC_ORIGIN` auf den öffentlichen Ursprung setzen; `HOST=0.0.0.0` erlaubt Bindung im eigenen Container/Host. Standard ist lokale Bindung.
 
-`npm run build:pages` erzeugt `sites/railatlas-europa/dist-pages`. Dieses Verzeichnis wird durch `.github/workflows/pages.yml` veröffentlicht. `npm run build` erzeugt den Sites-Worker und dessen Client. Die bestehende Graph-/OSM-Regression läuft unabhängig mit `npm test`.
+## Veröffentlichung
 
-## Abgleich bei Änderungen
+Sites wurde nativ als Version 14 bestätigt. Aktuelle Arbeit an den unabhängigen Kartenebenen wird dort abgenommen. GitHub erhält denselben Quellstand, jedoch keinen Verweis als Ersatzanwendung. `npm run build:pages` hat keine fest eingebaute ChatGPT-API.
 
-1. Den ausgewählten Sites-Quellstand prüfen, bauen und veröffentlichen.
-2. Alle getrackten Quelldateien desselben Commits in `sites/railatlas-europa` übernehmen; keine Laufzeitdaten, Zugangsdaten, installierten Pakete oder Buildausgaben kopieren.
-3. Das Herkunftsmanifest auf die echte Sites-Version, den Quellcommit und die Dateiprüfsummen aktualisieren.
-4. Paritätsprüfung, App-Regressionen, TypeScript und Pages-Build ausführen. Der Pages-Workflow veröffentlicht den gemeinsamen Stand von `main`.
-5. Die GitHub-Seite mit echten Anbieteranfragen praktisch prüfen. Auskunftslücken offen dokumentieren.
+Die bisherige Pages-Veröffentlichung wird in diesem Schritt erhalten. Eine neue Pages-Veröffentlichung wird manuell mit einer eigenen Serveradresse gestartet. GitHub Pages selbst kann keinen Node-/Worker-Server ausführen. Die Serveradresse ist keine Zugangsinformation; es werden keine Zugangsdaten veröffentlicht.
 
-## Quellen und Grenzen
+## Abgleich
 
-Die Auskunft nutzt ÖBB / Scotty und auswählbar VRR / EFA OpenService. VRR ist ein Testzugang ohne garantierte Produktionsverfügbarkeit. Es gibt keine gesonderte direkte DB-/VBB-Anbindung; DB-Prüflinks öffnen deren externe Auskunft. EFA-BW, die konkrete efa.de-Instanz und Trainline Partner Solutions sind nicht freigeschaltet. Der Stationskatalog steht unter ODbL 1.0.
+1. Gemeinsame Quellen prüfen, alle benötigten Ausgaben bauen und Sites veröffentlichen.
+2. Getrackte Dateien desselben Commits übernehmen; Buildausgaben, Laufzeitdaten und Zugangsdaten ausschließen.
+3. Herkunftsmanifest und Versionsangabe aktualisieren.
+4. Paritätsprüfung, App-Tests, Typprüfung und unabhängigen Build ausführen.
+5. Verifizierte Live-Ergebnisse und offene Grenzen getrennt dokumentieren.
 
-Fehlende Streckengeometrie wird nicht ergänzt und es werden keine Fahrten erfunden. Sperrungs- und Echtzeitabdeckung bleiben partiell. Historische konkrete Live-Prüfungen stehen im gemeinsamen `QA.md`; die Prüfung dieser GitHub-Veröffentlichung wird in `github-pages-qa.md` festgehalten.
+Die neue Kartenprüfung ist wegen blockierter CSS und bisher fehlgeschlagener Overpass-Abrufe unvollständig. Dieser Source-Abgleich behauptet keine bestandene visuelle Abnahme der Netzebenen oder ein bereits vorhandenes eigenes öffentliches API-Hosting.

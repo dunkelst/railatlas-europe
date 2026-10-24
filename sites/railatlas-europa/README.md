@@ -1,6 +1,6 @@
 # RailAtlas Europa
 
-Private europäische Reiseplanung für steffen_fun|x. Der frühere feste Demo-Fahrplan wurde vollständig ersetzt.
+Europäische Reiseplanung für steffen_fun|x mit öffentlicher Testoberfläche und eigenständig startbarem Server. Der frühere feste Demo-Fahrplan wurde vollständig ersetzt.
 
 ## Funktionsumfang
 
@@ -13,7 +13,9 @@ Private europäische Reiseplanung für steffen_fun|x. Der frühere feste Demo-Fa
 - Bahn, S-Bahn, U-Bahn, Bus, Tram, Fähre und Ersatzbus erhalten eigene Produktkennzeichnungen aus dem ÖBB-Produktprofil. Betreiber, Richtung, Halte, Soll-/Prognosezeiten und Gleis-/Steigänderungen bleiben sichtbar. Nicht bediente Durchfahrts-/Grenzpunkte werden nicht als Fahrplanhalte aufgeführt.
 - Meldungen auf Reise-, Abschnitts-, Fahrt-, Fußweg- und Haltebene werden dedupliziert und ihren Gültigkeits-/Ereigniszeiträumen entsprechend angezeigt. Betriebs- und Sperrhinweise bleiben auch bei geschlossenem Reiseverlauf sichtbar. Ausfälle, nicht erreichbare Fahrten und gesperrter Ein-/Ausstieg werden ausgeschlossen. Eine vollständige europaweite Sperrungs- oder Echtzeitabdeckung kann die öffentliche Quelle nicht bestätigen und wird nie behauptet; keine aus Text erratenen Umleitungen. Erneute Suche fragt ohne Fahrplan-Cache neu ab.
 - Alle angezeigten Reisezeiten in Europe/Berlin, einschließlich korrektem Tageswechsel und Sommer-/Winterzeit. Die Eingabemaske weist darauf hin.
-- Private Sites-Bereitstellung; keine zusätzlichen Nutzer oder öffentlichen Freigaben.
+- Öffentliche Testbereitstellung auf Sites. GitHub enthält dieselbe Oberfläche und dieselbe Anbieter-/Routinglogik für einen eigenen Node-Server; die unabhängige Anwendung benötigt keine ChatGPT-API.
+- Unabhängige Kartenebenen für Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus. Linien und Halte sind einzeln schaltbar, Bahn ist voreingeschaltet. Das Bahnnetz nutzt OpenRailwayMap-Schieneninfrastruktur; OSM-Linienrelationen und Halte werden für kleine sichtbare Ausschnitte ab Zoom 12 über Overpass geladen. Quellenlücken und Fehler werden ausgewiesen. OSM ist kein Echtzeitfahrplan.
+- OSM-Halte lassen sich direkt als Start, Ziel oder Zwischenziel übernehmen. Die Fahrplanauskunft muss den Halt weiterhin anhand von Name und Lage bestätigen.
 
 ## Daten und Lizenzen
 
@@ -25,8 +27,24 @@ Leaflet 1.9.4 liegt lokal unter `public/vendor` inklusive Lizenz. Es werden kein
 
 - `node --test tests/*.test.mjs`: Katalogbreite und Ranking, Kürzel und Umlaute, Standortzuordnung, Zeitzonen, aufgezeichnete echte DB-Antworten, Zugausfälle, Endpunktkontrolle und zeitlich erreichbare Zwischenziele.
 - `node node_modules/typescript/bin/tsc --noEmit`: Typprüfung.
-- `node /root/.codex/plugins/cache/openai-curated-remote/sites/1.1.0/scripts/build-site.mjs`: Sites-Build im vorgesehenen Laufzeitprofil.
+- `node /root/.codex/plugins/cache/openai-curated-remote/sites/1.1.2/scripts/build-site.mjs`: Sites-Build im vorgesehenen Laufzeitprofil.
 
 Die DB- und ÖBB-Testfixtures sind tatsächlich abgefragte Fahrplanantworten vom 20.10.2026 für Reisen am 21.10.2026. Sie dienen der Parserregression, nicht als Laufzeit-Fallback.
 
 VRR / EFA OpenService: https://www.opendata-oepnv.de/ht/de/api. Der offene Server darf laut Anbieter für Entwicklung, Tests und Hobbyzwecke verwendet werden und kann vom Anbieter für eigene Tests verwendet werden. Ergebnisse und Verfügbarkeit sind eingeschränkt; für einen verlässlichen Produktivzugang ist eine gesonderte Projektfreigabe erforderlich. Keine Serienabfragen und kein Fahrplan-Cache. Explizit nicht im Routing berücksichtigte Störungen führen zum Ausschluss des betroffenen Vorschlags. Die gespeicherte VRR-Testantwort stammt aus einer einzelnen echten Anfrage vom 21.10.2026 für eine Reise am 22.10.2026.
+
+## Eigenständig starten
+
+Node.js ab 22.13 und pnpm 11.25.0. Im Ordner dieser Anwendung:
+
+```bash
+pnpm install --frozen-lockfile
+npm run build:standalone
+npm run start:standalone
+```
+
+Danach `http://127.0.0.1:3000` öffnen. Der Node-Server liefert die gebaute Oberfläche und `/api/stations`, `/api/journeys`, `/api/network` aus demselben Prozess. Er verwendet dieselben Anbieterparser und denselben API-Handler wie die Sites-Version. Der Server selbst benötigt nur Node, keine Cloudflare-, ChatGPT- oder Sites-Laufzeit. Ausgehende HTTPS-Verbindungen zu den Fahrplan-/Kartendiensten bleiben erforderlich. `PORT` und `HOST` ändern Port und Bind-Adresse (Standard: 3000 / 127.0.0.1).
+
+Bei einem eigenen HTTPS-Reverse-Proxy `HOST=0.0.0.0` und `PUBLIC_ORIGIN=https://dein-server.example` setzen. `PUBLIC_ORIGIN` gibt den öffentlichen Ursprung für die gleiche CORS-Prüfung vor. TLS wird am Reverse-Proxy terminiert. Für eine separate GitHub-Pages-Oberfläche ist ausschließlich der bestehende GitHub-Ursprung freigegeben.
+
+`npm run build:pages` erzeugt die statische Oberfläche. Sie hat keine voreingestellte ChatGPT-Serveradresse. Für Live-Auskunft in „Live-Auskunft einrichten“ den eigenen HTTPS-Server verbinden; `/api/health` prüft die Kompatibilität. Alternativ beim Build `RAILATLAS_API_ORIGIN` setzen. Die Serveradresse wird nur im eigenen Browser gespeichert; sie enthält keine Zugangsdaten. Ohne Server bleiben Karte, OSM-Netzebenen und lokaler Stationskatalog nutzbar. GitHub Pages allein kann die serverseitige Fahrplanauskunft nicht ausführen.

@@ -1,0 +1,31 @@
+name: Check RailAtlas shared application
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - name: Verify shared source
+        run: node tools/verify-sites-source.mjs
+      - name: Install
+        run: npm run install:app
+      - name: App regressions
+        run: npm run test:app
+      - name: TypeScript
+        run: node sites/railatlas-europa/node_modules/typescript/bin/tsc --project sites/railatlas-europa/tsconfig.json --noEmit --incremental false
+      - name: Standalone client
+        run: npm run build:standalone
+      - name: Pages client
+        run: npm run build:pages

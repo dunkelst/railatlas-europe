@@ -71,3 +71,19 @@ Die veröffentlichte GitHub-Seite blieb bei allen folgenden Formularabfragen unt
 - Hameln → genau der Katalogeintrag „Bahnhof Bad Münder am Deister“ am 24.10.2026: S5 (34540), 09:20–09:27. Namens-/Lagezuordnung zum echten EVA-Bahnhof sichtbar.
 - Bern–Amsterdam–Berlin am 24./25.10.2026: Bern 09:04 → Amsterdam 17:50 (ICE 372/918/124), Weiterfahrt 20:40 über Duisburg mit IC 60403 und ICE 1541, Berlin 05:39. Gewünschter Aufenthalt 60 Min., tatsächlicher Aufenthalt 2 Std. 50 Min.; Zeitumstellung korrekt berücksichtigt. Dasselbe Ergebnis auf Sites geprüft.
 - Der externe DB-Prüflink enthielt bei Bad Münder noch die lokale sechsstellige Katalogkennung. Der gemeinsame Link-Generator übergibt jetzt ausschließlich echte sieben- bis neunstellige EVA-Kennungen; sonst bleibt die Bahnhofssuche über den Namen erhalten. Zusätzliche Regression bestanden, insgesamt 30.
+
+
+## Fortführung 24.10.2026: Netzebenen und eigenständiger Server
+
+- 42 Node-Regressionen bestanden. Neu: unabhängige Vorgaben/Schalter, OSM-Produktzuordnung, gemeinsame Bahn-/S-Bahn-Halte, mehrere Geometriefragmente, Ausschnittbegrenzung, unvollständige Overpass-Antworten, echter lokaler HTTP-Server einschließlich Dateien, CORS, JSON-/Größenfehlern sowie gültiger Serverkonfiguration. Gezielte OSM-Objekte in diesen Tests sind synthetische Parserfälle, keine behaupteten Live-Kartendaten.
+- TypeScript, Sites-Produktionsbuild, GitHub-Pages-Build und eigenständiger Clientbuild erfolgreich.
+- Die Netzebenen werden ohne vorherige Reiseabfrage geladen. Bahn-Schieneninfrastruktur ist voreingeschaltet; OSM-Linien und Halte der übrigen Modi sind unabhängig schaltbar. Abruf nur für kleine Ausschnitte ab Zoom 12, kurze Begrenzung der Antwortzeit und Antwortgröße. Abgebrochene oder unvollständige Daten werden nicht als vollständiges Netz ausgegeben. Keine Verbindung über Geometrielücken.
+- Die Bahnübersicht zeigt OpenRailwayMap-Schieneninfrastruktur, welche auch gemeinsam genutzte Infrastruktur enthalten kann. Die Betriebsart einer S-Bahn wird aus OSM-Routenkennzeichnung abgeleitet, nicht aus der bloßen Existenz eines Gleises. Keine Behauptung vollständiger europaweiter Netzdaten oder aktueller Bedienung.
+- Sites und Node rufen denselben API-Handler und dieselbe Anbieter-/Routinglogik auf. Die eigenständige Anwendung benötigt keine ChatGPT-Seite. Für Pages wird eine eigene Serveradresse ausdrücklich eingerichtet; es gibt keinen versteckten Rückfall auf Sites.
+- Die interne Vorschau wurde vom Dienst als laufend gemeldet, war im Browser jedoch mit ERR_CONNECTION_REFUSED nicht erreichbar. Die Browserprüfung dieser Vorschau ist daher nicht als bestanden zu werten. Die direkte Overpass-Abfrage aus der Entwicklungsumgebung lieferte HTTP 406; dies ist kein Live-Nachweis einer gültigen Overpass-Antwort.
+
+### Live-Prüfung der Fortführung
+
+- Sites-Version 13 nativ erfolgreich veröffentlicht. Die neue Oberfläche und ihre Schalter wurden im Browser geladen. Die echte ÖBB-Stationssuche liefert weiterhin Wien Karlsplatz (U) und Wien Stephansplatz (U).
+- Beide Stylesheet-URLs werden in dieser Prüfumgebung mit HTTP 403 / Cloudflare „error code: 1010“ abgewiesen; der Browser meldet beim direkten CSS-Aufruf ERR_BLOCKED_BY_CLIENT. Die Dateien sind in Clientbuild und Bereitstellungspaket enthalten. Kein CSS-Inlining als Umgehung. Eine vollständige visuelle Abnahme bleibt damit offen.
+- Die erste veröffentlichte Overpass-Abfrage an die Hauptinstanz lieferte HTTP 521. Laut aktueller OSM-Dokumentation ist diese Instanz überlastet; deshalb wird die dokumentierte globale private.coffee-Instanz verwendet. Aus der Entwicklungsumgebung kam dort HTTP 429. Rate-Limit- und Serverfehler lösen nun eine Pause von mindestens 30 Sekunden aus, bevor weitere Ausschnitte angefragt werden. Keine automatischen Wiederholungsserien und keine erfundenen Netzdaten.

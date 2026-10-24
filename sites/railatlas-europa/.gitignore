@@ -48,6 +48,7 @@ next-env.d.ts
 
 /dist/
 /dist-pages/
+/dist-standalone/
 /.wrangler/
 # Checkout-local execution profile and tool state; never publish them.
 /.sites-runtime/

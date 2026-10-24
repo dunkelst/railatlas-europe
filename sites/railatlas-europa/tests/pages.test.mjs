@@ -4,7 +4,7 @@ import {assetUrl, apiUrl} from '../lib/urls.mjs';
 import {apiJson, apiOptions, rejectOrigin, PAGES_ORIGIN} from '../lib/api-cors.mjs';
 
 test('the same UI resolves assets under Pages and API calls at the server', () => {
-  const pages = {basePath: '/railatlas-europe/', apiOrigin: 'https://railatlas-europa.cocoaamber33.chatgpt.site'};
+  const pages = {basePath: '/railatlas-europe/', apiOrigin: 'https://railatlas.example'};
   assert.equal(assetUrl('/data/stations.json', pages), '/railatlas-europe/data/stations.json');
   assert.equal(assetUrl('vendor/leaflet.js', pages), '/railatlas-europe/vendor/leaflet.js');
   assert.equal(apiUrl('/api/stations?q=Bern', pages), pages.apiOrigin + '/api/stations?q=Bern');

@@ -1,9 +1,12 @@
 name: Deploy RailAtlas Europe to GitHub Pages
 
 on:
-  push:
-    branches: ["main"]
   workflow_dispatch:
+    inputs:
+      api_origin:
+        description: "Eigener HTTPS-RailAtlas-Auskunftsserver (kein voreingestellter Sites-Server)"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -42,6 +45,8 @@ jobs:
         run: npm run install:app
 
       - name: Build the actual application for Pages
+        env:
+          RAILATLAS_API_ORIGIN: ${{ inputs.api_origin }}
         run: npm run build:pages
 
       - name: Configure Pages

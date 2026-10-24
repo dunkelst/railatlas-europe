@@ -9,6 +9,8 @@
     "install:app": "npm --prefix sites/railatlas-europa run install:ci",
     "test:app": "node --test sites/railatlas-europa/tests/*.test.mjs",
     "test": "node test/app-state-isolation.test.mjs && node test/routing.test.mjs && node test/region-loader.test.mjs && node test/bundle-graph.test.mjs && node test/bundle-router.test.mjs && node test/location-index.test.mjs && node test/location-catalog.test.mjs && node test/location-crosswalk.test.mjs && node test/rail-access.test.mjs && node test/location-graph-resolver.test.mjs && node test/infrastructure-schema.test.mjs && python3 test/bundle-registry-schema.test.py && python3 test/osm-builder.test.py && python3 test/graph-tiler.test.py",
-    "build:pages": "npm --prefix sites/railatlas-europa run build:pages"
+    "build:pages": "npm --prefix sites/railatlas-europa run build:pages",
+    "build:standalone": "npm --prefix sites/railatlas-europa run build:standalone",
+    "start:standalone": "npm --prefix sites/railatlas-europa run start:standalone"
   }
 }

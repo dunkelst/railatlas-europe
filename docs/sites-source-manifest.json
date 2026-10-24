@@ -1,6 +1,6 @@
 {
-  "site_version": 12,
-  "site_source_commit": "4487d1c3111ef4a0678a48c92d224bfd99bf0e74",
+  "site_version": 14,
+  "site_source_commit": "31171b052fd0f815f6eddf40f3014cb8f7ca6219",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.cocoaamber33.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -11,9 +11,9 @@
     {
       "path": ".gitignore",
       "mode": "100644",
-      "git_blob": "de4ad0deac4f50b468027d10b53b1a070f493883",
-      "sha256": "03764821ce03d8d38f675c5454dbdf606a162b05b1d07643be69e85c39882420",
-      "bytes": 837
+      "git_blob": "225ba0ddf02967d9bd2d5b86090b6d76774c9907",
+      "sha256": "efa64a34060edcffe21c8bbbde956140e16649b25312ee7801e74eafc4015d07",
+      "bytes": 855
     },
     {
       "path": ".npmrc",
@@ -32,30 +32,44 @@
     {
       "path": "QA.md",
       "mode": "100644",
-      "git_blob": "aa051c5a74d6686695e2af6ef2e137059dfef21d",
-      "sha256": "3de8d0919de79d4099213b2afef00391403e67e828b677e0ac4429144bf48b7a",
-      "bytes": 8994
+      "git_blob": "512c9111b247d3f5a26b23584c6746917beb06e3",
+      "sha256": "3bee352f94352a20999ccc750b1755965877c3daa9e8c8a4347efdc69ce3b904",
+      "bytes": 11999
     },
     {
       "path": "README.md",
       "mode": "100644",
-      "git_blob": "4b8b042608634938d0597478d6d4a894bd8e12f2",
-      "sha256": "1c5b9920af596e6bd9b0e2682ebc05c2a8b037b1b125ec8a2708989fdc17c6f3",
-      "bytes": 4782
+      "git_blob": "65fb5fc0165714828ec5417b22f5b3e7c7abdb0c",
+      "sha256": "8c2d50967304947c7384ab7d85b8808cc85191549311315c3fe7c08f9e65f251",
+      "bytes": 7079
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "mode": "100644",
+      "git_blob": "7225f61e7c1ce4a9b9af4df37bf81ba9e1ff1877",
+      "sha256": "29cd6fba531b01383ebc9febd6fb4dd8d123d9fcfcc334409c350b02d522e549",
+      "bytes": 70
     },
     {
       "path": "app/api/journeys/route.ts",
       "mode": "100644",
-      "git_blob": "d3f3f2d99e5bfad9e8fb69ae007effb1a414f04c",
-      "sha256": "e4d02e1b9f6db041a3d33a5d26c34d6dd46b08ffbc4a386d4601184cc001319a",
-      "bytes": 2033
+      "git_blob": "66049d768cdc284dfbdc982d6614bf84621bccf6",
+      "sha256": "14e1aecfb3950dcab4e6cf0014d38075c7885520712c5b2d96b237684a3304df",
+      "bytes": 71
+    },
+    {
+      "path": "app/api/network/route.ts",
+      "mode": "100644",
+      "git_blob": "7225f61e7c1ce4a9b9af4df37bf81ba9e1ff1877",
+      "sha256": "29cd6fba531b01383ebc9febd6fb4dd8d123d9fcfcc334409c350b02d522e549",
+      "bytes": 70
     },
     {
       "path": "app/api/stations/route.ts",
       "mode": "100644",
-      "git_blob": "adac4ae2f30f999f05ae4219e848bfff2437cbec",
-      "sha256": "409d5413fbaf2a458bf0b13e2abae3e33b93c1112d6c4f6033b5e8f52686ec82",
-      "bytes": 1076
+      "git_blob": "7225f61e7c1ce4a9b9af4df37bf81ba9e1ff1877",
+      "sha256": "29cd6fba531b01383ebc9febd6fb4dd8d123d9fcfcc334409c350b02d522e549",
+      "bytes": 70
     },
     {
       "path": "app/chatgpt-auth.ts",
@@ -67,9 +81,9 @@
     {
       "path": "app/globals.css",
       "mode": "100644",
-      "git_blob": "f1de89577739f58a6255b57f86ee3aff383d8a55",
-      "sha256": "406f723c99b1c8b013db45616160d4990e346e9f7f9b630c377adf9047a21d39",
-      "bytes": 18124
+      "git_blob": "4b47cbcdd136d08269988457dc84d12b3c1d5133",
+      "sha256": "f4d5abdb0dfe6ff9a228ded2a5d1e7fa410ee1f81e095620791aef18985e1a75",
+      "bytes": 21208
     },
     {
       "path": "app/layout.tsx",
@@ -81,9 +95,9 @@
     {
       "path": "app/page.tsx",
       "mode": "100644",
-      "git_blob": "6adda419d143e1a5fd1a55c682aed3b675788ae0",
-      "sha256": "d548ece1544f7750bb506cf4321c521e07eebf547278c45969db79efc34324da",
-      "bytes": 23970
+      "git_blob": "970e0f663eea36fb02f50ca2b8c8d6e2ab7bd77e",
+      "sha256": "6e3af89d849abd2cfe39e95388a6407861d5b343a6bd51cb8cc89a7864cb4ecf",
+      "bytes": 24847
     },
     {
       "path": "build/connector-preview-plugin.mjs",
@@ -135,6 +149,13 @@
       "bytes": 420
     },
     {
+      "path": "components/api-connection.tsx",
+      "mode": "100644",
+      "git_blob": "82a147d1cc45540b27c49f35efd0207e0b7c5b9f",
+      "sha256": "cc28cacd53f037f934677159c852c642073eccb6f4ec1dc867affdafd0afce98",
+      "bytes": 2230
+    },
+    {
       "path": "components/connector-error.tsx",
       "mode": "100644",
       "git_blob": "3c994dc58811e4b02250092fec54b0b788edcc2c",
@@ -151,9 +172,9 @@
     {
       "path": "components/rail-map.tsx",
       "mode": "100644",
-      "git_blob": "9f7d4aade23b7619866d75a8197b6e0edbcad261",
-      "sha256": "cadff267469979f11684489863350ba90e21c99d5ce26c7240b87585fa2a2be9",
-      "bytes": 4378
+      "git_blob": "6954ac94874192d6e79ed387e1ee446f5986dbc8",
+      "sha256": "96a4a48e1b53b13092e9b13167528427c28e777a762547c4ed3ec5592305d2b6",
+      "bytes": 11294
     },
     {
       "path": "components/ui/accordion.tsx",
@@ -667,6 +688,13 @@
       "bytes": 1588
     },
     {
+      "path": "lib/api.mjs",
+      "mode": "100644",
+      "git_blob": "8556341c3f3366e7f891eda61772e59eff518495",
+      "sha256": "ebbcefeb6ff3d49aed779a05ac29e78392be72dc7bbcd9a1120607778d25c3dc",
+      "bytes": 3871
+    },
+    {
       "path": "lib/connector-context.ts",
       "mode": "100644",
       "git_blob": "6cdeac72bf2df63e0a73159af25e0b4564ed1d43",
@@ -704,9 +732,16 @@
     {
       "path": "lib/journey.mjs",
       "mode": "100644",
-      "git_blob": "b93e0865058b97c04e9d7998a022b4860b6216bf",
-      "sha256": "7f7b7adf0ef2f5cd5a03badff35fe8d4c4c1c101602be6a477ff84486ea5ad48",
-      "bytes": 16833
+      "git_blob": "12dace0deb46fcdb7834395355f0bbf428647314",
+      "sha256": "beeca4b9246536164eece9de6ca0c531f15e92e4588f9d4300598aa89fcda44d",
+      "bytes": 16821
+    },
+    {
+      "path": "lib/network.mjs",
+      "mode": "100644",
+      "git_blob": "eb05038c898ed993213155c9e2128b13bda24e68",
+      "sha256": "2109d200a8de51154a667daad66bac11e1d590e79a7faebb6a624a76bdc6c634",
+      "bytes": 9197
     },
     {
       "path": "lib/rail.mjs",
@@ -739,9 +774,9 @@
     {
       "path": "lib/urls.mjs",
       "mode": "100644",
-      "git_blob": "ba6cc2a439114352bb51817f887865cf019f13dc",
-      "sha256": "405cf640f810d44f305320f320479dc87260979fa71830bb4e36ec80ecb2d905",
-      "bytes": 416
+      "git_blob": "83d3d600656706a5794db28ae1f7afd0b75e7301",
+      "sha256": "50b6362536219f6dd1f60d70be698ea9da3d1c4af3aa59f9d00fedb987c2e65d",
+      "bytes": 1611
     },
     {
       "path": "lib/utils.ts",
@@ -767,9 +802,9 @@
     {
       "path": "package.json",
       "mode": "100644",
-      "git_blob": "c6e8b821fe95b8a67e8f037f5981df29585db187",
-      "sha256": "553e0a3703a6a46b305c2fa5fde8dd3e8eb3195518acd83e5b0784877862d1a8",
-      "bytes": 2203
+      "git_blob": "231618d2d2748c244153e56155cc23261132ace7",
+      "sha256": "67ec4f529052b3ec37285fea3dd5a37cb4ce9199cbcd5cdf69b34f0c946ab846",
+      "bytes": 2351
     },
     {
       "path": "pnpm-lock.yaml",
@@ -947,6 +982,13 @@
       "bytes": 993
     },
     {
+      "path": "scripts/serve-standalone.mjs",
+      "mode": "100644",
+      "git_blob": "9346f6ac310d91016d9a25e4dcc06f3b8d788365",
+      "sha256": "79c14b22c051ed2a75968f18831341fdcef794ab6a371894888ce3733ba0095a",
+      "bytes": 3289
+    },
+    {
       "path": "scripts/sites-env.mjs",
       "mode": "100644",
       "git_blob": "1eeedb5e13e4b9af70d89446d981dfd4cd92a3fd",
@@ -1017,11 +1059,18 @@
       "bytes": 38712
     },
     {
+      "path": "tests/network.test.mjs",
+      "mode": "100644",
+      "git_blob": "d59ec01d220bb68fdbda4b1acd5293dc2e799f7e",
+      "sha256": "e027b17f57b63594425e6e7d73ee80a08f4608fa3f7b285b603bd3fd5b039385",
+      "bytes": 4662
+    },
+    {
       "path": "tests/pages.test.mjs",
       "mode": "100644",
-      "git_blob": "eb9c212d376b370d7ae223d6858f1af70329ab83",
-      "sha256": "2715f6ecb189aad530e03341832b894a3d1db1418c7a70dc1b7ffa46098b0eb9",
-      "bytes": 2625
+      "git_blob": "b215dca6edb3ca6264c3ace4accf89570817c9bc",
+      "sha256": "c3816ad8ecfbd680a28c02d7c94269b58a1779e88dfab52c2c4995853dcf2e9d",
+      "bytes": 2600
     },
     {
       "path": "tests/rail.test.mjs",
@@ -1029,6 +1078,13 @@
       "git_blob": "a02cc601379c731f658f4dbff27edf35811f34b8",
       "sha256": "9d407f38ec35684eb3dde28c554aa5484a0e3b10db81c7b8fcf7cb01732dc259",
       "bytes": 7334
+    },
+    {
+      "path": "tests/standalone.test.mjs",
+      "mode": "100644",
+      "git_blob": "57106310a94b12b0a7cb7846ce3b38da43ee20a0",
+      "sha256": "0c54bfd71bdafdca66786f76b6062eeed7685dcb6c7168e3966d5689cd65abcd",
+      "bytes": 3708
     },
     {
       "path": "tests/transit.test.mjs",
@@ -1075,9 +1131,9 @@
     {
       "path": "vite.pages.config.mjs",
       "mode": "100644",
-      "git_blob": "3aa01b43445afed9fc48fdca58bce2285208a7ce",
-      "sha256": "34b6df697d4f77df14e563296ecdbb1b7e4325a11d85b1a368aeef6533dc6474",
-      "bytes": 1252
+      "git_blob": "1eaeafa16c2caea9283cf48e1b3b8ea9ac12cc5d",
+      "sha256": "2524c3d1154223eaedc0b3f3608ece3c940eaaafa57880a348eec1c795b5fc48",
+      "bytes": 1387
     }
   ]
 }
