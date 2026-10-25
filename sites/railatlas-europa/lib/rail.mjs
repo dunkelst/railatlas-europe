@@ -5,14 +5,14 @@ export function searchStations(stations,query,limit=10) {
  const n=normalize(query);if(n.length<2)return [];
  const q=aliases[n]||n,tokens=q.split(' '),matches=[];
  for(const s of stations){
-  if(!tokens.every(t=>s.search.includes(t)))continue;
+  if(!tokens.every(t=>t.length===1?s.search.split(' ').includes(t):s.search.includes(t)))continue;
   let score=(s.key===q?1000:0)+(s.key.startsWith(q+' ')?500:s.key.startsWith(q)?350:0)+(s.key.split(' ').includes(q)?150:0)+(s.main?100:0)+(s.dbId?15:0)-s.name.length/100;
   matches.push({s,score});
  }
  return matches.sort((a,b)=>b.score-a.score||a.s.name.localeCompare(b.s.name)).slice(0,limit).map(m=>m.s);
 }
 export function distanceKm(a,b){const r=Math.PI/180,dlat=(b.lat-a.lat)*r,dlon=(b.lon-a.lon)*r;return 6371*2*Math.atan2(Math.sqrt(Math.sin(dlat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dlon/2)**2),Math.sqrt(1-(Math.sin(dlat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dlon/2)**2)));}
-export function walkingMinutes(journey){const legs=journey.legs.filter(l=>l.walking);if(legs.some(l=>Date.parse(l.arrival)<=Date.parse(l.departure)))return null;return Math.round(legs.reduce((n,l)=>n+Date.parse(l.arrival)-Date.parse(l.departure),0)/60000);}
+export function walkingMinutes(journey){const legs=journey.legs.filter(l=>l.walking);if(legs.some(l=>Date.parse(l.arrival)<Date.parse(l.departure)||l.arrival===l.departure&&!(Number.isFinite(l.distanceMeters)&&l.distanceMeters<=10)))return null;return Math.round(legs.reduce((n,l)=>n+Date.parse(l.arrival)-Date.parse(l.departure),0)/60000);}
 export function nearestStations(stations,lat,lon,limit=5){if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat< -90||lat>90||lon< -180||lon>180)throw new Error('Ungültige Standortkoordinaten.');return stations.map(s=>({...s,distance:distanceKm({lat,lon},s)})).sort((a,b)=>a.distance-b.distance).slice(0,limit);}
 export function validateChain(parts,stops,dwell){
  if(parts.length!==stops.length-1)throw new Error('Eine Teilstrecke fehlt.');
@@ -23,7 +23,17 @@ export function validateChain(parts,stops,dwell){
  }
  return true;
 }
-export function berlinInput(date){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date(date)).replace(' ','T');}
+const berlinFormatter=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+export function berlinInput(date){return berlinFormatter.format(new Date(date)).replace(' ','T');}
+// Calendar midnights also work on DST weekends, unlike 24-hour jumps.
+export function berlinSearchDays(departure){const initial=berlinInput(departure),[y,m,d]=initial.slice(0,10).split('-').map(Number);return [initial,...[1,2].map(day=>new Date(Date.UTC(y,m-1,d+day)).toISOString().slice(0,10)+'T00:00:00')];}
+export function remainingJourneyPoints(points,partIndex,station,same){
+ if(!Number.isInteger(partIndex)||partIndex<0||partIndex>=points.length-1)throw Error('Der gewählte Reiseabschnitt fehlt.');
+ const remaining=points.slice(partIndex+1);
+ if(same(station,remaining[0].station))remaining.shift();
+ if(!remaining.length)throw Error('Dieser Halt ist bereits dein Reiseziel.');
+ return [{key:'start',text:station.name,station,dwell:0},...remaining.map((p,i)=>({...p,key:i===remaining.length-1?'end':'via-replan-'+i}))];
+}
 export function localBerlinISO(s){
  if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(s))throw new Error('Bitte Datum und Uhrzeit prüfen.');
  const p=s.slice(0,16),utc=Date.parse((s.length===16?s+':00':s)+'Z');let guess=utc;

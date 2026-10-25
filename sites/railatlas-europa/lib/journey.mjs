@@ -2,22 +2,24 @@ import {localBerlinISO,berlinInput,distanceKm,normalize} from './rail.mjs';
 import {hafasTime,routeGeometry,transportProduct,noticeReferences,parseNotices,mergeNotices} from './transit.mjs';
 export {hafasTime} from './transit.mjs';
 const countryCodes={80:'DE',81:'AT',82:'LU',83:'IT',84:'NL',85:'CH',86:'DK',87:'FR',88:'BE',70:'GB',71:'ES',94:'PT',51:'PL',54:'CZ',55:'HU',56:'SK'};
-function timestamp(s){if(!s)return null;if(/(Z|[+-]\d\d:\d\d)$/.test(s))return new Date(s).toISOString();return localBerlinISO(s.slice(0,19));}
+export function timestamp(s){if(!s)return null;if(/(Z|[+-]\d\d:\d\d)$/.test(s))return new Date(s).toISOString();return localBerlinISO(s.slice(0,19));}
 function attr(lid,key){return new RegExp('(?:^|@)'+key+'=([^@]+)').exec(lid||'')?.[1];}
-export function parseStation(raw,fallbacks=[]){const o=raw?.ort||raw?.station||raw||{},lid=o.lid||o.id||'',id=String(o.extId||attr(lid,'L')||'');const old=fallbacks.find(s=>s.dbId===id||s.name===o.name);const lat=Number(o.lat??o.latitude??o.coordinate?.x??(o.crd?.y!==undefined?o.crd.y/1e6:undefined)??(attr(lid,'Y')?Number(attr(lid,'Y'))/1e6:old?.lat)),lon=Number(o.lon??o.longitude??o.coordinate?.y??(o.crd?.x!==undefined?o.crd.x/1e6:undefined)??(attr(lid,'X')?Number(attr(lid,'X'))/1e6:old?.lon));return {id:id||o.name||'unknown',dbId:id,name:o.name||attr(lid,'O')||old?.name||'Halt',country:o.country||old?.country||countryCodes[id.slice(0,2)]||'',lat:Number.isFinite(lat)?lat:null,lon:Number.isFinite(lon)?lon:null,main:false};}
+export function parseStation(raw,fallbacks=[]){const o=raw?.ort||raw?.station||raw||{},lid=o.lid||o.id||'',id=String(o.extId||attr(lid,'L')||'');const old=fallbacks.find(s=>s.dbId===id||s.name===o.name);const lat=Number(o.lat??o.latitude??o.coordinate?.x??(o.crd?.y!==undefined?o.crd.y/1e6:undefined)??(attr(lid,'Y')?Number(attr(lid,'Y'))/1e6:old?.lat)),lon=Number(o.lon??o.longitude??o.coordinate?.y??(o.crd?.x!==undefined?o.crd.x/1e6:undefined)??(attr(lid,'X')?Number(attr(lid,'X'))/1e6:old?.lon));return {id:id||o.name||'unknown',dbId:id,name:o.name||attr(lid,'O')||old?.name||'Halt',country:o.country||old?.country||countryCodes[id.slice(0,2)]||'',lat:Number.isFinite(lat)?lat:null,lon:Number.isFinite(lon)?lon:null,main:false,networkModes:Number.isFinite(o.pCls)?[...new Set([1,2,4,8,16,32,64,128,256,512,2048,4096].filter(bit=>o.pCls&bit).map(cls=>transportProduct({cls}).mode))]:[]};}
 function notes(o){return [...(o.risNotizen||[]),...(o.himMeldungen||[]),...(o.priorisierteMeldungen||[])].map(n=>n.text||n.value||n.ueberschrift||n.titel||n.kurzText||'').filter(t=>typeof t==='string'&&t.length).map(t=>t.replace(/<[^>]*>/g,'').slice(0,1500)).slice(0,8);}
+export function sameNearbyStation(a,b){
+ if(![a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)||distanceKm(a,b)>.25)return false;
+ const marker=/(?:^|\s)(?:U|S)\s+|\((?:U|S)\s*\d*\)|\s+(?:U|S)\s*$/i;
+ for(const [map,provider] of [[a,b],[b,a]])if(['bus','tram'].includes(map.networkMode)&&marker.test(provider.name)&&!(provider.networkModes||[]).includes(map.networkMode))return false;
+ const places=[a.locality,b.locality].filter(Boolean).map(normalize);if(!places.length&&[a,b].every(s=>String(s.name).includes(','))){const first=normalize(a.name.split(',')[0]);if(first===normalize(b.name.split(',')[0]))places.push(first);}
+ const forms=s=>[...new Set(String(s.name).split(',').map(part=>{
+  let n=normalize(part.replace(/\((?:U|S)\s*\d*\)/gi,'')).replace(/\b([a-z0-9]+)str\b/g,'$1strasse').replace(/\bstr\b/g,'strasse');
+  for(const place of places){if(n===place)return '';if(n.startsWith(place+' '))n=n.slice(place.length+1);if(n.endsWith(' '+place))n=n.slice(0,-place.length-1);}
+  return n.replace(/^[us]\s+|\s+[us]$/g,'').trim();
+ }).filter(n=>n.length>=4))];
+ return forms(a).some(first=>forms(b).some(second=>{const shorter=first.length<=second.length?first:second,longer=first.length>second.length?first:second;return first===second||shorter.length>=5&&longer.endsWith(' '+shorter);}));
+}
 export function sameStation(a,b){
- // OSM stops often omit the city prefix supplied by the timetable provider.
- // Restrict this rule to map selections and a small station complex (250 m).
- if([a,b].some(s=>typeof s?.id==='string'&&s.id.startsWith('osm:'))){
-  if(![a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)||distanceKm(a,b)>.25)return false;
-  const marker=/(?:\((?:U|S)\s*\d*\)|\s+(?:U|S))\s*$/i;
-  const name=s=>normalize(s.name.replace(marker,'')).replace(/[^a-z0-9]+/g,' ').trim();
-  const first=name(a),second=name(b),shorter=first.length<=second.length?first:second,longer=first.length>second.length?first:second;
-  // Do not confuse an explicitly marked metro stop with a neighbouring bus/tram.
-  for(const [map,provider] of [[a,b],[b,a]])if(typeof map.id==='string'&&map.id.startsWith('osm:')&&['bus','tram'].includes(map.networkMode)&&marker.test(provider.name))return false;
-  return (!!first&&first===second)||(shorter.length>=5&&longer.endsWith(' '+shorter));
- }
+ if([a,b].some(s=>typeof s?.id==='string'&&s.id.startsWith('osm:')))return sameNearbyStation(a,b);
  if(a.dbId&&a.dbId===b.dbId)return true;
  // Large stations have separate IDs for platforms, levels and S-Bahn stops.
  // Accept these only with matching names and verified physical proximity.
@@ -48,7 +50,7 @@ export function parseJourneys(data,from,to,requested){
  return parsed.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));
 }
 const stationsCache=new Map();
-export async function fetchJSON(url,init={},signal,timeout=16000){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout),abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});try{if(signal?.aborted)controller.abort();const r=await fetch(url,{...init,signal:controller.signal,headers:{Accept:'application/json','User-Agent':'RailAtlas-Europa/1.0',...(init.headers||{})}});if(!r.ok)throw new Error('Fahrplandienst HTTP '+r.status);return await r.json();}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}}
+export async function fetchJSON(url,init={},signal,timeout=16000){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout),abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});try{if(signal?.aborted)controller.abort();const r=await fetch(url,{...init,signal:controller.signal,headers:{Accept:'application/json','User-Agent':'RailAtlas-Europa/1.0',...(init.headers||{})}});if(!r.ok)throw Object.assign(new Error('Fahrplandienst HTTP '+r.status),{code:'UPSTREAM_UNAVAILABLE'});return await r.json();}catch(e){if(!signal?.aborted&&!e.code)e.code=e.name==='SyntaxError'?'SOURCE_RESPONSE_INVALID':'UPSTREAM_UNAVAILABLE';throw e;}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}}
 // ÖBB's public HAFAS protocol profile is documented by hafas-client (ISC).
 const hafasProfile={lang:'de',client:{type:'IPH',id:'OEBB',v:'6030600',name:'oebbPROD-ADHOC'},ver:'1.45',auth:{type:'AID',aid:'OWDL4fE4ixNiPBBm'}};
 async function hafas(method,req,signal){const body=await fetchJSON('https://fahrplan.oebb.at/bin/mgate.exe',{method:'POST',headers:{'Content-Type':'application/json','User-Agent':'RailAtlas-Europa/1.0 (+https://github.com/dunkelst/railatlas-europe)'},body:JSON.stringify({...hafasProfile,svcReqL:[{cfg:{polyEnc:'GPA'},meth:method,req}]})},signal,22000);const service=body.svcResL?.[0];if(body.err!=='OK'||service?.err!=='OK')throw new Error(service?.errTxt||body.errTxt||'Keine passende Fahrplanauskunft verfügbar.');return service.res;}

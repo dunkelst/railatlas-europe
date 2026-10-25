@@ -46,5 +46,6 @@ test('VRR map-stop matching preserves the same strict proximity and mode checks'
  const mapDestination={...to,id:'osm:platform/test',vrrId:undefined,name:'Heinrich-Heine-Allee',networkMode:'subway',lat:raw.destination.coord[0],lon:raw.destination.coord[1]};
  assert.equal(sameVrrStation(mapDestination,to),true,'Actual EFA U suffix and station/platform offset are supported');
  assert.equal(parseVrrJourneys(fixture(),from,mapDestination,requested)[0].legs[0].line,'U77');
- assert.equal(sameVrrStation({...mapDestination,networkMode:'bus'},to),false);
+ assert.equal(sameVrrStation({...mapDestination,networkMode:'bus'},to),true,'The source confirms a shared bus/metro hub');
+ assert.equal(sameVrrStation({...mapDestination,networkMode:'bus'},{...to,networkModes:['subway']}),false,'Metro-only stops cannot substitute for bus stops');
 });

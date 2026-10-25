@@ -1,5 +1,43 @@
 # RailAtlas Europa
 
+## Ausweichoptionen und Neuplanung (25.10.2026)
+
+In der automatischen Auskunft lassen sich zusätzliche **Fußweg-Notlösungen**
+einschalten: 15, 30 oder 60 Minuten zu Fuß und höchstens 3 km **je Teilstrecke**.
+Die Vorschläge sind vollständige Reisen der EFA-Auskunft, mit tatsächlichen
+Fußwegverläufen und erreichbarer Weiterfahrt. Bis zu drei zusätzliche Optionen
+erscheinen in der bestehenden Auswahl. Fußwege dieser Optionen sind rot
+gestrichelt und zusätzlich als „Fußweg-Notlösung“ beschriftet. Reguläre
+Verbindungen bleiben weiterhin vergleichbar.
+
+Start und Ziel werden bei der Koordinatenabfrage innerhalb von 30 Metern
+geprüft. Eine nahe Adresse aus der Quelle wird ausdrücklich benannt und nicht
+als bestätigte Haltestellen-ID ausgegeben. Fehlende Wege, Budgetüberschreitung,
+Ausfälle und Zeitkonflikte ergeben keine nutzbare Notlösung. Bei einem relevanten
+ersten Fußweg wird anhand seiner unveränderten Quellgehzeit ein früherer Start
+mit mindestens zwei Minuten Reserve zum Einstieg berechnet. Diese Zeiten werden
+als berechnet bezeichnet; die Zeiten öffentlicher Verkehrsmittel bleiben
+unverändert. Ein Start vor dem angefragten Zeitpunkt ist ausgeschlossen.
+
+„Bei Ausfall: ab einem Halt neu planen“ übernimmt einen ausgewählten Reisehalt.
+Bereits gefahrene Abschnitte entfallen, offene Zwischenziele mit Aufenthalten
+bleiben erhalten. Datum und Uhrzeit sind anschließend zu prüfen und die Reise
+wird über den gemeinsamen API-Pfad neu abgefragt.
+
+Fahrten, die zunächst vom Ziel wegführen, werden nicht geografisch herausgefiltert.
+Ein Testnetz belegt die frühere Ankunft nach anfänglicher Rückfahrt. Eine eigene
+umfassende Suche über weitere Umstiegspunkte in ganz Europa ist damit noch nicht
+implementiert. Die Anbieterabdeckung bleibt regional unterschiedlich.
+
+Die DB-Auskunft wurde vom veröffentlichten Worker mit HTTP 403 abgewiesen.
+Der unabhängige Node-Pfad funktioniert für den aufgezeichneten Berliner Fall;
+dies ist keine Zusage, dass der normale DB-Fallback auf Sites erreichbar ist.
+Es wird keine Sperre umgangen. Die zusätzliche EFA-Fußwegoption ist eine eigene
+zulässige Abfrage bei der bereits angebundenen Auskunft.
+
+Parametergrundlage für EFA-Nähe-/Fußwegsuche: [Mentz-Dokumentation über MobiData BW](https://www.mobidata-bw.de/data/Dokumentation-EFA_JSON_Schnittstelle_V2.pdf),
+Abschnitte 6.8.6 und 6.9. Keine neuen Zugänge wurden beantragt.
+
 Europäische Reiseplanung für steffen_fun|x mit öffentlicher Testoberfläche und eigenständig startbarem Server. Der frühere feste Demo-Fahrplan wurde vollständig ersetzt.
 
 ## Funktionsumfang
@@ -63,11 +101,11 @@ Katalogranking gefiltert. Die Suche berücksichtigt auch den von EFA gelieferten
 Gemeindenamen. Stationsanfragen sind begrenzt zwischengespeichert, Fahrten werden
 immer neu abgefragt. Anbieterfehler bleiben als Fehler erkennbar.
 
-`efaId`, `vrrId` und ÖBB-/EVA-IDs bleiben getrennt. Sobald ein EFA-Halt gewählt ist,
-plant die automatische Auskunft über EFA und ordnet den anderen Endpunkt anhand
-von Name und Lage zu. Bei einem ÖBB-Kartenhalt ohne eindeutige Stationszuordnung
-kann EFA übernehmen. Ausfälle, fehlende Verbindungen und Anbieterfehler lösen
-keinen stillen Anbieterwechsel aus. Die Ergebnisquelle und abweichend zugeordnete
+`efaId`, `vrrId` und ÖBB-/EVA-IDs bleiben getrennt. Die Automatik vergleicht vollständige Verbindungen aus ÖBB und EFA. Wenn keine
+nutzbare Verbindung bestätigt wird, kann die ergänzende DB-Auskunft übernehmen.
+Endpunkte werden jeweils anhand von Name und Lage eindeutig zugeordnet. Bei einem ÖBB-Kartenhalt ohne eindeutige Stationszuordnung
+kann EFA übernehmen. Ausfälle und gesperrte Halte schließen den betreffenden Vorschlag aus. Andere
+Auskunftsquellen müssen eine Alternative unabhängig davon positiv bestätigen. Die Ergebnisquelle und abweichend zugeordnete
 Endpunktnamen bleiben sichtbar.
 
 Live nachgewiesen am 24.10.2026 für den 26.10.2026 ab 08:00 Europe/Berlin:
@@ -105,3 +143,34 @@ Die Zürcher Busverbindung Milchbuck → Bucheggplatz wurde von den bisherigen
 Fahrplanquellen nicht bestätigt; daraus wird keine nutzbare Fahrt erfunden.
 EFA-Produktklasse 97 wird als Durchbindung behandelt: bei „nicht umsteigen“
 bleibt man im Fahrzeug, die folgende Buslinie zählt nicht als neuer Umstieg.
+
+
+### Späte Abfahrt und ergänzende DB-Auskunft
+
+Die DB-Auskunft ergänzt automatisch fehlende Verbindungen, wenn die beiden
+bisherigen Auskünfte keine nutzbare Reise bestätigen. Zugeordnete Halte bleiben
+im eigenen Namensraum (`dbStopId`, `db:`); lokale sechsstellige Schlüssel werden
+nicht als EVA-Kennungen an andere Anbieter weitergereicht. U-/S-Kennzeichnung,
+Straßenabkürzungen und Ortszusätze werden nur mit enger räumlicher Übereinstimmung
+(maximal 250 Meter) und passender Verkehrsmittelzuordnung abgeglichen.
+
+Liefert die DB eine tatsächlich leere Verbindungsliste, werden höchstens die
+beiden nächsten Kalendertage ab Mitternacht geprüft. Die Datumsschritte benutzen
+Europe/Berlin und beachten die Zeitumstellung. Anbieterfehler lösen keine solche
+Suche aus. Ein späterer Abfahrtstag erscheint ausdrücklich am Ergebnis.
+DB-Suchergebnisse werden weder als Fahrplan-Cache noch als Beispiel-Fallback gespeichert.
+
+Die gewählte DB-Verbindung wird erneut mit verfügbarer Quellgeometrie abgefragt.
+Ausfälle, falsche Endpunkte, fehlende Daten und unplausible Anschlüsse bleiben
+Ausschlussgründe. Die ausgefallenen S51-Vorschläge der echten Testantwort werden
+verworfen; ihre Meldungen bleiben entsprechend als Ausschlussgründe sichtbar.
+Für die anderen Alternativen kann die Quelle noch keine Geometrie liefern.
+
+Live nachgewiesen: Rohdental → U Turmstraße (Berlin), für den 24.10.2026 ab
+23:17 Uhr angefragt, bestätigte Verbindung am Montag, 26.10.2026, 06:53–12:34:
+Bus 27 / Bus 20 / Fußweg / S5 / ICE 553 / Fußweg / Bus 245. Ein früherer Vorschlag
+mit S51 fällt laut Quelle aus und wird nicht als nutzbare Verbindung ausgegeben.
+Die tatsächlichen DB- und EFA-Antworten liegen als Regressionen unter `tests/fixtures`.
+Der öffentliche DB-Webservice ist nicht als garantierte API zugesichert. Die
+Abfrageformate wurden mit dem öffentlichen db-vendo-client verglichen:
+https://github.com/public-transport/db-vendo-client/tree/main/p/dbweb.

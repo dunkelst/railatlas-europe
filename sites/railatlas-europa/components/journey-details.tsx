@@ -30,11 +30,12 @@ export function JourneyLeg({leg:l,previous}:{leg:Leg;previous?:Leg}){
  return <>
  {l.throughService&&<div className="transfer-wait"><BusFront size={12}/>Im Fahrzeug bleiben · Linienwechsel ohne Umstieg</div>}
  {previous&&!l.walking&&!l.throughService&&wait>0&&<div className="transfer-wait"><Clock size={12}/>{wait} Min. {previous.walking?'bis zur Weiterfahrt':'Umsteigezeit'}</div>}
- <div className={'leg '+(l.walking?'walking':'')}>
+ <div className={'leg '+(l.walking?'walking':'')+(l.walkingFallback?' walking-fallback':'')}>
   <div className="leg-times"><b>{time(l.departure)}</b><span className="leg-track"/><b>{time(l.arrival)}</b></div>
   <div className="leg-content">
    <b>{l.from.name}</b><ChangedTime actual={l.departure} planned={l.plannedDeparture}/>
    <div className="leg-service"><span className={'train-label mode-'+l.mode}><ModeIcon mode={l.mode}/>{unspecifiedWalk?l.line:l.modeLabel+' · '+l.line}</span><span>{unspecifiedWalk?'Gehzeit nicht separat geliefert':minutes(l.departure,l.arrival)+' Min.'}</span></div>
+   {l.walkingFallback&&<small className="fallback-label"><Footprints size={12}/>Fußweg-Notlösung{Number.isFinite(l.distanceMeters)?' · etwa '+((l.distanceMeters as number)/1000).toLocaleString('de-DE',{maximumFractionDigits:2})+' km':''} · Verlauf laut Auskunft</small>}
    {l.direction&&<small className="service-detail">Richtung {l.direction}</small>}
    {l.operator&&<small className="service-detail">{l.operator}</small>}
    {l.platform&&<small className="service-detail">Abfahrt {l.walking?'an':'ab'} {['bus','replacement-bus','tram'].includes(l.mode)?'Steig':'Gleis'} {l.platform}{l.plannedPlatform&&l.plannedPlatform!==l.platform&&<em> · geändert, geplant {l.plannedPlatform}</em>}</small>}

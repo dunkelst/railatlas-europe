@@ -2,7 +2,42 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Stand entspricht Sites-Version **17**, Quellcommit `c77852ce8782fb3b2b0c5d66e05b553b9172ee5a`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Stand entspricht Sites-Version **20**, Quellcommit `9e4953340c2fb3a0afc23beac2275b2e597e6e50`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Neu in Version 20: Ausweichen und unterwegs neu planen
+
+In der automatischen Auskunft lassen sich **Fußweg-Notlösungen** einschalten:
+15, 30 oder 60 Minuten und maximal 3 km **je Teilstrecke**. Zusätzliche vollständige
+Reisen erscheinen in der bestehenden Auswahl. Ihre Fußwege sind rot gestrichelt
+und mit Text sowie Gehzeit/-strecke gekennzeichnet. Die Quelle berechnet die Wege;
+Endpunkte müssen innerhalb von 30 Metern liegen. Fehlende Wege, Ausfälle und
+Zeitkonflikte bleiben Ausschlussgründe.
+
+Ein erster Gehweg wird mit unveränderter Quellgehzeit früher eingeplant, wenn
+sonst die zwei Minuten Reserve zum Einstieg fehlen. Berechnete Fußwegzeiten sind
+gekennzeichnet; Bus- und Zugzeiten bleiben unverändert. Die angefragte früheste
+Abfahrt wird eingehalten. Das Menü **„Bei Ausfall: ab einem Halt neu planen“**
+übernimmt einen Reisehalt und behält offene Zwischenziele samt Aufenthalt.
+
+Live auf Version 20 und über den unabhängigen Node-HTTP-Pfad bestätigt:
+
+- Rohdental → gewählter Berliner Punkt nahe U Turmstraße, 26.10.2026,
+  **06:53–12:49**, drei auswählbare Fußweg-Optionen. Erster Vorschlag:
+  Bus 27/20, S5, ICE 553, S7 und Fußwege; 29 Minuten zu Fuß insgesamt.
+- Tannenweg → Punkt am Bahnhof Hessisch Oldendorf, 26.10.2026,
+  **06:45–07:14**, drei Optionen. Erster Gehweg 341 m/sechs Minuten,
+  zwei Minuten Reserve, Bus 27 unverändert um 06:53, danach Quellfußweg.
+
+Beide öffentlichen API-Aufrufe lieferten HTTP 200. S51 wurde nicht als nutzbare
+Alternative ausgegeben. Statuslisten und die tatsächlich gelieferte
+informative-only-Kennzeichnung werden berücksichtigt; Ausschlusshinweise bleiben
+sichtbar. **72 App-Tests, TypeScript und alle drei Builds bestanden.**
+
+Anfängliche Fahrten vom Ziel weg werden nicht geografisch verworfen; ein
+künstliches Testnetz belegt deren frühere Ankunft. Die gezielte eigene Suche über
+weitere Umstiegspunkte ist noch auszubauen. Vollständige europäische Abdeckung
+und eine neue visuelle Browserabnahme sind nicht bestätigt. Die DB-403-Grenze
+wird nicht umgangen. [Ausbau und Grenzen](docs/routing-resilience.md).
 
 ## Automatische Reiseplanung mit Bus, Bahn und Nahverkehr
 
@@ -65,14 +100,14 @@ Die bestehende [Pages-Veröffentlichung](https://dunkelst.github.io/railatlas-eu
 - Der gebaute eigenständige Server liefert App-CSS, Leaflet-CSS und Leaflet-JS mit HTTP 200, korrekten MIME-Typen und bytegleichem Inhalt. Die externe visuelle Abnahme bleibt offen.
 
 
-- **58 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
+- **72 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
 - Neuer echter lokaler HTTP-Servertest einschließlich Dateien, Health, CORS, JSON-, Datums- und Größenfehlern.
 - Veröffentlichte ÖBB-Auskunft: Wien Karlsplatz → Stephansplatz am 24.10.2026, U1 18:27–18:29, Wiener Linien, einschließlich eines gelieferten Bauhinweises.
 - Die neue Kartenoberfläche ist funktional eingebaut. Ihre vollständige visuelle Live-Abnahme ist offen: CSS-Anfragen werden der Prüfumgebung mit HTTP 403 / Cloudflare 1010 verweigert; die CSS-Dateien sind im Paket vorhanden. Neue Overpass-Livedaten waren hier noch nicht erfolgreich bestätigt. Quellenfehler werden nicht mit Beispieldaten verdeckt.
-- Sperrungs-/Echtzeitabdeckung bleibt partiell. VRR / EFA ist ein Testzugang ohne garantierte Verfügbarkeit. EFA-BW, direkter DB-/VBB-Zugang und Trainline Partner Solutions sind nicht angeschlossen.
+- Sperrungs-/Echtzeitabdeckung bleibt partiell. VRR / EFA ist ein Testzugang ohne garantierte Verfügbarkeit. Der direkte DB-Web-Fallback ist eingebaut, wurde auf dem Worker jedoch mit HTTP 403 blockiert. EFA-BW, direkter VBB-Zugang und Trainline Partner Solutions sind nicht angeschlossen.
 - [Gemeinsamer Prüfstand](sites/railatlas-europa/QA.md) · [Fortführungsstand](docs/continuation-2026-10-24.md)
 
-`node tools/verify-sites-source.mjs` prüft die 173 übernommenen Dateien gegen das Herkunftsmanifest. `npm run test:app` führt die aktuellen App-Regressionen aus. Die bestehende OSM-/Graph-Pipeline, ihre Daten und Regressionen bleiben erhalten; `npm test` führt deren Node-/Python-Prüfungen aus. Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenzen liegen unter `sites/railatlas-europa/public`.
+`node tools/verify-sites-source.mjs` prüft die 185 übernommenen Dateien gegen das Herkunftsmanifest. `npm run test:app` führt die aktuellen App-Regressionen aus. Die bestehende OSM-/Graph-Pipeline, ihre Daten und Regressionen bleiben erhalten; `npm test` führt deren Node-/Python-Prüfungen aus. Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenzen liegen unter `sites/railatlas-europa/public`.
 
 
 
@@ -110,3 +145,4 @@ Rohdental und Heilbronn Finanzamt. Die automatische Rohdental-Reise für
 26.10.2026 ab 06:00 Europe/Berlin liefert drei echte Verbindungen; die erste
 fährt 06:53–13:43 mit Bus 27 → Bus 20 (im Fahrzeug bleiben), S5, ICE 785,
 RE 8, Fußweg und S4, vier Umstiege. Es wurde keine manuelle Auskunft vorgegeben.
+

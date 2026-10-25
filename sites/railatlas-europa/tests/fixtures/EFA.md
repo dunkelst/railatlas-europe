@@ -17,6 +17,21 @@ Queries used the actual StopFinder IDs:
 
 These are historical parser fixtures, never a runtime timetable or fallback.
 
+On 25 October 2026, two further complete rapidJSON replies were recorded for
+26 October. `efa-rohdental-turmstrasse-walking.json.gz` uses coordinates
+52.200076,9.249135 → 52.525547,13.3413274, requested from local midnight.
+It retains all six returned proposals, including the impossible S51 proposal,
+source status arrays, notices, stop sequences and pedestrian shapes.
+
+`efa-first-mile-walking.json.gz` was queried from the source-confirmed Tannenweg
+point 52.202257,9.247365 → 52.166577,9.244608, from 06:00 local. Its first walk
+is 341 m / six minutes. Tests derive an earlier pedestrian start to provide two
+minutes for boarding, preserving the original source times separately and
+leaving all transit times unchanged. Query options explicitly select pedestrian
+access (trITMOT=100), 30 minutes and nearby stops. A preceding probe from
+52.2025,9.2465 was snapped about 65 m away and was rejected by our endpoint
+validation; it is not the canonical first-mile fixture.
+
 The additional reverse-route sample Rohdental → Heilbronn was fetched on
 24 October 2026 for 26 October at 06:00 Europe/Berlin. Its first complete
 journey is retained, including the actual EFA product class 97 (stay seated)

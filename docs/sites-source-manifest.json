@@ -1,6 +1,6 @@
 {
-  "site_version": 17,
-  "site_source_commit": "c77852ce8782fb3b2b0c5d66e05b553b9172ee5a",
+  "site_version": 20,
+  "site_source_commit": "9e4953340c2fb3a0afc23beac2275b2e597e6e50",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.cocoaamber33.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -32,16 +32,16 @@
     {
       "path": "QA.md",
       "mode": "100644",
-      "git_blob": "96d280d5f8ae1264d9ceb710351008b064c6074d",
-      "sha256": "1f6e67a1a5118882f3d4fa668afafb8888d98ecdae3897ff638f0dd37a28db9e",
-      "bytes": 18836
+      "git_blob": "05a38201ca58b797c844cbd7cebe00082269c342",
+      "sha256": "3742f4f3c4c7f0cb2ff2b414fe2443e16593a372521b674562898972c98a337e",
+      "bytes": 23736
     },
     {
       "path": "README.md",
       "mode": "100644",
-      "git_blob": "e01cdb85cfc949192a2d78a84b7f7364a1e7fe11",
-      "sha256": "f44331b7168fa1305a6901aff20a0856a9bb1b5b66ba910074e7419944ee4537",
-      "bytes": 11025
+      "git_blob": "d6f471b3c02f1969378be6f5b6d409661c939997",
+      "sha256": "a867e76f044b32bcd029de26e3236e6591ab2990da34d3f442db9d47e32f7794",
+      "bytes": 15601
     },
     {
       "path": "app/api/health/route.ts",
@@ -81,9 +81,9 @@
     {
       "path": "app/globals.css",
       "mode": "100644",
-      "git_blob": "a40415007a3d75735a1e3b455e3ac617a5a541fe",
-      "sha256": "df0c367719e6769ed73f0fe20c93c4b61948a40385fa1594d988d91fba7905a6",
-      "bytes": 22585
+      "git_blob": "f53d5ffcc707a9db822e7535acb5ae4b9cbcb4fa",
+      "sha256": "66c56fa3146e4d1e480b2e39b4274ee398208462f68563fb2076ee05b93f058b",
+      "bytes": 23864
     },
     {
       "path": "app/layout.tsx",
@@ -95,9 +95,9 @@
     {
       "path": "app/page.tsx",
       "mode": "100644",
-      "git_blob": "5ebd6d3dc30acaa788f49c1c28b55644a38cb8d0",
-      "sha256": "94045512ece6502cd99991f4756cc089f87b2999f736d62993ccf09eebf68821",
-      "bytes": 28505
+      "git_blob": "e02ac6b38a8ac77971e797d3e49b69845d949eb2",
+      "sha256": "8205d238f6017c61c00ea9e49983232b0875cd6707ad624e0865da2cb6414dd2",
+      "bytes": 30936
     },
     {
       "path": "build/connector-preview-plugin.mjs",
@@ -165,16 +165,23 @@
     {
       "path": "components/journey-details.tsx",
       "mode": "100644",
-      "git_blob": "93cf3383d1cdee9297a3cf780337d25f450256ab",
-      "sha256": "4af8caa4320175dcfe930117fd895ee8ca0e64179196e105bfd448a77eed9145",
-      "bytes": 6630
+      "git_blob": "5a45f34f9e91ba4df33198c104eee19b036d589b",
+      "sha256": "d0bfaeb0f374a5a266e8e32057099da494f9b41e6c29fcfb01790aa068be0496",
+      "bytes": 6948
+    },
+    {
+      "path": "components/journey-replan.tsx",
+      "mode": "100644",
+      "git_blob": "d0ebd4bc60e5fe14af041167309b591581f1bb88",
+      "sha256": "0610e9a9d7c063f987d84eed59f49f83a010713976b449c4520602828c4e3783",
+      "bytes": 1644
     },
     {
       "path": "components/rail-map.tsx",
       "mode": "100644",
-      "git_blob": "e7b8d7d172fc03533ad76d6f78906cccb3bf6886",
-      "sha256": "9554a6fa37243fc7ad3292ecafa30989916b578c0b01c1cd803dbf659e030eeb",
-      "bytes": 11526
+      "git_blob": "f6c9343fa79a807231018b2e4019af22cb5a518f",
+      "sha256": "23005eea39dd507bead0af64bab8dc90575ac3443230c8fc13af61a9731a85d6",
+      "bytes": 11647
     },
     {
       "path": "components/ui/accordion.tsx",
@@ -690,9 +697,9 @@
     {
       "path": "lib/api.mjs",
       "mode": "100644",
-      "git_blob": "20775d27c8dd1fd71677f9495dd34d443f850b12",
-      "sha256": "596b88a3235978b830a53bedd6e49037782bc6fe6448daeda86a0094171e833d",
-      "bytes": 4006
+      "git_blob": "f36b78c6cfadca4d82df2eb559d6e3cdbb3285e9",
+      "sha256": "13b537b9129215e6032565f121c68b29f177e08bd4b3612b1845555c173a906d",
+      "bytes": 4278
     },
     {
       "path": "lib/connector-context.ts",
@@ -730,11 +737,18 @@
       "bytes": 416
     },
     {
+      "path": "lib/db.mjs",
+      "mode": "100644",
+      "git_blob": "1a8fd21322c38dc5f21096f904186708ce4576f1",
+      "sha256": "394cf3f1c5dc3c95d02681c0da45d97f3fabc40e9ddedc44d5ee92bc14061063",
+      "bytes": 10170
+    },
+    {
       "path": "lib/journey.mjs",
       "mode": "100644",
-      "git_blob": "d6a1fd056c38ca9e846c0bdd5e3c8016f7d545b6",
-      "sha256": "2cfc7185b109f7188f65aa8b89bc4b992c8b0e8d0428517c82e8fdfdb2521ba9",
-      "bytes": 18218
+      "git_blob": "c988258a12668b68b177f60ea9e3499cc13a72a5",
+      "sha256": "480c686325cac9c0be4dc205e3c015741c5482987178be1a2ba2bc8e54b5f8c8",
+      "bytes": 19004
     },
     {
       "path": "lib/network.mjs",
@@ -746,9 +760,9 @@
     {
       "path": "lib/rail.mjs",
       "mode": "100644",
-      "git_blob": "6d4712cb128539438a5828ecb4eeedb03264fce3",
-      "sha256": "ef98f3eb2594bc76a47048dcaa81c2cc15a9cf6d836c6929c13c0e6e12abdde7",
-      "bytes": 4806
+      "git_blob": "fb5116464cc17936f1c687b01c90e01967bea278",
+      "sha256": "b1bcfc7586fbe3d34aa4d5ebb45d8fa4277047bf4f6d81481ad34ce3da221b22",
+      "bytes": 5806
     },
     {
       "path": "lib/stations.ts",
@@ -767,9 +781,9 @@
     {
       "path": "lib/timetable.mjs",
       "mode": "100644",
-      "git_blob": "5315b2d06e21143399035d80e59e1503faa85f11",
-      "sha256": "c63a307fbdf4d42895902a2b23575c385a7f28076a8abf264a6f20391df987a6",
-      "bytes": 3748
+      "git_blob": "71c5c27605c1ce0a3fedeb35496b3b41c9f3a8ae",
+      "sha256": "bdab9b287f291c008a0e74751669528577a5a2a42f22c11bd64133939755deec",
+      "bytes": 4360
     },
     {
       "path": "lib/transit.mjs",
@@ -781,9 +795,9 @@
     {
       "path": "lib/types.ts",
       "mode": "100644",
-      "git_blob": "e84b317ea90420ed247ac4b0e15679d508e2607c",
-      "sha256": "78a11737931ce572acf283a9babe98cd25d17a7bdd48a6483c570395e515706d",
-      "bytes": 1776
+      "git_blob": "d9cb43e8fd881961deca6902afd44f60ed87bc0b",
+      "sha256": "ce4fd08b2c140f17e25a20b8374a29f41c50d1b4c116d6d9287497adbc8cfccd",
+      "bytes": 2027
     },
     {
       "path": "lib/urls.mjs",
@@ -802,9 +816,9 @@
     {
       "path": "lib/vrr.mjs",
       "mode": "100644",
-      "git_blob": "66c145677df798de9811f5e491f9b9bfb4beb708",
-      "sha256": "70249a6b1018e7c82e73c7422c6ddb0733ca085cbd54ae7cb9e7b23a6af3f129",
-      "bytes": 14981
+      "git_blob": "4c264150fcf068746d44ed67bdaea291be3e4819",
+      "sha256": "3916e9c6d42eea3d6868365f8c46612be80b7b4291dca08c4bfb4c9c922454ae",
+      "bytes": 21386
     },
     {
       "path": "next.config.ts",
@@ -1017,11 +1031,18 @@
       "bytes": 1530
     },
     {
+      "path": "tests/db-fallback.test.mjs",
+      "mode": "100644",
+      "git_blob": "4797ac95ad2834c3e96d93ffc4e9765fc68cbbb1",
+      "sha256": "232a584838a853ce7604c974774b1b5d1c91219c1373ca974661c1d26f28b43a",
+      "bytes": 6022
+    },
+    {
       "path": "tests/fixtures/EFA.md",
       "mode": "100644",
-      "git_blob": "441b2dce0e5448097f31a4b626104d2f74826299",
-      "sha256": "8b6e332c0e4079243b81e1f4c3dbead42e2e5016435df08807db86c33479da8e",
-      "bytes": 1284
+      "git_blob": "ff22e6421a0b5248ddd64efba9629c9f8a4863cd",
+      "sha256": "c85cf02cbcbc2592fa8c79c3a96334421c826541ae759c4787074e3861f74077",
+      "bytes": 2262
     },
     {
       "path": "tests/fixtures/db-amsterdam-berlin.json",
@@ -1045,6 +1066,55 @@
       "bytes": 20793
     },
     {
+      "path": "tests/fixtures/db-rohdental-nearby.json",
+      "mode": "100644",
+      "git_blob": "64f985c77c3cb25334ffc60fddf85cd362057eba",
+      "sha256": "e43e41657489ab7a661c935cf5f8116e57d5c1c074ab69b8ee45c5f9bbe37a0f",
+      "bytes": 218
+    },
+    {
+      "path": "tests/fixtures/db-rohdental-turmstrasse.json.gz",
+      "mode": "100644",
+      "git_blob": "fc9cc7746718399edd951d2145ed73dff59efa05",
+      "sha256": "0162add1cc59a52d1ffc77bd12edb4f475c995d8da9bb27d63f6f7cf0f9c72c7",
+      "bytes": 36573
+    },
+    {
+      "path": "tests/fixtures/db-turmstrasse-geometry.json.gz",
+      "mode": "100644",
+      "git_blob": "7b3396466d19b850d2e9b92a019f2b64c1b1b24b",
+      "sha256": "28802374bf6f8000f84d8ac8486828a1f212c45183b8ce6c86fee3eb7e242b77",
+      "bytes": 10915
+    },
+    {
+      "path": "tests/fixtures/db-turmstrasse-nearby.json",
+      "mode": "100644",
+      "git_blob": "b83bf6fbba8b97ffeffa159059c63c90c28c9f5a",
+      "sha256": "7ac5b12034cf8126d1ae59f16a4e85ad602b3c15b20edd838fe6959707049b45",
+      "bytes": 1204
+    },
+    {
+      "path": "tests/fixtures/efa-ambiguous-stopfinder.json",
+      "mode": "100644",
+      "git_blob": "697c13a10ea8ecc53a1e981cd6472a9e0163b2ab",
+      "sha256": "231022b7cf7586a49e80e1c6ef31f8517c6a379b6cbf865cf9d8380966e111bd",
+      "bytes": 7121
+    },
+    {
+      "path": "tests/fixtures/efa-empty-stopfinder.json",
+      "mode": "100644",
+      "git_blob": "06cc36786a7ab03ccd6dfb4d2e0d6acc36cf46ef",
+      "sha256": "aa93902cc35e36d108e5c921045f7f386ed63db99bbd33f64b2ce5a5da6416f5",
+      "bytes": 115
+    },
+    {
+      "path": "tests/fixtures/efa-first-mile-walking.json.gz",
+      "mode": "100644",
+      "git_blob": "2fba37677c19d66f893d4efb0061b403fbefd390",
+      "sha256": "6435b25b4c1182fc830b16d2cfa96bfdd2fbf5d9915823f931e3cd99f9cdde4d",
+      "bytes": 8088
+    },
+    {
       "path": "tests/fixtures/efa-heilbronn-rohdental-trip.json.gz",
       "mode": "100644",
       "git_blob": "cb73e2481bed1b265e7370ca9024d9b43ad692d9",
@@ -1064,6 +1134,13 @@
       "git_blob": "37f9759ebd91578e4655ef4d8fc61c86d6b9e7dd",
       "sha256": "73d9e76090d864d5a983f6db29555f12361a3524725f7fdf4903e61345342325",
       "bytes": 3268
+    },
+    {
+      "path": "tests/fixtures/efa-rohdental-turmstrasse-walking.json.gz",
+      "mode": "100644",
+      "git_blob": "c72c5cb248334e3103f45c9dd5e95e47d06501dc",
+      "sha256": "3c3909d3cd2d782872fb37a850377a46e709d0c0aecb739e13d6f265aa72fec9",
+      "bytes": 266556
     },
     {
       "path": "tests/fixtures/efa-stops-heilbronn-finanzamt.json",
@@ -1150,6 +1227,13 @@
       "bytes": 8599
     },
     {
+      "path": "tests/resilience.test.mjs",
+      "mode": "100644",
+      "git_blob": "b3d69216d4b7265485851eea7fd5760a4d3f31e7",
+      "sha256": "025b2a97e0f0cd65799b1523ebbbd277e065ecbe1ace3f5be9210311b166fe61",
+      "bytes": 9777
+    },
+    {
       "path": "tests/standalone.test.mjs",
       "mode": "100644",
       "git_blob": "57106310a94b12b0a7cb7846ce3b38da43ee20a0",
@@ -1166,9 +1250,9 @@
     {
       "path": "tests/timetable.test.mjs",
       "mode": "100644",
-      "git_blob": "7ae1d26234a88364b015b7f1294ae050f4171041",
-      "sha256": "22854a0ff8a464da42f309cfe6af6aed5691fce675ca515bbf9bb099c168a5b1",
-      "bytes": 6943
+      "git_blob": "7924f5f001b74b05adaf4dfc7b7300249e414580",
+      "sha256": "5e90bcbbc7704eab4373e271e0aa6bcaef79e7777b59a8fef1a3d652df2f69ab",
+      "bytes": 7006
     },
     {
       "path": "tests/transit.test.mjs",
@@ -1180,9 +1264,9 @@
     {
       "path": "tests/vrr.test.mjs",
       "mode": "100644",
-      "git_blob": "0ce1df6c21c18927358806a123e58c2fa89513e2",
-      "sha256": "532a907837e6068891c9682ebb56ec955ce913da26fc1b34d514e749ad91ea90",
-      "bytes": 4538
+      "git_blob": "fb680f1c35932bcae0d8452e6b00254c0df2fa06",
+      "sha256": "d7e3d6516e5fccf771394d6efd82bfd504d8b7c33f56944bd2abaac6156090f6",
+      "bytes": 4741
     },
     {
       "path": "tsconfig.json",

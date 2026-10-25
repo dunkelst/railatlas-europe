@@ -1,4 +1,4 @@
-import {berlinInput, distanceKm, localBerlinISO, normalize} from './rail.mjs';
+import {berlinInput, berlinSearchDays, distanceKm, localBerlinISO, normalize, walkingMinutes} from './rail.mjs';
 import {fetchJSON, sameStation} from './journey.mjs';
 import {mergeNotices, plainText} from './transit.mjs';
 
@@ -12,7 +12,9 @@ async function request(method, params, signal, provider=VRR_PROVIDER) {
  url.search = new URLSearchParams({outputFormat:'rapidJSON',coordOutputFormat:'WGS84[dd.ddddd]',language:'de',...params}).toString();
  const data = await fetchJSON(url, {}, signal, 22000);
  const error = data.systemMessages?.find(m => m.type === 'error');
- if (error) throw Error(provider.label+': '+plainText(error.text));
+ // Broker ambiguity/no-match replies are valid station search results, even
+ // when EFA labels them "error". They must not become a network outage.
+ if(error&&!(method==='XML_STOPFINDER_REQUEST'&&[-8011,-8014].includes(Number(error.code)))){const failure=Error(provider.label+': '+(plainText(error.text)||'Die Auskunft hat die Anfrage nicht bestätigt ('+error.code+').'));failure.code='PROVIDER_REJECTED';throw failure;}
  return data;
 }
 export function parseVrrStation(raw, provider=VRR_PROVIDER) {
@@ -20,7 +22,8 @@ export function parseVrrStation(raw, provider=VRR_PROVIDER) {
  const coord = stop.coord || raw.coord || [];
  const city = stop.parent?.name || '';
  const name = stop.name || '';
- return {id:provider.id+':'+stop.id,[provider.idField]:String(stop.id||''),aliases:[stop.disassembledName,stop.properties?.mainLocality].filter(Boolean).join(' '),dbId:'',name:city && !normalize(name).startsWith(normalize(city)) ? city+', '+name : name,country:'DE',lat:coord[0],lon:coord[1],main:false};
+ const coordinate=['address','coord'].includes(stop.type);
+ return {id:coordinate?'coord:'+coord.join(':'):provider.id+':'+stop.id,...(!coordinate?{[provider.idField]:String(stop.id||'')}:{locationType:'coordinate'}),aliases:[stop.disassembledName,stop.properties?.mainLocality].filter(Boolean).join(' '),locality:stop.properties?.mainLocality||city,networkModes:[...new Set((stop.productClasses||raw.productClasses||[]).map(cls=>vrrProduct({product:{class:cls}}).mode))],dbId:'',name:city && !normalize(name).startsWith(normalize(city)) ? city+', '+name : name,country:'DE',lat:coord[0],lon:coord[1],main:false};
 }
 export function parseVrrStations(data, provider=VRR_PROVIDER) {
  return (data.locations||[]).filter(s=>s.type==='stop').sort((a,b)=>(b.matchQuality||0)-(a.matchQuality||0)).map(s=>parseVrrStation(s,provider))
@@ -37,6 +40,7 @@ export async function findVrrStations(query, signal, provider=VRR_PROVIDER) {
  stationCache.set(key,{stations,until:Date.now()+15*60000});return stations;
 }
 export function sameVrrStation(a,b,provider=VRR_PROVIDER) {
+ if([a,b].some(s=>s?.locationType==='coordinate'))return [a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<=.03;
  if([a,b].some(s=>typeof s?.id==='string'&&s.id.startsWith('osm:')))return sameStation(a,b);
  if(a[provider.idField] && b[provider.idField]) return a[provider.idField]===b[provider.idField];
  const key=s=>normalize(s.name).replace(/\b(hauptbahnhof|hbf|bahnhof|station)\b/g,'').replace(/[^a-z0-9]/g,'');
@@ -85,10 +89,10 @@ export function vrrProduct(transport) {
  if(cls===0||[13,14,15,16,17].includes(cls))return {mode:'train',modeLabel:'Zug'};
  return {mode:'unknown',modeLabel:transport.product?.name||'Öffentlicher Verkehr'};
 }
-function geometry(raw, from, to, provider=VRR_PROVIDER) {
+function geometry(raw, from, to, provider=VRR_PROVIDER, maxGap=.5) {
  const coords=raw.coords;
  if(!Array.isArray(coords)||coords.length<2||coords.some(p=>!Array.isArray(p)||p.length!==2||!p.every(Number.isFinite)||Math.abs(p[0])>90||Math.abs(p[1])>180)||coords.length===2&&distanceKm(from,to)>.15)return {status:'missing',segments:[],source:provider.label};
- const close=(point,station)=>distanceKm({lat:point[0],lon:point[1]},station)<.5;
+ const close=(point,station)=>distanceKm({lat:point[0],lon:point[1]},station)<=maxGap;
  return {status:close(coords[0],from)&&close(coords.at(-1),to)?'complete':'partial',segments:[coords],source:provider.label};
 }
 function lineName(transport, fallback) {
@@ -96,17 +100,22 @@ function lineName(transport, fallback) {
  return /^\d+[A-Za-z]?$/.test(line)&&transport.properties?.trainType?transport.properties.trainType+' '+line:line;
 }
 function disabled(raw) {
- return raw.cancelled===true||raw.isCancelled===true||raw.tripImpossible===true||raw.isRealtimeInformative===true||raw.isRealTimeOnlyInformative===true||['TRIP_CANCELLED','DEVIATION','REALTIME_ONLY_INFORMATIVE'].includes(raw.realtimeStatus)||raw.properties?.isCancelled===true;
+ const statuses=Array.isArray(raw.realtimeStatus)?raw.realtimeStatus:[raw.realtimeStatus];
+ return raw.cancelled===true||raw.isCancelled===true||raw.tripImpossible===true||raw.isRealtimeInformative===true||raw.isRealTimeOnlyInformative===true||raw.isRealtimeOnlyInformative===true||statuses.some(s=>['TRIP_CANCELLED','DEVIATION','REALTIME_ONLY_INFORMATIVE'].includes(s))||raw.properties?.isCancelled===true;
 }
 function stopover(raw,start,end,provider=VRR_PROVIDER) {
  const station=parseVrrStation(raw,provider);
  return {station,departure:iso(raw.departureTimeEstimated||raw.departureTimePlanned),arrival:iso(raw.arrivalTimeEstimated||raw.arrivalTimePlanned),plannedDeparture:iso(raw.departureTimePlanned),plannedArrival:iso(raw.arrivalTimePlanned),platform:raw.properties?.platformName||raw.properties?.platform,cancelled:disabled(raw),notices:parseVrrNotices(raw.infos,start,end,station.name,provider)};
 }
 // No geometry or timetable fallback is generated here. Only complete source journeys survive.
-export function parseVrrJourneys(data, from, to, requested, provider=VRR_PROVIDER) {
+export function parseVrrJourneys(data, from, to, requested, provider=VRR_PROVIDER, coordinateEndpoints=false) {
  const journeys=[],excludedNotices=[];
  for(const trip of data.journeys||[])try {
-  if(disabled(trip))continue;
+  if(disabled(trip)){
+   const start=iso(trip.legs?.[0]?.origin?.departureTimeEstimated||trip.legs?.[0]?.origin?.departureTimePlanned)||requested,end=iso(trip.legs?.at(-1)?.destination?.arrivalTimeEstimated||trip.legs?.at(-1)?.destination?.arrivalTimePlanned)||new Date(Date.parse(requested)+3*86400000).toISOString();
+   excludedNotices.push(...parseVrrNotices([...(trip.infos||[]),...(trip.legs||[]).flatMap(l=>[...(l.infos||[]),...(l.origin?.infos||[]),...(l.destination?.infos||[])])],start,end,'Verworfener Verbindungsvorschlag ('+(trip.legs||[]).map(l=>lineName(l.transportation||{},'')).filter(Boolean).join(' / ')+'): '+from.name+' → '+to.name,provider));
+   continue;
+  }
   const sourceLegs=(trip.legs||[]).map(raw=>{
    const origin=raw.origin||{},destination=raw.destination||{},start=parseVrrStation(origin,provider),end=parseVrrStation(destination,provider);
    const departure=iso(origin.departureTimeEstimated||origin.departureTimePlanned),arrival=iso(destination.arrivalTimeEstimated||destination.arrivalTimePlanned);
@@ -114,7 +123,9 @@ export function parseVrrJourneys(data, from, to, requested, provider=VRR_PROVIDE
    const transport=raw.transportation||{},product=vrrProduct(transport),walking=product.mode==='walk';
    const notices=parseVrrNotices([...(raw.infos||[]),...(origin.infos||[]),...(destination.infos||[])],departure,arrival,start.name+' → '+end.name,provider);
    const stopovers=(raw.stopSequence||[]).map(s=>stopover(s,departure,arrival,provider));
-   return {from:start,to:end,departure,arrival,plannedDeparture:iso(origin.departureTimePlanned),plannedArrival:iso(destination.arrivalTimePlanned),line:lineName(transport,product.modeLabel),...product,operator:transport.operator?.name||'',direction:transport.destination?.name||'',tripId:transport.properties?.tripCode!=null?String(transport.properties.tripCode):null,platform:origin.properties?.platformName||origin.properties?.platform,arrivalPlatform:destination.properties?.platformName||destination.properties?.platform,plannedPlatform:origin.properties?.plannedPlatformName,plannedArrivalPlatform:destination.properties?.plannedPlatformName,walking,cancelled:disabled(raw)||disabled(origin)||disabled(destination),realtime:raw.isRealtimeControlled===true,stops:stopovers.slice(1,-1).map(s=>s.station),stopovers,notices,notes:(raw.hints||[]).map(h=>plainText(h.content||h.text)).filter(Boolean),geometry:geometry(raw,start,end,provider)};
+   const physical=(raw,station)=>Array.isArray(raw.coord)?{lat:raw.coord[0],lon:raw.coord[1]}:station;
+   const shape=geometry(raw,walking?physical(origin,start):start,walking?physical(destination,end):end,provider,walking?.03:.5),distance=walking?(Number.isFinite(raw.distance)&&raw.distance>=0?raw.distance:shape.status==='complete'?shape.segments.reduce((sum,segment)=>sum+segment.slice(1).reduce((n,p,i)=>n+distanceKm({lat:segment[i][0],lon:segment[i][1]},{lat:p[0],lon:p[1]})*1000,0),0):null):null;
+   return {from:start,to:end,departure,arrival,plannedDeparture:iso(origin.departureTimePlanned),plannedArrival:iso(destination.arrivalTimePlanned),line:lineName(transport,product.modeLabel),...product,operator:transport.operator?.name||'',direction:transport.destination?.name||'',tripId:transport.properties?.tripCode!=null?String(transport.properties.tripCode):null,platform:origin.properties?.platformName||origin.properties?.platform,arrivalPlatform:destination.properties?.platformName||destination.properties?.platform,plannedPlatform:origin.properties?.plannedPlatformName,plannedArrivalPlatform:destination.properties?.plannedPlatformName,walking,...(walking?{distanceMeters:distance}:{}),cancelled:disabled(raw)||disabled(origin)||disabled(destination),realtime:raw.isRealtimeControlled===true,stops:stopovers.slice(1,-1).map(s=>s.station),stopovers,notices,notes:(raw.hints||[]).map(h=>plainText(h.content||h.text)).filter(Boolean),geometry:shape};
   });
   const legs=[];
   for(const [i,leg] of sourceLegs.entries()){
@@ -126,8 +137,10 @@ export function parseVrrJourneys(data, from, to, requested, provider=VRR_PROVIDE
    if(instruction?.mode==='stay-on-board'){leg.throughService=true;leg.notes.unshift('Im Fahrzeug bleiben; kein Umstieg beim Linienwechsel.');leg.notices=mergeNotices([leg.notices,instruction.notices]);}
    legs.push(leg);
   }
-  if(!legs.length||legs.some((l,i)=>l.cancelled||Date.parse(l.arrival)<Date.parse(l.departure)||i&&(Date.parse(l.departure)<Date.parse(legs[i-1].arrival)||!sameVrrStation(legs[i-1].to,l.from,provider))))continue;
-  if(Date.parse(legs[0].departure)<Date.parse(requested)||!sameVrrStation(from,legs[0].from,provider)||!sameVrrStation(to,legs.at(-1).to,provider))continue;
+  if(legs.some(l=>l.cancelled)){excludedNotices.push(...legs.flatMap(l=>l.notices).map(n=>({...n,scope:'Verworfener Verbindungsvorschlag ('+legs.map(l=>l.line).join(' / ')+'): '+n.scope})));continue;}
+  if(!legs.length||legs.some((l,i)=>Date.parse(l.arrival)<Date.parse(l.departure)||i&&(Date.parse(l.departure)<Date.parse(legs[i-1].arrival)||!sameVrrStation(legs[i-1].to,l.from,provider))))continue;
+  const endpoint=(asked,actual)=>coordinateEndpoints?[asked.lat,asked.lon,actual.lat,actual.lon].every(Number.isFinite)&&distanceKm(asked,actual)<=.03:sameVrrStation(asked,actual,provider);
+  if(Date.parse(legs[0].departure)<Date.parse(requested)||!endpoint(from,legs[0].from)||!endpoint(to,legs.at(-1).to))continue;
   const departure=legs[0].departure,arrival=legs.at(-1).arrival;
   const notices=mergeNotices([parseVrrNotices(trip.infos,departure,arrival,from.name+' → '+to.name,provider),...legs.map(l=>l.notices),...legs.flatMap(l=>l.stopovers.map(s=>s.notices))]);
   // EFA can explicitly say that a disruption was NOT considered by its router.
@@ -156,3 +169,38 @@ export const findEfaStations=(query,signal)=>findVrrStations(query,signal,EFA_PR
 export const getEfaJourney=(from,to,departure,signal)=>getVrrJourney(from,to,departure,signal,EFA_PROVIDER);
 
 export const getEfaJourneys=(from,to,departure,signal)=>getVrrJourney(from,to,departure,signal,EFA_PROVIDER,true);
+
+// Each response owns a complete journey, including routed pedestrian access.
+// Never join a nearby map stop to an unverified onward service.
+export async function getEfaWalkingJourneys(from,to,departure,signal,maxMinutes=30){
+ if(![15,30,60].includes(maxMinutes))throw Object.assign(Error('Bitte ein gültiges Gehbudget wählen.'),{code:'INVALID_INPUT'});
+ let data;
+ for(const local of berlinSearchDays(departure)){
+  signal?.throwIfAborted();
+  data=await request('XML_TRIP_REQUEST2',{type_origin:'coord',name_origin:from.lon+':'+from.lat+':WGS84[dd.ddddd]',type_destination:'coord',name_destination:to.lon+':'+to.lat+':WGS84[dd.ddddd]',itdDate:local.slice(0,10).replaceAll('-',''),itdTime:local.slice(11,16).replace(':',''),itdTripDateTimeDepArr:'dep',calcOneDirection:'1',useRealtime:'1',realDesc:'2',calcNumberOfTrips:'5',ptOptionsActive:'1',itOptionsActive:'1',trITMOT:'100',trITMOTvalue:String(maxMinutes),lineRestriction:'400',locationServerActive:'1',useProxFootSearch:'1'},signal,EFA_PROVIDER);
+  if(!Array.isArray(data.journeys))throw Object.assign(Error('Die Fußweg-Auskunft hat keine auswertbare Verbindungsliste geliefert.'),{code:'SOURCE_RESPONSE_INVALID'});
+  const journeys=parseVrrJourneys(data,from,to,departure,EFA_PROVIDER,true).filter(j=>{
+   const walks=j.legs.filter(l=>l.walking),minutes=walkingMinutes(j);
+   if(!walks.length||!j.legs.some(l=>!l.walking)||minutes===null||walks.reduce((n,l)=>n+Date.parse(l.arrival)-Date.parse(l.departure),0)>maxMinutes*60000||walks.some(l=>l.geometry.status!=='complete'||!Number.isFinite(l.distanceMeters))||walks.reduce((n,l)=>n+l.distanceMeters,0)>3000)return false;
+   const firstRide=j.legs.findIndex(l=>!l.walking),access=j.legs.slice(0,firstRide);
+   if(access.some(l=>l.distanceMeters>10)){
+    const gap=Date.parse(j.legs[firstRide].departure)-Date.parse(access.at(-1).arrival),shift=Math.max(0,120000-gap);
+    if(Date.parse(j.departure)-shift<Date.parse(departure))return false;
+    // A pedestrian leg can begin earlier; retain its supplied duration and path.
+    // Only calculated access times move. Transit departure times never do.
+    if(shift){for(const l of access){l.sourceDeparture=l.departure;l.sourceArrival=l.arrival;l.departure=new Date(Date.parse(l.departure)-shift).toISOString();l.arrival=new Date(Date.parse(l.arrival)-shift).toISOString();l.plannedDeparture=undefined;l.plannedArrival=undefined;l.walkingTiming='calculated';l.notes.unshift('Fußweg-Zeiten aus der gelieferten Gehzeit berechnet: früher losgehen für mindestens 2 Minuten Reserve bis zur Weiterfahrt.');}j.departure=j.legs[0].departure;}
+   }
+   for(const l of walks)l.walkingFallback=true;
+   j.alternativeKind='walking';j.walkingDistanceMeters=Math.round(walks.reduce((n,l)=>n+l.distanceMeters,0));
+   j.endpointMappings=['Zusätzliche Fußweg-Option: Start und Ziel wurden über ihre gewählten Koordinaten geprüft (maximal 30 Meter Abweichung). Die Auskunft kann dafür eine nahe Adresse benennen.'];
+   j.sourceWarning='Fußweg-Notlösung mit Quellverlauf; maximal '+maxMinutes+' Minuten und 3 km je Teilstrecke. Bei einem ersten Gehweg werden aus der Quellgehzeit mindestens 2 Minuten Reserve bis zur Weiterfahrt eingeplant. Interne Umstiege laut Auskunft. Die Zugänglichkeit aller Wege ist nicht bestätigt.';
+   return true;
+  });
+  if(journeys.length)return journeys.slice(0,3);
+  if(data.journeys.length)break;
+ }
+ const error=Object.assign(Error('Keine bestätigte Fußweg-Alternative innerhalb des Gehbudgets und der nächsten drei Kalendertage gefunden.'),{code:'NO_JOURNEY'});
+ const end=new Date(Date.parse(departure)+3*86400000).toISOString();
+ error.notices=mergeNotices((data?.journeys||[]).flatMap(t=>[parseVrrNotices(t.infos,departure,end,from.name+' → '+to.name,EFA_PROVIDER),...(t.legs||[]).map(l=>parseVrrNotices(l.infos,departure,end,from.name+' → '+to.name,EFA_PROVIDER))]));
+ throw error;
+}

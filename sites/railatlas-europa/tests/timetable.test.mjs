@@ -57,7 +57,7 @@ test('Provider outage remains an error; automatic routing preserves ÖBB failure
  await assert.rejects(findTimetableStations('Rohdental','auto',controller.signal),{name:'AbortError'});
  await assert.rejects(getTimetableJourney(from,rohdental,departure,'auto',controller.signal),{name:'AbortError'});
 });
-test('EFA rejects wrong endpoint IDs, cancelled trips and backwards journeys with the shared validator',()=>{
+test('EFA rejects wrong endpoint IDs, cancelled trips and backwards-in-time journeys with the shared validator',()=>{
  for(const mutate of [j=>j.tripImpossible=true,j=>j.legs[0].origin.isCancelled=true,j=>j.legs[0].destination.arrivalTimeEstimated='2026-10-26T06:00:00Z',j=>j.legs[0].destination.parent.id='de:03252:9999']){
   const data=trip('rohdental-local');data.journeys=data.journeys.slice(0,1);mutate(data.journeys[0]);assert.equal(parseVrrJourneys(data,rohdental,bahnhof,departure,EFA_PROVIDER).length,0);
  }
@@ -65,7 +65,7 @@ test('EFA rejects wrong endpoint IDs, cancelled trips and backwards journeys wit
 test('Unresolved OSM stops use EFA only after name and nearby coordinates agree',async t=>{
  const hosts=[];
  t.mock.method(globalThis,'fetch',async(url,init)=>{
-  const u=new URL(url);hosts.push(u.hostname);
+  const u=new URL(url);hosts.push(u.hostname);if(u.hostname==='int.bahn.de')return Response.json([]);
   if(u.hostname==='fahrplan.oebb.at'){
    assert.equal(JSON.parse(init.body).svcReqL[0].meth,'LocGeoPos');
    return Response.json({err:'OK',svcResL:[{err:'OK',res:{locL:[]}}]});

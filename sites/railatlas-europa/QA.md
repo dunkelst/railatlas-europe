@@ -1,5 +1,42 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
+## Fortsetzung 25.10.2026: Fußweg-Notlösungen und Neuplanung
+
+- Die Wiederherstellung verwendet den tatsächlich veröffentlichten Quellcommit
+  a242d3ab6640272f7ef34be597857cdf6cbded36 (Version 19). Ungesicherte Dateien
+  des abgebrochenen Laufs waren nicht erhalten; dessen 70 Tests werden nicht
+  als Prüfung des neu aufgebauten Stands ausgegeben.
+- 72 Regressionen des wiederhergestellten/erweiterten Stands bestanden. Neu:
+  echte EFA-Koordinatenantworten mit Gehwegen, Budgets, Endpunktkontrolle,
+  Quellgeometrie, zeitliche Anschlüsse, Statuslisten, informative-only-Fahrten,
+  begrenzte Kalendertagssuche über die Zeitumstellung, explizites Einschalten,
+  künstliches Gegenrichtungsnetz und Erhalt offener Zwischenziele bei Neuplanung.
+- Aktuelle echte EFA-Antwort vom 25.10.2026 für 26.10.2026: Rohdental →
+  gewählter Berliner Zielpunkt nahe U Turmstraße, erste Option 06:53–12:49,
+  Bus 27/20, S5, ICE 553, S7 sowie Quellfußwege. Die 1.179 Meter von Bellevue
+  zum Ziel dauern laut Quelle 20 Minuten; mit Bahnhofsumstieg 29 Minuten zu Fuß.
+- Die spätere S51-Alternative ist als tripImpossible und TRIP_CANCELLED
+  gekennzeichnet. Statuslisten und die tatsächliche Schreibweise
+  isRealtimeOnlyInformative werden zusätzlich zu den bisherigen Varianten
+  erkannt. Auch Hinweise vollständig verworfener Reisen bleiben sichtbar.
+- Echte erste Gehstrecke am Tannenweg: 341 Meter, sechs Minuten, 17 gelieferte
+  Koordinaten. Die Fußwegzeiten werden aus der Quellgehzeit zwei Minuten früher
+  eingeplant (06:45–06:51), Bus 27 bleibt unverändert bei 06:53. Die Reserve ist
+  im Reiseverlauf sichtbar. Keine erfundene Gehzeit oder veränderte Buszeit.
+- Ein erster Punkt 65 Meter neben der von EFA verwendeten Adresse wird wegen
+  Überschreitung der 30-Meter-Endpunktgrenze zurückgewiesen. Für den bestätigten
+  ersten Gehweg wurde der tatsächliche Quellpunkt anschließend neu abgefragt.
+- Die Ausweichoption ist zunächst ausgeschaltet. Gehbudget und 3-km-Grenze
+  gelten ausdrücklich je Teilstrecke. „Ab hier neu planen“ bereitet eine neue
+  Abfrage vor; es behauptet keine automatisch bestätigte aktuelle Geräteposition.
+- Die gezielte eigene Umstiegspunkt-Suche europaweit bleibt offen. Der Test
+  einer besseren Ankunft trotz anfänglicher Fahrt vom Ziel weg ist synthetisch.
+- DB-HTTP-403 auf dem veröffentlichten Worker bleibt eine bekannte Grenze.
+  Keine Umgehung und keine Behauptung vollständiger Fahrplan-/Störungsabdeckung.
+- Die zuvor fehlgeschlagene verwaltete Vorschau und Browser-Sicherheitsgrenze
+  wurden nicht umgangen. Die neue Oberfläche hat noch keine visuelle Abnahme.
+  Build-/Veröffentlichungsnachweise des finalen Stands stehen im GitHub-Abgleich.
+
 ## Ausgeführt
 
 - 17 Node-Regressionen bestanden, einschließlich Stationskatalog, Zeitzonen, Zwischenziel-Aufenthalt, Endpunktkontrolle, Ausfälle, GPA-Geometrie, Geometrielücken, ÖPNV-Produkte, temporäre Gültigkeits-/Ereignisfenster und nicht bediente Grenzpunkte.
@@ -157,3 +194,34 @@ Die veröffentlichte GitHub-Seite blieb bei allen folgenden Formularabfragen unt
 - Die visuelle Abnahme der neuen Auswahlliste ist offen. Die verwaltete Vorschau
   war in dieser Sitzung nicht erreichbar, die Browser-Übergabe wurde zusätzlich
   durch die Browser-Sicherheitsrichtlinie blockiert. Keine erneute Umgehung.
+
+
+## Ergänzung 24.10.2026: Rohdental → U Turmstraße nach Betriebsschluss
+
+- Sites-, Pages- und eigenständiger Clientbuild erfolgreich. Gemeinsamer Node-HTTP-Pfad liefert für eine späte Samstagsanfrage HTTP 200 und drei DB-Alternativen bis zum Berliner Ziel.
+
+- Der gemeldete Fall betrifft den OSM-Bushalt 3961281940, „U Turmstraße“,
+  Berlin, für eine Abfahrt am 24.10.2026 um 23:17 Europe/Berlin.
+  ÖBB konnte die Halte nicht eindeutig zuordnen. EFA antwortete bei der
+  Stationssuche mit HTTP 200, BROKER -8014 und leerer Liste. Diese Antwort
+  wurde zuvor falsch als nicht erreichbare Datenquelle behandelt.
+- EFA -8011 mit Trefferliste und -8014 ohne Treffer werden als Suchantworten
+  behandelt. „U“ muss beim Ranking als eigenes Wort vorkommen. Swiss-/AT-
+  Turmstraßen werden dadurch nicht wegen eines beliebigen Buchstabens u bevorzugt.
+- Die öffentliche DB-Auskunft bestätigt Rohdenthal/Hessisch Oldendorf mit
+  lokalem Schlüssel 265209 und Turmstr.(U), Berlin, mit Schlüssel 730740.
+  Beide werden anhand des Namens und weniger als 250 Metern Abstand zugeordnet.
+  Die Berliner Station ist laut Quelle zugleich Bus-/Tram-/U-Bahn-Halt.
+- Die späte Samstagsanfrage lieferte eine leere DB-Verbindungsliste. Am Montag
+  werden sieben Vorschläge geliefert; fünf bleiben nach der Ausfallprüfung.
+  S51 ist in zwei Vorschlägen ausdrücklich als ausgefallen markiert.
+  Erste nutzbare Verbindung: 26.10.2026, 06:53–12:34, Bus 27/20, S5, ICE 553,
+  Bus 245 sowie gelieferte Fußwege. Die gewählte Verbindung wurde separat
+  erneuert; fünf Verkehrsabschnitte besitzen Quellgeometrie, zwei Fußwege nicht.
+- 63 App-Regressionen und TypeScript bestanden. Neue Prüfungen umfassen die
+  tatsächlichen EFA-Semantikantworten, Zuordnung und Modi, falsche Nachbarhalte,
+  echte Ausfallmeldungen, Quellen-IDs, die begrenzte Wochenendsuche über die
+  Zeitumstellung und einen bei erneuter Prüfung gemeldeten Ausfall.
+- Keine visuelle Browserabnahme behauptet: Die bereits festgestellte
+  Vorschau-/Browser-Sicherheitsgrenze wurde nicht umgangen. Der neue Screenshot
+  des Nutzers bestätigt die Darstellung der vorherigen Version, nicht diese Änderung.
