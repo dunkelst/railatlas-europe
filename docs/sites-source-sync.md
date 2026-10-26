@@ -7,9 +7,9 @@ und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub C
 
 Der eigene Programmcode ist AGPL-3.0-only. Lizenztext, Umfang, Build- und
 Startanleitung sowie die vollständigen entsprechenden Quellen sind öffentlich.
-Version 26 ist gespeichert und lokal geprüft. Die native Veröffentlichung
-erfolgt nach diesem GitHub-Abgleich. Version 24 bleibt als geprüfter historischer
-Stand unten dokumentiert.
+Version 26 wurde nach diesem GitHub-Abgleich nativ veröffentlicht und im
+verbundenen Chrome geprüft. Beide Prüfläufe für den Codecommit sind erfolgreich.
+Version 24 bleibt als geprüfter historischer Stand unten dokumentiert.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
 | --- | --- | --- | --- |
@@ -47,7 +47,9 @@ Die öffentliche Version-25-API hat den gemeldeten Fall und die Rückrichtung mi
 HTTP 200 und je drei Optionen bestätigt. Die OSM-Auswahl über das veröffentlichte
 Browserformular liefert ebenfalls drei Optionen. Der Abschlussstand 26 ersetzt
 technische START/END-Labels durch die ausgewählten Namen und kennzeichnet
-unbestätigte Geometrie zutreffend. Finale UI-Prüfung folgt nach Veröffentlichung.
+unbestätigte Geometrie zutreffend. Auch die finale Version 26 ist im Browser bestätigt: drei Alternativen für
+die getippten OSM-Halte ab 21:05, erste Reise 21:07–21:34. Technische Endpunktnamen
+erscheinen nicht mehr. [Prüfprotokoll mit Bildschirmfoto](qa/railatlas-v26.md).
 
 ## Historische Nachweise von Version 24
 

@@ -15,8 +15,8 @@ Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
 Version **26**, Quelle `72f0ef86e9e6c89b9b90deb510ec6c0b26ecf917`,
 199 App-Dateien im Herkunftsmanifest. 103 Tests, TypeScript und alle drei Builds
-bestanden. Gespeichert, Veröffentlichung nach GitHub-Abgleich. Publikum bleibt
-unverändert. Die vorigen UI-/Halte-Nachweise von Version 24 sind historisch.
+bestanden. Nativ veröffentlicht, im Browser geprüft, Codecommit in beiden CI-Läufen
+erfolgreich. Publikum unverändert. Vorige Version-24-Nachweise sind historisch.
 
 Der stabile Transitous-/MOTIS-Kartenhaltepfad ist im gemeinsamen Netzwerkmodell
 angebunden. Eigene GTFS-IDs und Originalkoordinaten, keine aus Feednamen erfundenen
@@ -52,8 +52,8 @@ Die gemeinsame UI enthält die Attribution auch im Reiseergebnis.
 
 ## Nächste Schritte und Grenzen
 
-1. Version 26 nach GitHub-Abgleich veröffentlichen und gemeldete Suche im Browser
-   prüfen. Historische Version 24 ist geprüft: API HTTP 200 in vier Ländern;
+1. Version 26 ist veröffentlicht und die gemeldete Suche im Browser bestätigt.
+   [Aktuelles Prüfprotokoll](qa/railatlas-v26.md). Historische Version 24: HTTP 200 in vier Ländern;
    Start, Zwischenziel und Ziel aus echten Busmarkern übernommen. Prager Probe
    nach Feed-Zusammenführung acht Marker; zehn Einträge vor Zusammenführung.
    [Prüfprotokoll](qa/railatlas-v24.md). Interne Vorschau blieb wegen DNS

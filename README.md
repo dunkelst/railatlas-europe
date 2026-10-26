@@ -25,7 +25,8 @@ Quellfußwege bleiben sichtbar. Attribution steht direkt im Reiseergebnis.
 Quellen lösen keine weitere Anfrage aus. Cache, vier MiB Antwortgrenze,
 22 Sekunden Timeout, Anbieterpause und Abbruch begrenzen den Zusatzabruf.
 Keine Serienabfragen oder automatische Folgetagssuche. Der Stand ist gespeichert;
-native Veröffentlichung und Browserprüfung folgen nach diesem GitHub-Abgleich.
+Version 26 ist nativ veröffentlicht und im Browser erfolgreich geprüft.
+[Prüfprotokoll mit Bildschirmfoto](docs/qa/railatlas-v26.md).
 
 ## Seit Version 24: AGPLv3 und breitere Kartenhalte
 
