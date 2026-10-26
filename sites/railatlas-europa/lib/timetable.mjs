@@ -3,6 +3,7 @@ import {findEfaStations, findVrrStations, getEfaJourney, getEfaJourneys, getEfaW
 import {normalize, searchStations, rankJourneys} from './rail.mjs';
 import {findBusStops} from './stop-search.mjs';
 import {getDbJourneys} from './db.mjs';
+import {getTransitousJourneys} from './transitous.mjs';
 
 export const timetableSources = ['auto', 'oebb', 'efa', 'vrr'];
 const providers = {oebb: {find: findOnlineStations, journey: getJourney}, efa: {find: findEfaStations, journey: getEfaJourney}, vrr: {find: findVrrStations, journey: getVrrJourney}};
@@ -30,6 +31,7 @@ export async function getTimetableJourneys(from,to,departure,source='auto',signa
   if(source!=='auto')return [await providers[source].journey(from,to,departure,signal)];
   const results=await Promise.allSettled([getJourneys(from,to,departure,signal),getEfaJourneys(from,to,departure,signal),...(walkingBudget?[getEfaWalkingJourneys(from,to,departure,signal,walkingBudget)]:[])]);
   signal?.throwIfAborted();
+  if(!results.some(r=>r.status==='fulfilled'&&r.value.length))try{results.push({status:'fulfilled',value:await getTransitousJourneys(from,to,departure,signal)});}catch(reason){signal?.throwIfAborted();results.push({status:'rejected',reason});}
   if(!results.some(r=>r.status==='fulfilled'&&r.value.length))try{results.push({status:'fulfilled',value:await getDbJourneys(from,to,departure,signal)});}catch(reason){signal?.throwIfAborted();results.push({status:'rejected',reason});}
   const journeys=rankJourneys(results.flatMap(r=>r.status==='fulfilled'?r.value:[]),preference);
   if(!journeys.length){const unavailable=results.some(r=>r.status==='rejected'&&['UPSTREAM_UNAVAILABLE','SOURCE_RESPONSE_INVALID'].includes(r.reason?.code||r.reason?.cause?.code));const error=Error(unavailable?'Die angebundenen Auskünfte konnten gerade keine nutzbare Verbindung bestätigen; mindestens eine Datenquelle ist nicht erreichbar. Bitte die Suche erneut versuchen.':'Für diese Halte und Abfahrtszeit wurde in den angebundenen Auskünften keine nutzbare Verbindung bestätigt. Bitte Zeit oder Halte prüfen. Die Fahrplanabdeckung ist regional unterschiedlich.');error.notices=results.flatMap(r=>r.status==='rejected'&&Array.isArray(r.reason?.notices)?r.reason.notices:[]);throw error;}

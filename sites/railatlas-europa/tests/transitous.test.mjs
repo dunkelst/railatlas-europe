@@ -2,9 +2,15 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {parseTransitousStation,fetchTransitousStops} from '../lib/transitous.mjs';
 import {parseTransitousNetwork,parseEfaNetwork,mergeNetworkStops} from '../lib/network.mjs';
 import {sameStation} from '../lib/journey.mjs';
-import {getVrrJourney,parseVrrStation,sameVrrStation} from '../lib/vrr.mjs';
+import {getVrrJourney,parseVrrStation,sameVrrStation,EFA_PROVIDER} from '../lib/vrr.mjs';
 import {handleApi} from '../lib/api.mjs';
 import {validateChain} from '../lib/rail.mjs';
+import {gunzipSync} from 'node:zlib';
+import {parseTransitousJourneys} from '../lib/transitous.mjs';
+import {getTimetableJourneys} from '../lib/timetable.mjs';
+const plan=()=>JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-heilbronn-roemer-plan.json.gz',import.meta.url))));
+const endpoints=()=>{const d=plan();return [d.from,d.to].map(s=>({...parseTransitousStation(s),networkMode:'bus'}));};
+const requested='2026-10-26T19:51:00Z';
 const sample=JSON.parse(fs.readFileSync(new URL('./fixtures/transitous-heilbronn-sample.json',import.meta.url))),bbox=[49.138,9.224,49.147,9.243];let step=0;
 function clock(t){let now=Date.parse('2026-10-26T08:00:00Z')+(step++)*600000;t.mock.method(Date,'now',()=>now);return delta=>now+=delta;}
 
@@ -62,4 +68,49 @@ test('Transitous map selections resolve through the existing timetable and inter
   assert.equal(u.searchParams.get('name_origin'),from.vrrId);assert.equal(u.searchParams.get('name_destination'),to.vrrId);return Response.json(fixture);
  });
  const journey=await getVrrJourney(a,b,requested);assert.equal(journey.legs[0].line,'U77');assert.equal(calls.length,3);assert.equal(validateChain([journey],[a,b],[]),true);
+});
+
+test('Actual Friedhof to Römerstraße plans retain three full journeys, Bus 11/32, source walking paths and realtime',()=>{
+ const [a,b]=endpoints(),parsed=parseTransitousJourneys(plan(),a,b,requested);
+ assert.equal(parsed.journeys.length,3);const j=parsed.journeys[1];assert.deepEqual(j.legs.map(l=>l.line),['11','Fußweg','32']);assert.equal(j.departure,'2026-10-26T20:09:00.000Z');assert.equal(j.arrival,'2026-10-26T20:33:00.000Z');assert.equal(j.transfers,1);assert.ok(j.legs.some(l=>l.realtime));
+ assert.ok(j.legs.filter(l=>!l.walking).every(l=>l.geometry.status==='missing'&&!l.geometry.segments.length));assert.equal(j.legs[1].geometry.status,'complete');assert.ok(j.legs.at(-1).stopovers.length>5);assert.equal(validateChain([j],[a,b],[]),true);assert.ok(j.attributions.some(a=>a.url==='https://transitous.org/sources/'));
+ assert.equal(parseTransitousJourneys(plan(),{...a,name:'Fremder Halt'},b,requested).journeys.length,0);assert.equal(parseTransitousJourneys(plan(),a,{...b,lat:b.lat+.01},requested).journeys.length,0);
+});
+
+test('Unusable MOTIS alternatives preserve exclusions and cannot bypass cancellations, times, geometry or dataset validity',()=>{
+ const [a,b]=endpoints();
+ for(const mutate of [j=>j.legs[1].cancelled=true,j=>j.legs[1].from.pickupType='NOT_ALLOWED',j=>j.legs[1].to.dropoffType='NOT_ALLOWED',j=>j.legs[1].startTime='2026-10-26T19:59:00Z',j=>j.legs[1].endTime='2026-10-26T19:59:00Z',j=>j.legs[1].from.lat+=.01,j=>j.legs[0].legGeometry.points='',j=>j.legs[0].endTime=j.legs[0].startTime,j=>j.legs[1].loopedCalendarSince='2026-10-01',j=>j.legs[1].mode='UNSUPPORTED']){
+  const d=plan();d.itineraries=d.itineraries.slice(0,1);mutate(d.itineraries[0]);assert.equal(parseTransitousJourneys(d,a,b,requested).journeys.length,0);
+ }
+ const d=plan();d.itineraries=d.itineraries.slice(0,1);d.itineraries[0].legs[1].alerts=[{headerText:'Bus fällt aus',descriptionText:'Diese Fahrt entfällt.',effect:'NO_SERVICE',severityLevel:'SEVERE',impactPeriod:[{start:'2026-10-26T19:00:00Z',end:'2026-10-26T23:00:00Z'}]}];
+ const result=parseTransitousJourneys(d,a,b,requested);assert.equal(result.journeys.length,0);assert.equal(result.notices[0].kind,'cancellation');
+ d.itineraries[0].legs[1].alerts[0].impactPeriod[0].end='2026-10-26T19:01:00Z';assert.equal(parseTransitousJourneys(d,a,b,requested).journeys.length,1);
+});
+
+test('Coordinate access keeps the selected point within 30 metres for typed or intermediate stops',()=>{
+ const [a,b]=endpoints(),d=plan();d.itineraries=d.itineraries.slice(0,1);const raw=d.itineraries[0].legs[0].from;delete raw.stopId;raw.vertexType='NORMAL';raw.name='Startpunkt';
+ assert.equal(parseTransitousJourneys(d,a,b,requested).journeys.length,1);raw.lat+=.0005;assert.equal(parseTransitousJourneys(d,a,b,requested).journeys.length,0);
+});
+
+test('Automatic common API falls back to the existing GTFS identities after name resolvers fail, before DB',async t=>{
+ const [a,b]=endpoints(),calls=[];t.mock.method(Date,'now',()=>Date.parse('2026-10-26T19:00:00Z'));
+ t.mock.method(globalThis,'fetch',async(url,init)=>{const u=new URL(url);calls.push(u);if(u.hostname==='fahrplan.oebb.at')return Response.json({err:'OK',svcResL:[{err:'OK',res:{locL:[]}}]});if(u.hostname==='www.efa.de')return Response.json({locations:[]});
+  assert.equal(u.hostname,'api.transitous.org');assert.equal(u.pathname,'/api/v6/plan');assert.equal(u.searchParams.get('fromPlace'),a.transitousId);assert.equal(u.searchParams.get('toPlace'),b.transitousId);assert.equal(u.searchParams.get('time'),requested);assert.equal(u.searchParams.get('directModes'),'');assert.equal(u.searchParams.has('radius'),false);assert.match(init.headers['User-Agent'],/RailAtlas-Europa\/25/);return Response.json(plan());
+ });
+ const response=await handleApi(new Request('https://railatlas.example/api/journeys',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from:a,to:b,departure:requested,source:'auto'})}));
+ assert.equal(response.status,200);const d=await response.json();assert.equal(d.journeys.length,3);assert.deepEqual(d.journeys[1].legs.map(l=>l.line),['11','Fußweg','32']);assert.equal(calls.filter(u=>u.hostname==='api.transitous.org').length,1);assert.equal(calls.some(u=>u.hostname==='int.bahn.de'),false);
+});
+
+test('A successful existing source needs no extra European journey query',async t=>{
+ const d=JSON.parse(fs.readFileSync(new URL('./fixtures/vrr-duesseldorf-live.json',import.meta.url))),raw=d.journeys[0].legs[0],[a,b]=[raw.origin,raw.destination].map(s=>parseVrrStation(s,EFA_PROVIDER)),calls=[];
+ t.mock.method(globalThis,'fetch',async url=>{const u=new URL(url);calls.push(u.hostname);if(u.hostname==='fahrplan.oebb.at')return Response.json({err:'OK',svcResL:[{err:'OK',res:{locL:[]}}]});assert.equal(u.hostname,'www.efa.de');return Response.json(d);});
+ const j=await getTimetableJourneys(a,b,'2026-10-22T07:00:00Z');assert.equal(j[0].legs[0].line,'U77');assert.equal(calls.includes('api.transitous.org'),false);
+});
+
+test('European journey cache rechecks endpoints; source rate limits pause calls and caller abort remains an abort',async t=>{
+ const module=await import('../lib/transitous.mjs?journey-cache'),[a,b]=endpoints();let now=Date.parse('2026-10-26T19:00:00Z'),calls=0;t.mock.method(Date,'now',()=>now);
+ t.mock.method(globalThis,'fetch',async()=>{calls++;return calls===1?Response.json(plan()):new Response('limited',{status:429,headers:{'Retry-After':'120'}});});
+ assert.equal((await module.getTransitousJourneys(a,b,requested)).length,3);await assert.rejects(module.getTransitousJourneys({...a,name:'Anderer Halt'},b,requested),e=>e.code==='NO_JOURNEY');assert.equal(calls,1);
+ now+=31000;await assert.rejects(module.getTransitousJourneys(a,b,requested),/HTTP 429/);now+=119000;await assert.rejects(module.getTransitousJourneys(a,b,requested),/pausiert/);assert.equal(calls,2);
+ const controller=new AbortController();controller.abort();await assert.rejects(module.getTransitousJourneys(a,b,requested,controller.signal),{name:'AbortError'});assert.equal(calls,2);
 });

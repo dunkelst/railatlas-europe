@@ -18,8 +18,10 @@ export function JourneyAlerts({parts,notices=[]}:{parts:Journey[];notices?:Notic
  const warnings=[...new Map([...notices,...parts.flatMap(p=>p.notices||[])].filter(n=>n.severity==='warning').map(n=>[n.id,n])).values()];
  const endpointFeed=parts.length>0&&parts.every(p=>p.disruptionCheck==='trip-and-station-alerts');
  const sources=[...new Set(parts.map(p=>p.source))].join(' · ')||'Die gewählte Auskunft';
+ const attributions=[...new Map(parts.flatMap(p=>p.attributions||[]).map(a=>[a.url,a])).values()];
  return <div className="journey-alerts" aria-label="Störungen und Datenabdeckung">
   <div className="coverage-note"><AlertTriangle size={15}/><div><b>{warnings.length?`${warnings.length} Betriebs- oder Sperrhinweis${warnings.length===1?'':'e'}`:'Störungslage nicht vollständig bestätigt'}</b><p>{sources}: Gelieferte Betriebs- und Sperrhinweise werden für die Reisezeit geprüft. {endpointFeed?'Zusätzliche Start-/Zielmeldungen wurden abgefragt. ':''}Ausfälle und nicht erreichbare Verbindungen werden ausgeschlossen. Weitere, auch kurzfristige Sperrungen können fehlen.</p>{[...new Set(parts.map(p=>p.sourceWarning).filter(Boolean))].map(w=><p key={w}>{w}</p>)}</div></div>
+  {attributions.length>0&&<p className="journey-attributions">{attributions.map(a=><a key={a.url} href={a.url} target="_blank" rel="noreferrer">{a.label}</a>)}</p>}
   {warnings.map(n=><NoticeCard key={n.id} notice={n}/>)}
  </div>;
 }

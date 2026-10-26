@@ -1,4 +1,6 @@
-import {fetchJSON} from './journey.mjs';
+import {fetchJSON,sameStation} from './journey.mjs';
+import {distanceKm} from './rail.mjs';
+import {decodePolyline,transportProduct,plainText,mergeNotices} from './transit.mjs';
 
 export const TRANSITOUS_SOURCE='Transitous / MOTIS (GTFS)';
 export const TRANSITOUS_ATTRIBUTIONS=[{label:'Transitous-Datenquellen',url:'https://transitous.org/sources/'},{label:'OpenStreetMap',url:'https://www.openstreetmap.org/copyright'}];
@@ -24,4 +26,69 @@ export async function fetchTransitousStops(bounds,selected,signal){
  }catch(error){
   signal?.throwIfAborted();nextRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;
  }
+}
+
+const classes={HIGHSPEED_RAIL:1,LONG_DISTANCE:2,NIGHT_RAIL:2,REGIONAL_RAIL:16,SUBURBAN:32,SUBWAY:256,TRAM:512,BUS:64,COACH:64,FERRY:128};
+const iso=value=>typeof value==='string'&&/(Z|[+-]\d\d:\d\d)$/.test(value)&&Number.isFinite(Date.parse(value))?new Date(value).toISOString():null;
+function place(raw){
+ const stop=parseTransitousStation(raw);if(stop)return stop;
+ if(raw?.vertexType!=='NORMAL'||typeof raw.name!=='string'||![raw.lat,raw.lon].every(Number.isFinite)||Math.abs(raw.lat)>90||Math.abs(raw.lon)>180)throw Error('Ungültiger Fahrplanpunkt');
+ return {id:'coord:'+raw.lat+':'+raw.lon,name:raw.name,lat:raw.lat,lon:raw.lon,dbId:'',country:'',main:false,locationType:'coordinate'};
+}
+const samePlace=(a,b)=>[a,b].some(s=>s?.locationType==='coordinate')?distanceKm(a,b)<=.03:sameStation(a,b);
+function alerts(raw,start,end,scope){
+ return (raw||[]).flatMap((a,i)=>{
+  const periods=(a.impactPeriod||[]).map(p=>({from:iso(p.start),until:iso(p.end)}));
+  if(periods.length&&!periods.some(p=>(!p.from||Date.parse(p.from)<=Date.parse(end))&&(!p.until||Date.parse(p.until)>Date.parse(start))))return [];
+  const title=plainText(a.headerText),text=plainText(a.descriptionText),effect=String(a.effect||'');if(!title&&!text&&!effect)return [];
+  return [{id:'transitous:'+effect+':'+title+':'+text+':'+i,title:title||'Betriebshinweis',text,code:effect,kind:effect==='NO_SERVICE'?'cancellation':effect==='SIGNIFICANT_DELAYS'?'delay':'notice',severity:a.severityLevel==='INFO'&&effect!=='NO_SERVICE'?'info':'warning',validFrom:periods.length===1?periods[0].from:null,validUntil:periods.length===1?periods[0].until:null,periods:periods.length>1?periods:[],validity:periods.length?'dated':'unspecified',scope,source:TRANSITOUS_SOURCE,routingUncertain:/nicht.{0,30}berücksichtigt/i.test(text)}];
+ });
+}
+export function parseTransitousJourneys(data,from,to,requested){
+ const journeys=[],excluded=[];
+ for(const trip of data.itineraries||[])try{
+  const legs=(trip.legs||[]).map(raw=>{
+   const a=place(raw.from),b=place(raw.to),departure=iso(raw.startTime),arrival=iso(raw.endTime),walking=raw.mode==='WALK',product=transportProduct({cls:classes[raw.mode]||0},walking);
+   if(!departure||!arrival||product.mode==='unknown'||raw.loopedCalendarSince)throw Error('Unbestätigte Fahrplandaten');
+   const notes=alerts([...(raw.alerts||[]),...(raw.from.alerts||[]),...(raw.to.alerts||[])],departure,arrival,a.name+' → '+b.name);
+   const points=walking?decodePolyline(raw.legGeometry?.points,raw.legGeometry?.precision):[];
+   const close=(p,s)=>p&&distanceKm({lat:p[0],lon:p[1]},s)<=.03;
+   // /plan does not identify whether a transit path is a GTFS shape or inferred.
+   // Retain actual ride times; only routed pedestrian geometry is drawn.
+   const complete=points.length>1&&!(points.length===2&&distanceKm(a,b)>.15)&&close(points[0],a)&&close(points.at(-1),b);
+   const geometry={status:complete?'complete':'missing',segments:complete?[points]:[],source:TRANSITOUS_SOURCE};
+   if(walking&&(!complete||!Number.isFinite(raw.distance)||raw.distance<0||arrival===departure&&raw.distance>10))throw Error('Kein bestätigter Fußweg');
+   const stopovers=(raw.intermediateStops||[]).map(s=>({station:place(s),arrival:iso(s.arrival),departure:iso(s.departure),plannedArrival:iso(s.scheduledArrival),plannedDeparture:iso(s.scheduledDeparture),platform:s.track,cancelled:!!s.cancelled,notices:alerts(s.alerts,departure,arrival,s.name)}));
+   return {from:a,to:b,departure,arrival,plannedDeparture:iso(raw.scheduledStartTime),plannedArrival:iso(raw.scheduledEndTime),...product,line:walking?'Fußweg':raw.routeShortName||raw.displayName||raw.tripShortName||raw.mode,operator:raw.agencyName||'',direction:raw.headsign||'',tripId:raw.tripId||null,platform:walking?undefined:raw.from.track,arrivalPlatform:walking?undefined:raw.to.track,plannedPlatform:raw.from.scheduledTrack,plannedArrivalPlatform:raw.to.scheduledTrack,walking,distanceMeters:walking?raw.distance:null,throughService:!!raw.interlineWithPreviousLeg,realtime:raw.realTime===true,cancelled:!!(raw.cancelled||raw.from.cancelled||raw.to.cancelled||raw.from.pickupType==='NOT_ALLOWED'||raw.to.dropoffType==='NOT_ALLOWED'),stops:stopovers.map(s=>s.station),stopovers,notices:notes,notes:walking?[]:['Linienverlauf nicht als Original-GTFS-Pfad bestätigt; auf der Karte bleibt dieser Fahrabschnitt offen.'],geometry};
+  });
+  const notices=mergeNotices([alerts(trip.alerts,trip.startTime,trip.endTime,from.name+' → '+to.name),...legs.flatMap(l=>[l.notices,...l.stopovers.map(s=>s.notices)])]);
+  if(legs.some(l=>l.cancelled)||notices.some(n=>n.code==='NO_SERVICE'||n.routingUncertain)){excluded.push(...notices.map(n=>({...n,scope:'Verworfener Verbindungsvorschlag: '+n.scope})));continue;}
+  if(!legs.length||!legs.some(l=>!l.walking)||legs.some((l,i)=>Date.parse(l.arrival)<Date.parse(l.departure)||i&&(Date.parse(l.departure)<Date.parse(legs[i-1].arrival)||!samePlace(legs[i-1].to,l.from))))continue;
+  if(Date.parse(legs[0].departure)<Date.parse(requested)||!samePlace(from,legs[0].from)||!samePlace(to,legs.at(-1).to))continue;
+  journeys.push({departure:legs[0].departure,arrival:legs.at(-1).arrival,legs,notices,transfers:Math.max(0,legs.filter(l=>!l.walking&&!l.throughService).length-1),source:TRANSITOUS_SOURCE,sourceWarning:'Zusätzliche europäische Fahrplanauskunft; Datenabdeckung und Echtzeitdaten sind partiell. Nicht als Originalpfad bestätigte Fahrzeuggeometrien bleiben auf der Karte offen.',disruptionCoverage:'partial',disruptionCheck:'trip-only',routingStatus:'provider-checked',attributions:TRANSITOUS_ATTRIBUTIONS,fetchedAt:new Date().toISOString()});
+ }catch{/* A malformed alternative cannot conceal valid connections. */}
+ journeys.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));
+ for(const journey of journeys)journey.notices=mergeNotices([journey.notices,excluded]);
+ return {journeys,notices:excluded};
+}
+let nextJourneyRequestAt=0;const journeyCache=new Map();
+export async function getTransitousJourneys(from,to,departure,signal){
+ signal?.throwIfAborted();
+ const endpoint=s=>typeof s.transitousId==='string'&&s.id==='transitous:'+s.transitousId?s.transitousId:s.lat+','+s.lon;
+ const key=JSON.stringify([endpoint(from),endpoint(to),departure]),cached=journeyCache.get(key);
+ // Keep source responses, then revalidate endpoints for every caller.
+ let data=cached&&cached.until>Date.now()?cached.data:null;
+ if(!data){
+  if(Date.now()<nextJourneyRequestAt)throw Object.assign(Error('Die ergänzende europäische Auskunft pausiert nach einem Anbieterfehler.'),{code:'UPSTREAM_UNAVAILABLE'});
+  const url=new URL('https://api.transitous.org/api/v6/plan');
+  url.search=new URLSearchParams({fromPlace:endpoint(from),toPlace:endpoint(to),time:departure,directModes:'',numItineraries:'3',maxItineraries:'3',searchWindow:'900',useRoutedTransfers:'true',detailedTransfers:'true',maxPreTransitTime:'900',maxPostTransitTime:'900'});
+  try{
+   data=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/25 (+https://github.com/dunkelst/railatlas-europe)'}},signal,22000,4*1024*1024);
+   if(!Array.isArray(data.itineraries))throw Object.assign(Error('Die europäische Auskunft hat keine auswertbare Verbindungsliste geliefert.'),{code:'SOURCE_RESPONSE_INVALID'});
+   if(journeyCache.size>=64)journeyCache.delete(journeyCache.keys().next().value);journeyCache.set(key,{data,until:Date.now()+30000});
+  }catch(error){signal?.throwIfAborted();nextJourneyRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
+ }
+ const parsed=parseTransitousJourneys(data,from,to,departure);
+ if(!parsed.journeys.length)throw Object.assign(Error('Die ergänzende europäische Auskunft hat für diese Halte und Zeit keine nutzbare Verbindung bestätigt.'),{code:'NO_JOURNEY',notices:parsed.notices});
+ return parsed.journeys.slice(0,3);
 }

@@ -25,3 +25,14 @@ API policy: https://transitous.org/api/. The RailAtlas owner approved AGPLv3 on
 the experimental calculated-line probe remains disconnected from the public app.
 Data and third-party licences remain separate from the project's own code.
 Do not contact the service maintainers without the owner's instruction.
+
+`transitous-heilbronn-roemer-plan.json.gz` is the unmodified bounded response
+from the stable `/api/v6/plan` endpoint on 26 October 2026. The query used
+de-DELFI_de:08121:17:0:0 to de-DELFI_de:08121:175:0:0, departure
+2026-10-26T19:51:00Z, three alternatives, routed transfers and no direct-only
+journeys. It contains actual DELFI bus schedules and OSM pedestrian paths.
+The source licences above apply. Tests mutate copies for negative cases.
+No fixture is runtime data. The application's journey fallback now uses this
+stable endpoint once after the original sources fail, with cache, cancellation,
+size and timeout limits. `/plan` does not identify whether a transit geometry
+is a GTFS shape or inferred; those vehicle paths are deliberately not drawn.

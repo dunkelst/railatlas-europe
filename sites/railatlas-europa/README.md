@@ -1,5 +1,26 @@
 # RailAtlas Europa
 
+## Verbindungssuche für neue Kartenhalte (26.10.2026)
+
+Die automatische Auskunft verwendet Transitous/MOTIS als zusätzliche
+Fahrplanquelle, wenn ÖBB und EFA keine nutzbare Reise bestätigen. Eine Suche
+löst höchstens eine zusätzliche `/api/v6/plan`-Abfrage aus, mit drei Alternativen,
+kurzem Antwortcache und Anbieterpause. Bestehende erfolgreiche Quellen bleiben
+ohne weitere Anfrage erhalten. Keine Serienabfragen oder automatische Folgetage.
+
+Original-GTFS-IDs werden direkt bei ihrer eigenen Quelle verwendet. Andere
+Halte gehen als Koordinaten in dieselbe Suche ein. Endpunkte, Anschlüsse,
+Ausfälle und Gehweggeometrien werden vor der Übernahme geprüft. Unsichere
+Kalenderverlängerungen werden verworfen; Fahrzeugzeiten werden nicht verändert.
+Der gemeldete Fall Heilbronn Friedhof → Neckargartach Römerstraße liefert drei
+echte Quellvorschläge, darunter Bus 11, vier Minuten Fußweg und Bus 32.
+EFA kann diese Halte per Kennung erkennen, liefert dafür jedoch keine Reise.
+
+Die v6-Fahrplanantwort weist die Herkunft ihrer Fahrzeuggeometrie nicht als
+Original-GTFS-Shape aus. Diese Abschnitte bleiben auf der Karte offen; bestätigte
+geroutete Fußwege werden gezeichnet. Quellen und OSM-Attribution stehen auch
+direkt im Reiseergebnis. Fahrplan- und Echtzeitabdeckung bleiben partiell.
+
 ## AGPLv3 und internationale Kartenhalte (26.10.2026)
 
 Der selbst erstellte Programmcode steht mit Freigabe des Eigentümers unter

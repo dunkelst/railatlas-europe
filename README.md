@@ -2,9 +2,32 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **24**, Quellcommit `202529ae7200ecd354bcbb7597e3f70c80932b48`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **25**, Quellcommit `5fe1125062c34589db351b2e69a184f14e39263d`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
-## Version 24: AGPLv3 und breitere Kartenhalte
+## Version 25: Verbindungssuche für die neuen Kartenhalte
+
+Die letzte Erweiterung verband Transitous mit der Karte; die Fahrtsuche
+verwendete weiterhin nur die bisherigen Auskünfte. Heilbronn Friedhof →
+Neckargartach Römerstraße scheiterte trotz ausgewählter Halte. Die automatische
+Suche fragt jetzt nach erfolgloser ÖBB-/EFA-Auskunft einmal den stabilen
+Transitous-Fahrplan ab. Native IDs bleiben bei ihrer Quelle; andere Halte werden
+über Koordinaten mit 30-m-Endpunktkontrolle geprüft. Kein neuer Reiseablauf.
+
+Der gemeinsame eigenständige Node-HTTP-Server bestätigt HTTP 200 und drei
+vollständige Optionen für den 26.10.2026 ab 20:51 Europe/Berlin: darunter
+Bus 11 ab 21:09, vier Minuten Quellfußweg, Bus 32 und Ankunft um 21:33.
+Auch ein erster Fußweg mit Bus 32 sowie eine spätere Bus-31-Alternative sind
+enthalten. Ausfälle, Zeitkonflikte, falsche Endpunkte und verlängerte Quellkalender
+werden verworfen. Unbestätigte Fahrzeuggeometrien werden nicht gezeichnet;
+Quellfußwege bleiben sichtbar. Attribution steht direkt im Reiseergebnis.
+
+**103 Tests, TypeScript und alle drei Builds bestanden.** Erfolgreiche bisherige
+Quellen lösen keine weitere Anfrage aus. Cache, vier MiB Antwortgrenze,
+22 Sekunden Timeout, Anbieterpause und Abbruch begrenzen den Zusatzabruf.
+Keine Serienabfragen oder automatische Folgetagssuche. Der Stand ist gespeichert;
+native Veröffentlichung und Browserprüfung folgen nach diesem GitHub-Abgleich.
+
+## Seit Version 24: AGPLv3 und breitere Kartenhalte
 
 Der eigene Programmcode steht nach ausdrücklicher Freigabe unter
 **AGPL-3.0-only**. [Lizenztext](LICENSE) und [Lizenzumfang](LICENSE_SCOPE.md)

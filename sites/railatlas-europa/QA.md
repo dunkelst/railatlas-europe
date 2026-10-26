@@ -1,5 +1,28 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
+## Fortsetzung 26.10.2026: Verbindungssuche Friedhof → Römerstraße
+
+- 103 Regressionen und TypeScript erfolgreich.
+- Die neuen Kartenhalte ließen sich auswählen, aber die bisherige Namensauflösung
+  von ÖBB/EFA erkannte die beiden lokalen Bushalte nicht. EFA erkannte sie nach
+  einer separaten Diagnose per bestätigter DHID, lieferte jedoch keine Fahrten
+  (BROKER -10015/-4000). Keine Umbenennung oder bloße Aufweichung des Abgleichs.
+- Eine einzelne echte Transitous-Fahrplanabfrage für den 26.10.2026 ab 20:51
+  Europe/Berlin liefert drei Reisen. Bus 11 ab 21:09, vier Minuten Quellfußweg,
+  Bus 32, Ankunft 21:33. Zweite Variante mit gleicher Ankunft: 15 Minuten
+  Quellfußweg ab 21:00 und Bus 32; spätere dritte Variante ebenfalls geliefert.
+- Die gemeinsame automatische API verwendet diese Quelle erst nach erfolglosen
+  bisherigen Auskünften und vor DB. Keine neuen Auswahlfelder oder paralleler
+  Reiseablauf. Native IDs bleiben in ihrer Quelle; andere Endpunkte als Koordinaten.
+- Neue Regressionen prüfen den tatsächlichen API-Pfad, erhaltene Alternativen,
+  keine Zusatzabfrage bei erfolgreicher EFA, Ausfälle und aktive Meldungen,
+  Zeitkonflikte, unbekannte Modi, Kalenderverlängerungen, falsche Endpunkte,
+  30-m-Koordinatenzugang, Gehweggeometrie, Cachevalidierung, Retry-After und Abbruch.
+- Die Fahrplanantwort bestätigt die Herkunft der Fahrzeuggeometrien nicht;
+  diese werden nicht als Originalpfad gezeichnet. Geroutete Quellfußwege bleiben
+  sichtbar. Attribution wird direkt im Reiseergebnis ergänzt. Die vollständige
+  europäische Echtzeit-/Störungsabdeckung bleibt unbestätigt.
+
 ## Fortsetzung 26.10.2026: AGPLv3 und gemeinsame GTFS-Kartenhalte
 
 - 97 Regressionen und TypeScript erfolgreich. Die neuen Fälle prüfen den

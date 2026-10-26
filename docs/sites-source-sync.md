@@ -1,14 +1,15 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **24**, Quellcommit `202529ae7200ecd354bcbb7597e3f70c80932b48`.
-**198** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
+Sites-Version **25**, Quellcommit `5fe1125062c34589db351b2e69a184f14e39263d`.
+**199** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
 Der eigene Programmcode ist AGPL-3.0-only. Lizenztext, Umfang, Build- und
 Startanleitung sowie die vollständigen entsprechenden Quellen sind öffentlich.
-Die neue Oberfläche wurde nach diesem GitHub-Abgleich als Version 24 auf der
-bestehenden öffentlichen Site veröffentlicht; beide GitHub-Prüfläufe sind grün.
+Version 25 ist gespeichert und lokal geprüft. Die native Veröffentlichung
+erfolgt nach diesem GitHub-Abgleich. Version 24 bleibt als geprüfter historischer
+Stand unten dokumentiert.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
 | --- | --- | --- | --- |
@@ -32,7 +33,17 @@ ChatGPT-Dienst. Ausgehende Verbindungen zu den tatsächlichen Datenquellen bleib
 notwendig. Bei eigenem HTTPS-Reverse-Proxy `PUBLIC_ORIGIN` setzen;
 `HOST=0.0.0.0` erlaubt Bindung im eigenen Container.
 
-## Nachweise des neuen Quellstands
+## Neuer Quellstand 25
+
+103 Regressionen, TypeScript und alle drei Builds erfolgreich. Der gemeinsame
+Node-HTTP-Server liefert für Friedhof → Römerstraße HTTP 200 mit drei echten
+Transitous-Reisen, darunter Bus 11 → Quellfußweg → 32, 21:09–21:33 Europe/Berlin.
+Die zusätzliche Fahrplanquelle wird erst nach erfolgloser ÖBB-/EFA-Abfrage und
+vor DB verwendet. Erfolgreiche bestehende Quellen brauchen keinen Zusatzabruf.
+Native Stop-IDs, Zeit-/Endpunktprüfung, Ausfälle, Attribution, begrenzte Abfrage
+und offene unbestätigte Fahrzeuggeometrie bleiben im gemeinsamen App-Modell.
+
+## Historische Nachweise von Version 24
 
 - 97 App-Regressionen, TypeScript, Worker-, Pages- und Standalone-Clientbuild.
 - Echte gemeinsame Node-HTTP-API: Bus-/Fernbushalte in Heilbronn 7, London 12,

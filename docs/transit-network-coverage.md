@@ -1,6 +1,6 @@
 # Buslinien und Halte: Datenbasis und AGPL-Freigabe
 
-Stand 26.10.2026, Quellversion 24. Die zusätzliche Haltequelle verbessert die
+Stand 26.10.2026, Quellversion 25. Die zusätzliche Haltequelle verbessert die
 belegte Abdeckung. Vollständige europäische Netz- oder Fahrplanabdeckung ist
 weiterhin nicht nachgewiesen.
 
@@ -23,7 +23,9 @@ Gleiche Halte verschiedener Feeds werden nach Name und maximal 250 m vereinigt;
 Plattformen desselben Feeds bleiben getrennt. Alle Kennungen bleiben verfügbar.
 EFA ergänzt echte Liniengeometrie und Halte. Quellenfehler entfernen verfügbare
 Daten der anderen Quelle nicht. Größe, Timeout, Retry-After und Cache begrenzen
-die Last. Keine /plan-Anfragen an Transitous.
+die Last. Seit Version 25 folgt nach erfolglosen ÖBB-/EFA-Auskunft eine einzelne
+begrenzte `/api/v6/plan`-Abfrage. Erfolgreiche alte Quellen benötigen sie nicht.
+Keine Serienabfragen oder automatische Folgetage.
 
 Die [API-Bedingungen](https://transitous.org/api/) verlangen ein nichtkommerzielles
 Open-Source-Projekt und angemessene Ressourcennutzung. Sichtbare Attribution
@@ -66,4 +68,18 @@ Seit Version 23 führen wesentlich engere Ausschnitte zu neuen Abfragen.
 `Ausschnitt neu laden` übergibt `refresh=1` durch den gemeinsamen API- und
 OSM-Pfad, weiterhin unter Beachtung der Anbieterpausen. Kleine Bewegungen nutzen
 passende Caches. Leere Sichtauswahl bestätigt keine fehlende Bedienung.
-97 Regressionen sichern den aktuellen gemeinsamen Stand ab.
+103 Regressionen sichern den aktuellen gemeinsamen Stand ab.
+
+
+## Fahrplananbindung seit Version 25
+
+Die Karte allein reichte für den gemeldeten Fall Heilbronn Friedhof →
+Neckargartach Römerstraße nicht. EFA erkennt die realen Haltekennungen, liefert
+jedoch keine Reise. Transitous liefert drei echte Optionen, im gemeinsamen
+Node-HTTP-Pfad HTTP 200 bestätigt. Beispiel 26.10.2026 ab 20:51: Bus 11 um 21:09,
+vier Minuten Quellfußweg, Bus 32 und Ankunft 21:33 Europe/Berlin.
+Native IDs bleiben bei ihrer Quelle, andere Halte werden über ihre Koordinaten
+angefragt. Endpunkte, aktive Meldungen, Ausfälle und Zeiten sind verbindlich.
+Original-GTFS-Shapes sind in `/plan` nicht als solche bestätigt. Fahrzeugpfade
+bleiben deshalb offen, geroutete Fußwege werden gezeigt. Die allgemeine
+experimentelle Linienkarte bleibt weiterhin außerhalb der öffentlichen App.

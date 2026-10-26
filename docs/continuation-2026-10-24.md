@@ -13,10 +13,10 @@ AGPL für den eigenen Programmcode und die Nutzung der breiteren Haltequelle
 freigegeben. AGPL-3.0-only ist umgesetzt; Fremddaten behalten ihre Bedingungen.
 Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
-Version **24**, Quelle `202529ae7200ecd354bcbb7597e3f70c80932b48`,
-198 App-Dateien im Herkunftsmanifest. 97 Tests, TypeScript und alle drei Builds
-bestanden. Nach bytegleichem GitHub-Abgleich nativ veröffentlicht, beide CI-Läufe
-erfolgreich. Öffentliche API und Chrome-Oberfläche geprüft; Publikum unverändert.
+Version **25**, Quelle `5fe1125062c34589db351b2e69a184f14e39263d`,
+199 App-Dateien im Herkunftsmanifest. 103 Tests, TypeScript und alle drei Builds
+bestanden. Gespeichert, Veröffentlichung nach GitHub-Abgleich. Publikum bleibt
+unverändert. Die vorigen UI-/Halte-Nachweise von Version 24 sind historisch.
 
 Der stabile Transitous-/MOTIS-Kartenhaltepfad ist im gemeinsamen Netzwerkmodell
 angebunden. Eigene GTFS-IDs und Originalkoordinaten, keine aus Feednamen erfundenen
@@ -38,9 +38,22 @@ nicht geografisch ausgeschlossen, gemeinsame dunkle Formularfelder, allgemeines
 Netz ohne Reise, sichtbereichsgleiche Zähler, Maßstabscache und echtes Neuladen.
 Historische Fahrplanbelege stehen im App-QA-Protokoll.
 
+## Aktueller Fehler behoben: fehlende Fahrplananbindung
+
+Der Nutzer meldete Friedhof → Neckargartach Römerstraße als nicht suchbar.
+ÖBB-/EFA-Namensauflösung verfehlt die lokalen Bushalte. EFA erkennt die DHIDs,
+liefert aber keine Reise (BROKER -10015/-4000). Eine echte Transitous-Abfrage
+liefert drei vollständige Reisen. Die automatische gemeinsame API bindet diese
+Quelle nach erfolglosen bisherigen Auskünften ein, vor DB. Node-HTTP: 200 mit
+Bus 11/Quellfußweg/32, 21:09–21:33 Europe/Berlin am 26.10.2026.
+Nur nutzerangestoßen, eine begrenzte Anfrage je Teilstrecke, keine Folgetage.
+Fahrzeuggeometrie ohne bestätigte Herkunft bleibt offen; Quellfußwege sind sichtbar.
+Die gemeinsame UI enthält die Attribution auch im Reiseergebnis.
+
 ## Nächste Schritte und Grenzen
 
-1. Version 24 ist veröffentlicht und geprüft: API HTTP 200 in vier Ländern;
+1. Version 25 nach GitHub-Abgleich veröffentlichen und gemeldete Suche im Browser
+   prüfen. Historische Version 24 ist geprüft: API HTTP 200 in vier Ländern;
    Start, Zwischenziel und Ziel aus echten Busmarkern übernommen. Prager Probe
    nach Feed-Zusammenführung acht Marker; zehn Einträge vor Zusammenführung.
    [Prüfprotokoll](qa/railatlas-v24.md). Interne Vorschau blieb wegen DNS
