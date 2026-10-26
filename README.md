@@ -2,9 +2,9 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **25**, Quellcommit `5fe1125062c34589db351b2e69a184f14e39263d`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **26**, Quellcommit `72f0ef86e9e6c89b9b90deb510ec6c0b26ecf917`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
-## Version 25: Verbindungssuche für die neuen Kartenhalte
+## Version 26: Verbindungssuche für die neuen Kartenhalte
 
 Die letzte Erweiterung verband Transitous mit der Karte; die Fahrtsuche
 verwendete weiterhin nur die bisherigen Auskünfte. Heilbronn Friedhof →

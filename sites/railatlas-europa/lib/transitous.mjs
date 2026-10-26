@@ -56,7 +56,7 @@ export function parseTransitousJourneys(data,from,to,requested){
    // /plan does not identify whether a transit path is a GTFS shape or inferred.
    // Retain actual ride times; only routed pedestrian geometry is drawn.
    const complete=points.length>1&&!(points.length===2&&distanceKm(a,b)>.15)&&close(points[0],a)&&close(points.at(-1),b);
-   const geometry={status:complete?'complete':'missing',segments:complete?[points]:[],source:TRANSITOUS_SOURCE};
+   const geometry={status:complete?'complete':'missing',segments:complete?[points]:[],source:TRANSITOUS_SOURCE,...(!walking?{reason:'unverified'}:{})};
    if(walking&&(!complete||!Number.isFinite(raw.distance)||raw.distance<0||arrival===departure&&raw.distance>10))throw Error('Kein bestätigter Fußweg');
    const stopovers=(raw.intermediateStops||[]).map(s=>({station:place(s),arrival:iso(s.arrival),departure:iso(s.departure),plannedArrival:iso(s.scheduledArrival),plannedDeparture:iso(s.scheduledDeparture),platform:s.track,cancelled:!!s.cancelled,notices:alerts(s.alerts,departure,arrival,s.name)}));
    return {from:a,to:b,departure,arrival,plannedDeparture:iso(raw.scheduledStartTime),plannedArrival:iso(raw.scheduledEndTime),...product,line:walking?'Fußweg':raw.routeShortName||raw.displayName||raw.tripShortName||raw.mode,operator:raw.agencyName||'',direction:raw.headsign||'',tripId:raw.tripId||null,platform:walking?undefined:raw.from.track,arrivalPlatform:walking?undefined:raw.to.track,plannedPlatform:raw.from.scheduledTrack,plannedArrivalPlatform:raw.to.scheduledTrack,walking,distanceMeters:walking?raw.distance:null,throughService:!!raw.interlineWithPreviousLeg,realtime:raw.realTime===true,cancelled:!!(raw.cancelled||raw.from.cancelled||raw.to.cancelled||raw.from.pickupType==='NOT_ALLOWED'||raw.to.dropoffType==='NOT_ALLOWED'),stops:stopovers.map(s=>s.station),stopovers,notices:notes,notes:walking?[]:['Linienverlauf nicht als Original-GTFS-Pfad bestätigt; auf der Karte bleibt dieser Fahrabschnitt offen.'],geometry};
@@ -65,6 +65,8 @@ export function parseTransitousJourneys(data,from,to,requested){
   if(legs.some(l=>l.cancelled)||notices.some(n=>n.code==='NO_SERVICE'||n.routingUncertain)){excluded.push(...notices.map(n=>({...n,scope:'Verworfener Verbindungsvorschlag: '+n.scope})));continue;}
   if(!legs.length||!legs.some(l=>!l.walking)||legs.some((l,i)=>Date.parse(l.arrival)<Date.parse(l.departure)||i&&(Date.parse(l.departure)<Date.parse(legs[i-1].arrival)||!samePlace(legs[i-1].to,l.from))))continue;
   if(Date.parse(legs[0].departure)<Date.parse(requested)||!samePlace(from,legs[0].from)||!samePlace(to,legs.at(-1).to))continue;
+  if(legs[0].from.locationType==='coordinate')legs[0].from={...legs[0].from,name:from.name};
+  if(legs.at(-1).to.locationType==='coordinate')legs.at(-1).to={...legs.at(-1).to,name:to.name};
   journeys.push({departure:legs[0].departure,arrival:legs.at(-1).arrival,legs,notices,transfers:Math.max(0,legs.filter(l=>!l.walking&&!l.throughService).length-1),source:TRANSITOUS_SOURCE,sourceWarning:'Zusätzliche europäische Fahrplanauskunft; Datenabdeckung und Echtzeitdaten sind partiell. Nicht als Originalpfad bestätigte Fahrzeuggeometrien bleiben auf der Karte offen.',disruptionCoverage:'partial',disruptionCheck:'trip-only',routingStatus:'provider-checked',attributions:TRANSITOUS_ATTRIBUTIONS,fetchedAt:new Date().toISOString()});
  }catch{/* A malformed alternative cannot conceal valid connections. */}
  journeys.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));

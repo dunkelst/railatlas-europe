@@ -1,13 +1,13 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **25**, Quellcommit `5fe1125062c34589db351b2e69a184f14e39263d`.
+Sites-Version **26**, Quellcommit `72f0ef86e9e6c89b9b90deb510ec6c0b26ecf917`.
 **199** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
 Der eigene Programmcode ist AGPL-3.0-only. Lizenztext, Umfang, Build- und
 Startanleitung sowie die vollständigen entsprechenden Quellen sind öffentlich.
-Version 25 ist gespeichert und lokal geprüft. Die native Veröffentlichung
+Version 26 ist gespeichert und lokal geprüft. Die native Veröffentlichung
 erfolgt nach diesem GitHub-Abgleich. Version 24 bleibt als geprüfter historischer
 Stand unten dokumentiert.
 
@@ -33,7 +33,7 @@ ChatGPT-Dienst. Ausgehende Verbindungen zu den tatsächlichen Datenquellen bleib
 notwendig. Bei eigenem HTTPS-Reverse-Proxy `PUBLIC_ORIGIN` setzen;
 `HOST=0.0.0.0` erlaubt Bindung im eigenen Container.
 
-## Neuer Quellstand 25
+## Neuer Quellstand 26
 
 103 Regressionen, TypeScript und alle drei Builds erfolgreich. Der gemeinsame
 Node-HTTP-Server liefert für Friedhof → Römerstraße HTTP 200 mit drei echten
@@ -42,6 +42,12 @@ Die zusätzliche Fahrplanquelle wird erst nach erfolgloser ÖBB-/EFA-Abfrage und
 vor DB verwendet. Erfolgreiche bestehende Quellen brauchen keinen Zusatzabruf.
 Native Stop-IDs, Zeit-/Endpunktprüfung, Ausfälle, Attribution, begrenzte Abfrage
 und offene unbestätigte Fahrzeuggeometrie bleiben im gemeinsamen App-Modell.
+
+Die öffentliche Version-25-API hat den gemeldeten Fall und die Rückrichtung mit
+HTTP 200 und je drei Optionen bestätigt. Die OSM-Auswahl über das veröffentlichte
+Browserformular liefert ebenfalls drei Optionen. Der Abschlussstand 26 ersetzt
+technische START/END-Labels durch die ausgewählten Namen und kennzeichnet
+unbestätigte Geometrie zutreffend. Finale UI-Prüfung folgt nach Veröffentlichung.
 
 ## Historische Nachweise von Version 24
 

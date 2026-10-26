@@ -1,6 +1,6 @@
 {
-  "site_version": 25,
-  "site_source_commit": "5fe1125062c34589db351b2e69a184f14e39263d",
+  "site_version": 26,
+  "site_source_commit": "72f0ef86e9e6c89b9b90deb510ec6c0b26ecf917",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.cocoaamber33.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -46,9 +46,9 @@
     {
       "path": "QA.md",
       "mode": "100644",
-      "git_blob": "7dd954e4029cfa45acf353d5f30642e94dfd21b0",
-      "sha256": "508694bd32644fc7eb18e605a639540765bbc2778e4efc357f872ccf869e4d58",
-      "bytes": 36054
+      "git_blob": "86a8dfe4887930aa9930539b18b4b45867d227af",
+      "sha256": "c8812e2e326b2b77f1c8ba0acdc306d48ea9b2cfda5fc7b8f3c50e2d06c959b9",
+      "bytes": 36573
     },
     {
       "path": "README.md",
@@ -179,9 +179,9 @@
     {
       "path": "components/journey-details.tsx",
       "mode": "100644",
-      "git_blob": "838de5d5e1a190eaf5b591df0fd7aff4ea99f403",
-      "sha256": "96762a228360085ae50e532ce9548ca0abea5b7c91564a8f804453df3b259bc8",
-      "bytes": 7212
+      "git_blob": "5b871f57f11224e00a42e8e6ab24f4f1ff3fb7e2",
+      "sha256": "a803979932c863b3a65f5c209493f89e27fae51ac6d1dc2c911c5f40601b52e9",
+      "bytes": 7345
     },
     {
       "path": "components/journey-replan.tsx",
@@ -809,16 +809,16 @@
     {
       "path": "lib/transitous.mjs",
       "mode": "100644",
-      "git_blob": "786c9a218108f2f1eb406ca273fca75711a2aa41",
-      "sha256": "5e70f7e24c06de0aba96a9d3d3eb4d7abb874ff35a4d7229d03db0579c5db77a",
-      "bytes": 10388
+      "git_blob": "07a2fb9d32d7fb3b3f9d095ba269104b6f8778bc",
+      "sha256": "e339c3e7639eb9fdcc399998734e0261614d6a99a0aadb08d01180d18481d4dd",
+      "bytes": 10617
     },
     {
       "path": "lib/types.ts",
       "mode": "100644",
-      "git_blob": "41f58154a2548b9c1be8d3773309bbf4a8163822",
-      "sha256": "73a724c8fe2ef1d1a4780cf6bf8a69187afef28f5565910062c167853cb58f05",
-      "bytes": 2114
+      "git_blob": "f5c3105971f7ef9519cf11114765e589d0d7a7e5",
+      "sha256": "26941e66d23696a7d6c943486fd8bf864e8a83073349d01953e3d50d1aea2f3f",
+      "bytes": 2135
     },
     {
       "path": "lib/urls.mjs",
@@ -1355,9 +1355,9 @@
     {
       "path": "tests/transitous.test.mjs",
       "mode": "100644",
-      "git_blob": "97c0ccfa784f8e47430d23ee13818f940fb85bfe",
-      "sha256": "4f4de1cbdb890697d8443dc8bcc44a349acee4934039564e62bff63f5f237d10",
-      "bytes": 14890
+      "git_blob": "a19f3e17a14276e3d7a389a08ad8917a96670ccd",
+      "sha256": "ba16b9eb20f89d9e2a067da312a876e957155af11d04f9e842d5f503f4b24880",
+      "bytes": 15038
     },
     {
       "path": "tests/vrr.test.mjs",

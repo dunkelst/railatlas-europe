@@ -13,7 +13,7 @@ AGPL für den eigenen Programmcode und die Nutzung der breiteren Haltequelle
 freigegeben. AGPL-3.0-only ist umgesetzt; Fremddaten behalten ihre Bedingungen.
 Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
-Version **25**, Quelle `5fe1125062c34589db351b2e69a184f14e39263d`,
+Version **26**, Quelle `72f0ef86e9e6c89b9b90deb510ec6c0b26ecf917`,
 199 App-Dateien im Herkunftsmanifest. 103 Tests, TypeScript und alle drei Builds
 bestanden. Gespeichert, Veröffentlichung nach GitHub-Abgleich. Publikum bleibt
 unverändert. Die vorigen UI-/Halte-Nachweise von Version 24 sind historisch.
@@ -52,7 +52,7 @@ Die gemeinsame UI enthält die Attribution auch im Reiseergebnis.
 
 ## Nächste Schritte und Grenzen
 
-1. Version 25 nach GitHub-Abgleich veröffentlichen und gemeldete Suche im Browser
+1. Version 26 nach GitHub-Abgleich veröffentlichen und gemeldete Suche im Browser
    prüfen. Historische Version 24 ist geprüft: API HTTP 200 in vier Ländern;
    Start, Zwischenziel und Ziel aus echten Busmarkern übernommen. Prager Probe
    nach Feed-Zusammenführung acht Marker; zehn Einträge vor Zusammenführung.

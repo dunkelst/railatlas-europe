@@ -3,6 +3,13 @@
 ## Fortsetzung 26.10.2026: Verbindungssuche Friedhof → Römerstraße
 
 - 103 Regressionen und TypeScript erfolgreich.
+- Öffentliche Version 25 bestätigt den ursprünglichen Kartenhalte-Fall und die
+  Rückrichtung mit HTTP 200 und je drei Optionen. Im Chrome zusätzlich die
+  getippten OSM-Halte Friedhof/Römerstraße ab 21:00 praktisch gesucht: drei
+  Optionen, darunter Bus 11/32 mit sieben Minuten Gesamtfußweg, 21:07–21:34.
+  Die abschließende Version ersetzt technische Koordinatenlabels durch die
+  gewählten Haltenamen und unterscheidet unbestätigte Fahrzeuggeometrie von
+  einem tatsächlich nicht gelieferten Verlauf.
 - Die neuen Kartenhalte ließen sich auswählen, aber die bisherige Namensauflösung
   von ÖBB/EFA erkannte die beiden lokalen Bushalte nicht. EFA erkannte sie nach
   einer separaten Diagnose per bestätigter DHID, lieferte jedoch keine Fahrten

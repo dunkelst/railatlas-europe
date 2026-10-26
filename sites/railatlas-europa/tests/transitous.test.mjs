@@ -73,7 +73,7 @@ test('Transitous map selections resolve through the existing timetable and inter
 test('Actual Friedhof to Römerstraße plans retain three full journeys, Bus 11/32, source walking paths and realtime',()=>{
  const [a,b]=endpoints(),parsed=parseTransitousJourneys(plan(),a,b,requested);
  assert.equal(parsed.journeys.length,3);const j=parsed.journeys[1];assert.deepEqual(j.legs.map(l=>l.line),['11','Fußweg','32']);assert.equal(j.departure,'2026-10-26T20:09:00.000Z');assert.equal(j.arrival,'2026-10-26T20:33:00.000Z');assert.equal(j.transfers,1);assert.ok(j.legs.some(l=>l.realtime));
- assert.ok(j.legs.filter(l=>!l.walking).every(l=>l.geometry.status==='missing'&&!l.geometry.segments.length));assert.equal(j.legs[1].geometry.status,'complete');assert.ok(j.legs.at(-1).stopovers.length>5);assert.equal(validateChain([j],[a,b],[]),true);assert.ok(j.attributions.some(a=>a.url==='https://transitous.org/sources/'));
+ assert.ok(j.legs.filter(l=>!l.walking).every(l=>l.geometry.status==='missing'&&l.geometry.reason==='unverified'&&!l.geometry.segments.length));assert.equal(j.legs[1].geometry.status,'complete');assert.ok(j.legs.at(-1).stopovers.length>5);assert.equal(validateChain([j],[a,b],[]),true);assert.ok(j.attributions.some(a=>a.url==='https://transitous.org/sources/'));
  assert.equal(parseTransitousJourneys(plan(),{...a,name:'Fremder Halt'},b,requested).journeys.length,0);assert.equal(parseTransitousJourneys(plan(),a,{...b,lat:b.lat+.01},requested).journeys.length,0);
 });
 
@@ -89,7 +89,7 @@ test('Unusable MOTIS alternatives preserve exclusions and cannot bypass cancella
 
 test('Coordinate access keeps the selected point within 30 metres for typed or intermediate stops',()=>{
  const [a,b]=endpoints(),d=plan();d.itineraries=d.itineraries.slice(0,1);const raw=d.itineraries[0].legs[0].from;delete raw.stopId;raw.vertexType='NORMAL';raw.name='Startpunkt';
- assert.equal(parseTransitousJourneys(d,a,b,requested).journeys.length,1);raw.lat+=.0005;assert.equal(parseTransitousJourneys(d,a,b,requested).journeys.length,0);
+ const parsed=parseTransitousJourneys(d,a,b,requested);assert.equal(parsed.journeys.length,1);assert.equal(parsed.journeys[0].legs[0].from.name,a.name);assert.equal(raw.name,'Startpunkt');raw.lat+=.0005;assert.equal(parseTransitousJourneys(d,a,b,requested).journeys.length,0);
 });
 
 test('Automatic common API falls back to the existing GTFS identities after name resolvers fail, before DB',async t=>{

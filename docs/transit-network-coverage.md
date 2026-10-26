@@ -1,6 +1,6 @@
 # Buslinien und Halte: Datenbasis und AGPL-Freigabe
 
-Stand 26.10.2026, Quellversion 25. Die zusätzliche Haltequelle verbessert die
+Stand 26.10.2026, Quellversion 26. Die zusätzliche Haltequelle verbessert die
 belegte Abdeckung. Vollständige europäische Netz- oder Fahrplanabdeckung ist
 weiterhin nicht nachgewiesen.
 
