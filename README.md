@@ -2,9 +2,31 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Stand entspricht Sites-Version **20**, Quellcommit `9e4953340c2fb3a0afc23beac2275b2e597e6e50`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Stand entspricht Sites-Version **21**, Quellcommit `6e7635875f32a0dc037d1fd9038b0661f8ee289e`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
-## Neu in Version 20: Ausweichen und unterwegs neu planen
+## Neu in Version 21: Busnetz ohne geplante Reise
+
+**Bus → Linien / Halte** zeigt ab Zoom 12 das allgemeine Netz im sichtbaren
+Kartenausschnitt. Dafür wird keine Reise berechnet. Die Kartenfunktionen der
+bereits angebundenen EFA-Auskunft liefern Halte, Linienzuordnung und tatsächliche
+Liniengeometrie; OSM/Overpass bleibt eine ergänzende Quelle. Die Quelle steht
+beim Netz. EFA-Halte behalten ihre Kennung für Start, Ziel und Zwischenziel.
+
+Der gemeldete Ausschnitt Welsede liefert live die Buslinien **40 und 45** sowie
+**Mitte und Hanebülten**, im erweiterten Clientausschnitt auch **Jägereiche**.
+Stabile Ausschnitte, begrenzte Caches und verzögerte Abfragen vermeiden neue
+Quellabfragen bei jeder kleinen Bewegung. Geladene Daten bleiben beim Nachladen
+und bei Fehlern sichtbar. Nur Halte zu aktivieren benötigt keine Liniengeometrie.
+
+**80 App-Tests, TypeScript und alle drei Builds bestanden.** Der echte
+unabhängige Node-HTTP-Pfad und die öffentliche Version-21-API bestätigen
+`/api/network` mit HTTP 200 ohne Fahrtsuche. Auch das ausgelieferte HTML
+enthält den Hinweis auf das allgemeine Netz. Die visuelle Browserabnahme ist offen: Die Erweiterung war in
+dieser Sitzung nicht verfügbar. Linienauswahl und europäische Abdeckung bleiben
+partiell; eine Netzlinie bestätigt keinen aktuellen Betrieb. Die bisherige
+Overpass-Quelle war bei einer kleinen Diagnoseabfrage nicht rechtzeitig erreichbar.
+
+## Seit Version 20: Ausweichen und unterwegs neu planen
 
 In der automatischen Auskunft lassen sich **Fußweg-Notlösungen** einschalten:
 15, 30 oder 60 Minuten und maximal 3 km **je Teilstrecke**. Zusätzliche vollständige
@@ -69,7 +91,7 @@ wird als Laufzeitersatz verwendet.
 
 ## Netzebenen
 
-Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus haben getrennte Schalter für Linien und Halte. Bahn ist voreingeschaltet. Das Bahnnetz zeigt OpenRailwayMap-Schieneninfrastruktur; die übrigen Linien sowie Halte kommen aus OSM für kleine sichtbare Ausschnitte ab Zoom 12. Haltestellen können als Start, Ziel oder Zwischenziel übernommen werden. Die Fahrplanauskunft muss sie danach anhand von Name und Lage bestätigen.
+Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus haben getrennte Schalter für Linien und Halte. Bahn ist voreingeschaltet. Das Bahnnetz zeigt OpenRailwayMap-Schieneninfrastruktur; Linien und Halte kommen aus EFA-Kartenfunktionen und ergänzend OSM/Overpass für kleine sichtbare Ausschnitte ab Zoom 12. Haltestellen können als Start, Ziel oder Zwischenziel übernommen werden. EFA-Kennungen bleiben erhalten; OSM-Halte muss die Fahrplanauskunft anhand von Name und Lage bestätigen.
 
 OSM ist kein Fahrplan und bestätigt keinen aktuellen Betrieb. Fehlende Geometrie bleibt offen. S-Bahn setzt eine entsprechende Routenkennzeichnung voraus; gemeinsame Bahnhöfe können mehreren Ebenen angehören. Anbieterfehler bleiben sichtbar und führen zu einer Abfragepause.
 
@@ -89,7 +111,7 @@ Danach **http://127.0.0.1:3000** öffnen. Oberfläche und alle APIs laufen aus d
 
 ## GitHub Pages
 
-`npm run build:pages` erzeugt dieselbe Oberfläche als statische Ausgabe. Es ist **keine ChatGPT-Serveradresse voreingestellt**. Für Live-Auskunft den eigenen HTTPS-Server in „Live-Auskunft einrichten“ verbinden oder beim Bau `RAILATLAS_API_ORIGIN` setzen. Karte, OSM-Netzebenen und der lokale Bahnhofskatalog funktionieren ohne Auskunftsserver. Pages kann die serverseitigen Anbieterabfragen selbst nicht ausführen.
+`npm run build:pages` erzeugt dieselbe Oberfläche als statische Ausgabe. Es ist **keine ChatGPT-Serveradresse voreingestellt**. Für Live-Auskunft den eigenen HTTPS-Server in „Live-Auskunft einrichten“ verbinden oder beim Bau `RAILATLAS_API_ORIGIN` setzen. Karte und lokaler Bahnhofskatalog funktionieren ohne Auskunftsserver; direkte Netzabfragen setzen die Browserfreigabe der jeweiligen Quelle voraus. Pages kann die serverseitigen Anbieterabfragen selbst nicht ausführen.
 
 Die bestehende [Pages-Veröffentlichung](https://dunkelst.github.io/railatlas-europe/) wurde bei diesem Source-Abgleich bewusst nicht ersetzt und entspricht noch Version 12 mit der damaligen gemeinsamen API. Der Pages-Workflow ist jetzt manuell und verlangt die eigene Serveradresse, damit beim Abgleich keine bestehende Live-Auskunft durch eine unkonfigurierte Veröffentlichung ersetzt wird. Aktueller Abnahmeort ist der oben verlinkte RailAtlas. Ein eigenständiger öffentlicher Auskunftsserver wurde hier nicht angelegt.
 
@@ -100,14 +122,14 @@ Die bestehende [Pages-Veröffentlichung](https://dunkelst.github.io/railatlas-eu
 - Der gebaute eigenständige Server liefert App-CSS, Leaflet-CSS und Leaflet-JS mit HTTP 200, korrekten MIME-Typen und bytegleichem Inhalt. Die externe visuelle Abnahme bleibt offen.
 
 
-- **72 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
+- **80 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
 - Neuer echter lokaler HTTP-Servertest einschließlich Dateien, Health, CORS, JSON-, Datums- und Größenfehlern.
 - Veröffentlichte ÖBB-Auskunft: Wien Karlsplatz → Stephansplatz am 24.10.2026, U1 18:27–18:29, Wiener Linien, einschließlich eines gelieferten Bauhinweises.
-- Die neue Kartenoberfläche ist funktional eingebaut. Ihre vollständige visuelle Live-Abnahme ist offen: CSS-Anfragen werden der Prüfumgebung mit HTTP 403 / Cloudflare 1010 verweigert; die CSS-Dateien sind im Paket vorhanden. Neue Overpass-Livedaten waren hier noch nicht erfolgreich bestätigt. Quellenfehler werden nicht mit Beispieldaten verdeckt.
+- Die vollständige visuelle Live-Abnahme ist offen. Frühere Prüfungen trafen auf eine CSS-Sicherheitsgrenze; aktuell war die Browser-Erweiterung nicht verfügbar. Neue EFA-Netzdaten sind live bestätigt, Overpass-Livedaten weiterhin nicht. Quellenfehler werden nicht mit Beispieldaten verdeckt.
 - Sperrungs-/Echtzeitabdeckung bleibt partiell. VRR / EFA ist ein Testzugang ohne garantierte Verfügbarkeit. Der direkte DB-Web-Fallback ist eingebaut, wurde auf dem Worker jedoch mit HTTP 403 blockiert. EFA-BW, direkter VBB-Zugang und Trainline Partner Solutions sind nicht angeschlossen.
 - [Gemeinsamer Prüfstand](sites/railatlas-europa/QA.md) · [Fortführungsstand](docs/continuation-2026-10-24.md)
 
-`node tools/verify-sites-source.mjs` prüft die 185 übernommenen Dateien gegen das Herkunftsmanifest. `npm run test:app` führt die aktuellen App-Regressionen aus. Die bestehende OSM-/Graph-Pipeline, ihre Daten und Regressionen bleiben erhalten; `npm test` führt deren Node-/Python-Prüfungen aus. Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenzen liegen unter `sites/railatlas-europa/public`.
+`node tools/verify-sites-source.mjs` prüft die 189 übernommenen Dateien gegen das Herkunftsmanifest. `npm run test:app` führt die aktuellen App-Regressionen aus. Die bestehende OSM-/Graph-Pipeline, ihre Daten und Regressionen bleiben erhalten; `npm test` führt deren Node-/Python-Prüfungen aus. Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenzen liegen unter `sites/railatlas-europa/public`.
 
 
 

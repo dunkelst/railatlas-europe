@@ -17,6 +17,24 @@ Queries used the actual StopFinder IDs:
 
 These are historical parser fixtures, never a runtime timetable or fallback.
 
+On 26 October 2026, three independent map replies for the Welsede viewport
+51.99572,9.3293,52.00299,9.35194 were recorded. These are not trip replies:
+
+- `efa-map-welsede-stops.json`: XML_COORD_REQUEST using a WGS84 bounding box;
+  actual stops Mitte (`de:03252:4450`) and Hanebülten (`de:03252:4440`).
+- `efa-map-welsede-lines.json`: XML_SERVINGLINES_REQUEST with `type_sl=stopID`
+  and Mitte's source ID; buses 40 and 45, both directions.
+- `efa-map-welsede-geometry.json.gz`: XML_GEOOBJECT_REQUEST with the four
+  returned line IDs as repeated `line` parameters and `filterDate=20261026`.
+  All source coordinate sequences are preserved, including separate fragments.
+
+GeoObject's generic product class zero is not the operating mode: the parser
+joins the exact line ID to the authoritative ServingLines metadata. Fixtures
+are complete source replies, gzip only compresses the geometry file. Tests
+check that the map can load without any journey query and does not invent
+coordinates or join geometry gaps. Source parameter documentation:
+https://mobidata-bw.de/daten/portal/efa-json/EFA_JSON_API_Training_EN_2.9.pdf.
+
 On 25 October 2026, two further complete rapidJSON replies were recorded for
 26 October. `efa-rohdental-turmstrasse-walking.json.gz` uses coordinates
 52.200076,9.249135 → 52.525547,13.3413274, requested from local midnight.

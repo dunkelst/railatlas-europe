@@ -1,5 +1,45 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
+## Fortsetzung 26.10.2026: allgemeines Busnetz ohne Reise
+
+- 80 Regressionen bestanden (`node --test --test-reporter=tap tests/*.test.mjs`),
+  TypeScript und alle drei Produktionsbuilds erfolgreich. Acht neue Prüfungen
+  betreffen echte EFA-Kartendaten, Anbieterkennungen, Geometriefragmente,
+  stabile Ausschnitte, Nur-Halte-Abfragen, Cacheabdeckung, Quellenfehler,
+  Abbruch und die Beachtung von Retry-After.
+- Der gemeldete Welsede-Ausschnitt
+  `[51.99572,9.3293,52.00299,9.35194]` liefert im echten gemeinsamen Node-Pfad
+  die Buslinien 40 und 45 sowie Mitte und Hanebülten. Die Anfrage verwendet
+  ausschließlich XML_COORD_REQUEST, XML_SERVINGLINES_REQUEST und
+  XML_GEOOBJECT_REQUEST, keine Fahrtsuche. Die zwei Linien besitzen jeweils
+  zwei sichtbare Quellfragmente mit zusammen 150 Originalpunkten.
+- Der eigenständige Node-HTTP-Server bestätigt `/api/network` mit HTTP 200
+  auch für den tatsächlich vom Client erweiterten Rasterausschnitt
+  `[51.99218,9.32812,52.00391,9.35938]`: Linien 40/45 und zusätzlich
+  Jägereiche. Eine folgende Nur-Halte-Abfrage nutzt in drei Millisekunden
+  dieselben bereits geladenen Daten, ohne weitere Anfrage bei der Quelle.
+- Die Linienklasse stammt aus ServingLines; die generische GeoObject-Klasse
+  null darf diese Buslinien nicht als Bahn darstellen. Gegensequenzen werden
+  über die gelieferte globale Linienkennung zusammengefasst, Geometrielücken
+  bleiben erhalten. Halte behalten echte EFA-IDs für den gemeinsamen
+  Start-/Ziel-/Zwischenzielpfad.
+- Die Quelle private.coffee war bei einer kleinen echten Abfrage nicht
+  rechtzeitig erreichbar; Worker-Logs zeigen den vorherigen 40-Sekunden-Timeout.
+  Die bereits angebundene EFA-Auskunft ergänzt nun den unabhängigen Netzpfad.
+  OSM bleibt eine ergänzende Quelle, ohne wiederholte Anfragen während einer
+  Anbieterpause. Es werden keine Zugangssperren umgangen.
+- Linien und Halte bleiben ab Zoom 12 einzeln schaltbar. Stabile Rasterausschnitte
+  und ein kurzer begrenzter Cache vermeiden Neuabfragen bei kleinen Bewegungen.
+  Bereits geladene Daten bleiben beim Nachladen und bei Fehlern erhalten.
+  Nur Halte erfordern keine Liniengeometrie; Teilausfälle bleiben sichtbar.
+- Die Quellabdeckung ist ausdrücklich partiell. Höchstens vier repräsentative
+  Halte und zwölf Linienvarianten je Ausschnitt begrenzen die Last; eine
+  begrenzte Auswahl erhält einen Hinweis. Keine Zusage zum aktuellen Betrieb.
+- Die verwaltete Vorschau meldet ihren Start. Die Browser-Erweiterung steht
+  dieser Sitzung jedoch nicht zur Verfügung. Die visuelle Abnahme sowie die
+  tatsächlichen Klicks auf die Halte-Schaltflächen werden nicht als bestanden
+  behauptet. Es wurde keine alternative URL zur Umgehung einer Sperre benutzt.
+
 ## Fortsetzung 25.10.2026: Fußweg-Notlösungen und Neuplanung
 
 - Die Wiederherstellung verwendet den tatsächlich veröffentlichten Quellcommit

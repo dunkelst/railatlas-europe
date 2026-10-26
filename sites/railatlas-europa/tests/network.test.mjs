@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {NETWORK_MODES,defaultNetworkLayers,validateBounds,networkMode,networkQuery,geometrySegments,parseNetwork,fetchNetwork} from '../lib/network.mjs';
+import {NETWORK_MODES,defaultNetworkLayers,validateBounds,networkMode,networkQuery,geometrySegments,parseNetwork,fetchOsmNetwork as fetchNetwork} from '../lib/network.mjs';
 const bbox=[49.1,9.1,49.2,9.3];
 const point=(id,name,tags={})=>({type:'node',id,lat:49.15,lon:9.2,tags:{name,...tags}});
 const route=(id,route,ref,stop,extra={})=>({type:'relation',id,tags:{type:'route',route,ref,...extra},members:[{type:'node',ref:stop,role:'stop',lat:49.15,lon:9.2},{type:'way',ref:id+100,role:'',geometry:[{lat:49.14,lon:9.19},{lat:49.15,lon:9.2},null,{lat:49.16,lon:9.21},{lat:49.17,lon:9.22}]}]});
@@ -39,7 +39,7 @@ test('an upstream rate limit pauses further requests instead of retrying on ever
 });
 
 test('queued requests are not cut off at 25 seconds; timeout is readable and pauses new calls',async t=>{
- const {fetchNetwork:request}=await import('../lib/network.mjs?timeout-regression');
+ const {fetchOsmNetwork:request}=await import('../lib/network.mjs?timeout-regression');
  t.mock.timers.enable({apis:['setTimeout']});
  let signal;
  const upstream=t.mock.method(globalThis,'fetch',(_url,init)=>new Promise((_resolve,reject)=>{signal=init.signal;signal.addEventListener('abort',()=>reject(new DOMException('upstream aborted','AbortError')),{once:true});}));
@@ -50,7 +50,7 @@ test('queued requests are not cut off at 25 seconds; timeout is readable and pau
  assert.equal(upstream.mock.callCount(),1);
 });
 test('user cancellation stays a cancellation and does not impose a provider cooldown',async t=>{
- const {fetchNetwork:request}=await import('../lib/network.mjs?cancel-regression');
+ const {fetchOsmNetwork:request}=await import('../lib/network.mjs?cancel-regression');
  const controller=new AbortController();
  const upstream=t.mock.method(globalThis,'fetch',(_url,init)=>new Promise((_resolve,reject)=>{init.signal.addEventListener('abort',()=>reject(new DOMException('upstream aborted','AbortError')),{once:true});}));
  const first=assert.rejects(request(bbox,['subway'],controller.signal),{name:'AbortError'});controller.abort();await first;

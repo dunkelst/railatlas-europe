@@ -1,6 +1,6 @@
 # RailAtlas Europa – aktueller Fortführungsstand
 
-Aktualisiert am 25.10.2026. Projekt `appgprj_6ad7024dce688191b17cca024104c456`.
+Aktualisiert am 26.10.2026. Projekt `appgprj_6ad7024dce688191b17cca024104c456`.
 Site: https://railatlas-europa.cocoaamber33.chatgpt.site
 Repository: https://github.com/dunkelst/railatlas-europe
 
@@ -13,29 +13,38 @@ erhalten. Keine zweite Anwendung, keine Weiterleitung als GitHub-Ersatz.
 
 ## Aktuell gesichert und veröffentlicht
 
-Version **20**, Quelle `9e4953340c2fb3a0afc23beac2275b2e597e6e50`,
-185 App-Dateien im Herkunftsmanifest. Die Veröffentlichung wurde nativ bestätigt.
-72 Tests, TypeScript und alle drei Builds sind erfolgreich. Zwei reale Fälle
-wurden anschließend sowohl über die öffentliche API als auch über den eigenen
-Node-HTTP-Server mit HTTP 200 und je drei Optionen geprüft:
+Version **21**, Quelle `6e7635875f32a0dc037d1fd9038b0661f8ee289e`,
+189 App-Dateien im Herkunftsmanifest. Nativ auf der bestehenden öffentlichen Site
+veröffentlicht. 80 Tests, TypeScript und alle drei Builds bestanden.
 
-- Rohdental → Punkt nahe U Turmstraße: 26.10.2026, 06:53–12:49, mit Gehweg über
-  Bellevue, Bus 27/20, S5, ICE 553 und S7.
-- Tannenweg → Punkt am Bahnhof Hessisch Oldendorf: 06:45–07:14, anfangs 341 m
-  zu Fuß. Quellgehzeit sechs Minuten; zwei Minuten Reserve vor Bus 27 um 06:53.
+Die allgemeinen Netzschalter arbeiten ab Zoom 12 unabhängig von einer geplanten
+Reise. Die frühere Overpass-Abfrage hing 40 Sekunden ohne Quelldaten; die bereits
+angebundene EFA-Auskunft liefert nun Kartenhalte, deren bedienende Linien und
+Geometrien über ihre nativen Kartenmethoden, ohne Fahrtsuche. OSM bleibt als
+weitere Quelle erhalten. Stabile Rasterausschnitte und begrenzte Caches vermeiden
+ständige Neuabfragen. Geladene Daten bleiben beim Nachladen und Fehlern sichtbar.
 
-Neue Funktionen: freiwillige Fußweg-Optionen mit Budget (15/30/60 Min. und 3 km
-je Teilstrecke), rote gestrichelte Quellwege und Kennzeichnung, mehrere auswählbare
-Reisen sowie Neuplanung ab gewähltem Reisehalt mit verbleibenden Zwischenzielen.
-Ein künstliches Testnetz bestätigt bessere Ankunft trotz anfänglicher Rückfahrt.
+Live im echten Node-HTTP-Pfad und auf der öffentlichen Version-21-API:
+Bus 40/45, Welsede Mitte und Hanebülten;
+im erweiterten Clientausschnitt zusätzlich Jägereiche. `/api/network` liefert
+HTTP 200; eine folgende Nur-Halte-Abfrage nutzt die vorhandenen Daten.
+Die EFA-Stop-IDs werden für Start, Ziel und Zwischenziel erhalten, nicht als OSM
+oder EVA umetikettiert. Die Quelle und partielle Abdeckung bleiben sichtbar.
+Höchstens vier repräsentative Halte und zwölf Linienvarianten je Ausschnitt;
+begrenzte Auswahl ausdrücklich benennen. Source-Geometriefragmente nicht verbinden.
 
-Die jüngsten Änderungen mussten aus dem gespeicherten Stand rekonstruiert werden:
-Ungesicherte Dateien des vorherigen Umgebungsausfalls waren verloren. Dieser neue
-Stand wurde tatsächlich neu geprüft, gesichert und veröffentlicht.
+Alle Version-20-Funktionen bleiben erhalten: freiwillige Fußweg-Optionen mit
+Budget (15/30/60 Min. und 3 km je Teilstrecke), rote gestrichelte Quellwege,
+mehrere vollständige Alternativen und Neuplanung ab Reisehalt mit offenen
+Zwischenzielen. Historische echte Version-20-Prüfungen beider API-Pfade:
+Rohdental → Punkt nahe U Turmstraße am 26.10.2026, 06:53–12:49, und Tannenweg →
+Punkt am Bahnhof Hessisch Oldendorf, 06:45–07:14, je drei Optionen.
+Ein künstliches Testnetz bestätigt bessere Ankunft trotz anfänglicher Rückfahrt;
+daraus keine bestätigte echte Ausweichfahrt ableiten.
 
 ## Nächste sachliche Schritte
 
-1. Neue Oberfläche praktisch im Browser abnehmen, sobald die zulässige Vorschau
+1. Allgemeines Netz und Halteübernahme praktisch im Browser abnehmen, sobald die zulässige Vorschau
    funktioniert. Keine Sicherheitsgrenze umgehen.
 2. Gezielte Ausweichsuche über verschiedene Umstiegspunkte und anfängliche Fahrten
    vom Ziel weg ausbauen, auf vollständigen echten Fahrplanantworten basierend.
@@ -57,6 +66,5 @@ wird verworfen. Der Nutzer muss bei Neuplanung tatsächlichen Halt und Zeit prü
 Kein GPS-Livenachweis oder neue visuelle Browserabnahme wird behauptet.
 Störungs- und europäische Fahrplanabdeckung bleiben partiell.
 
-Der stündliche Dev Cycle ist wieder aktiviert. Vor Änderungen neueste gesicherte
-Quelle lesen, keine parallelen Änderungen am selben Projekt erzeugen und nur
-echten geprüften Fortschritt veröffentlichen. [Ausbauvertrag](routing-resilience.md).
+Vor Änderungen neueste gesicherte Quelle lesen, keine parallelen Änderungen am
+selben Projekt erzeugen und nur echten geprüften Fortschritt veröffentlichen. [Ausbauvertrag](routing-resilience.md).

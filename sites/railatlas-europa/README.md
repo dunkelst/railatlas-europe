@@ -1,5 +1,25 @@
 # RailAtlas Europa
 
+## Allgemeine Buslinien und Halte (26.10.2026)
+
+Die vorhandenen Netzschalter laden Linien und Halte für den sichtbaren
+Kartenausschnitt **auch ohne geplante Reise**, ab Zoom 12. Die allgemeine
+Netzabfrage verwendet die Karten-/Haltestellen-/Linienfunktionen der bereits
+angebundenen EFA-Auskunft; bei fehlenden Daten bleibt OSM/Overpass als weitere
+Quelle erhalten. Die Ergebnisquelle steht auf der Karte. Es wird keine Reise
+berechnet, um das Netz einzublenden.
+
+Kleine Kartenbewegungen verwenden stabile Ausschnitte und kurzzeitig bereits
+geladene Daten. Beim Nachladen und bei Fehlern bleiben vorhandene Netzdaten
+sichtbar. Nur Halte zu aktivieren benötigt keine Liniengeometrie. EFA-Halte
+behalten ihre Anbieterkennung für Start, Ziel und Zwischenziel.
+
+Die Linienauswahl bleibt begrenzt und wird bei größeren Ausschnitten als
+unvollständig gekennzeichnet. Es gibt keine Zusage einer vollständigen
+europaweiten Abdeckung oder aktuellen Bedienung. Der gemeldete Ausschnitt
+Welsede liefert live Bus 40/45 sowie Mitte und Hanebülten, unabhängig von einer
+Reise. Die Overpass-Quelle war bei dieser Prüfung nicht rechtzeitig erreichbar.
+
 ## Ausweichoptionen und Neuplanung (25.10.2026)
 
 In der automatischen Auskunft lassen sich zusätzliche **Fußweg-Notlösungen**
@@ -52,8 +72,8 @@ Europäische Reiseplanung für steffen_fun|x mit öffentlicher Testoberfläche u
 - Meldungen auf Reise-, Abschnitts-, Fahrt-, Fußweg- und Haltebene werden dedupliziert und ihren Gültigkeits-/Ereigniszeiträumen entsprechend angezeigt. Betriebs- und Sperrhinweise bleiben auch bei geschlossenem Reiseverlauf sichtbar. Ausfälle, nicht erreichbare Fahrten und gesperrter Ein-/Ausstieg werden ausgeschlossen. Eine vollständige europaweite Sperrungs- oder Echtzeitabdeckung kann die öffentliche Quelle nicht bestätigen und wird nie behauptet; keine aus Text erratenen Umleitungen. Erneute Suche fragt ohne Fahrplan-Cache neu ab.
 - Alle angezeigten Reisezeiten in Europe/Berlin, einschließlich korrektem Tageswechsel und Sommer-/Winterzeit. Die Eingabemaske weist darauf hin.
 - Öffentliche Testbereitstellung auf Sites. GitHub enthält dieselbe Oberfläche und dieselbe Anbieter-/Routinglogik für einen eigenen Node-Server; die unabhängige Anwendung benötigt keine ChatGPT-API.
-- Unabhängige Kartenebenen für Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus. Linien und Halte sind einzeln schaltbar, Bahn ist voreingeschaltet. Das Bahnnetz nutzt OpenRailwayMap-Schieneninfrastruktur; OSM-Linienrelationen und Halte werden für kleine sichtbare Ausschnitte ab Zoom 12 über Overpass geladen. Quellenlücken und Fehler werden ausgewiesen. OSM ist kein Echtzeitfahrplan.
-- OSM-Halte lassen sich direkt als Start, Ziel oder Zwischenziel übernehmen. Die Fahrplanauskunft muss den Halt weiterhin anhand von Name und Lage bestätigen.
+- Unabhängige Kartenebenen für Bahn, S-Bahn, U-Bahn, Tram/Stadtbahn und Bus. Linien und Halte sind einzeln schaltbar, Bahn ist voreingeschaltet. Das Bahnnetz nutzt OpenRailwayMap-Schieneninfrastruktur; für kleine sichtbare Ausschnitte ab Zoom 12 liefern die EFA-Kartenfunktionen und ergänzend OSM/Overpass Linien und Halte. Quellenlücken und Fehler werden ausgewiesen. Das Netz ist kein Echtzeitfahrplan.
+- Kartenhalte lassen sich direkt als Start, Ziel oder Zwischenziel übernehmen. EFA-Halte behalten ihre Anbieterkennung; OSM-Halte muss die Fahrplanauskunft weiterhin anhand von Name und Lage bestätigen.
 
 ## Daten und Lizenzen
 
@@ -85,7 +105,7 @@ Danach `http://127.0.0.1:3000` öffnen. Der Node-Server liefert die gebaute Ober
 
 Bei einem eigenen HTTPS-Reverse-Proxy `HOST=0.0.0.0` und `PUBLIC_ORIGIN=https://dein-server.example` setzen. `PUBLIC_ORIGIN` gibt den öffentlichen Ursprung für die gleiche CORS-Prüfung vor. TLS wird am Reverse-Proxy terminiert. Für eine separate GitHub-Pages-Oberfläche ist ausschließlich der bestehende GitHub-Ursprung freigegeben.
 
-`npm run build:pages` erzeugt die statische Oberfläche. Sie hat keine voreingestellte ChatGPT-Serveradresse. Für Live-Auskunft in „Live-Auskunft einrichten“ den eigenen HTTPS-Server verbinden; `/api/health` prüft die Kompatibilität. Alternativ beim Build `RAILATLAS_API_ORIGIN` setzen. Die Serveradresse wird nur im eigenen Browser gespeichert; sie enthält keine Zugangsdaten. Ohne Server bleiben Karte, OSM-Netzebenen und lokaler Stationskatalog nutzbar. GitHub Pages allein kann die serverseitige Fahrplanauskunft nicht ausführen.
+`npm run build:pages` erzeugt die statische Oberfläche. Sie hat keine voreingestellte ChatGPT-Serveradresse. Für Live-Auskunft in „Live-Auskunft einrichten“ den eigenen HTTPS-Server verbinden; `/api/health` prüft die Kompatibilität. Alternativ beim Build `RAILATLAS_API_ORIGIN` setzen. Die Serveradresse wird nur im eigenen Browser gespeichert; sie enthält keine Zugangsdaten. Ohne Server bleiben Karte, Netzebenen bei erlaubtem Direktzugriff auf deren Quelle und lokaler Stationskatalog nutzbar. GitHub Pages allein kann die serverseitige Fahrplanauskunft nicht ausführen.
 
 ### Übernahme von Kartenhalten
 

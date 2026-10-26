@@ -8,8 +8,9 @@ const VRR_PROVIDER = {id:'vrr',idField:'vrrId',label:VRR_SOURCE,base:'https://op
 export const EFA_PROVIDER = {id:'efa',idField:'efaId',label:EFA_SOURCE,base:'https://www.efa.de/efa/',warning:''};
 export const validVrrId = id => typeof id === 'string' && /^(?:de:\d+:\d+(?::[\w-]+)*|\d{5,12})$/.test(id);
 async function request(method, params, signal, provider=VRR_PROVIDER) {
- const url = new URL(method, provider.base);
- url.search = new URLSearchParams({outputFormat:'rapidJSON',coordOutputFormat:'WGS84[dd.ddddd]',language:'de',...params}).toString();
+ const url = new URL(method, provider.base), query=new URLSearchParams({outputFormat:'rapidJSON',coordOutputFormat:'WGS84[dd.ddddd]',language:'de'});
+ for(const [key,value] of Object.entries(params))if(Array.isArray(value)){for(const item of value)query.append(key,String(item));}else query.set(key,String(value));
+ url.search=query.toString();
  const data = await fetchJSON(url, {}, signal, 22000);
  const error = data.systemMessages?.find(m => m.type === 'error');
  // Broker ambiguity/no-match replies are valid station search results, even
@@ -166,6 +167,12 @@ export async function getVrrJourney(from,to,departure,signal,provider=VRR_PROVID
 
 // The two EFA instances share their parser, validation and geometry handling.
 export const findEfaStations=(query,signal)=>findVrrStations(query,signal,EFA_PROVIDER);
+let efaMapNextRequestAt=0;
+export async function requestEfaMap(method,params,signal){
+ signal?.throwIfAborted();
+ if(Date.now()<efaMapNextRequestAt)throw Error('Die Karten-Linienauskunft pausiert nach einem Anbieterfehler. Bitte später erneut laden.');
+ try{return await request(method,params,signal,EFA_PROVIDER);}catch(error){if(!signal?.aborted&&['UPSTREAM_UNAVAILABLE','SOURCE_RESPONSE_INVALID'].includes(error.code))efaMapNextRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
+}
 export const getEfaJourney=(from,to,departure,signal)=>getVrrJourney(from,to,departure,signal,EFA_PROVIDER);
 
 export const getEfaJourneys=(from,to,departure,signal)=>getVrrJourney(from,to,departure,signal,EFA_PROVIDER,true);

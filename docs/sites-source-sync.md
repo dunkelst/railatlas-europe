@@ -1,7 +1,7 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **20**, Quellcommit `9e4953340c2fb3a0afc23beac2275b2e597e6e50`.
-**185** Dateien dieses Commits liegen bytegleich unter `sites/railatlas-europa`;
+Sites-Version **21**, Quellcommit `6e7635875f32a0dc037d1fd9038b0661f8ee289e`.
+**189** Dateien dieses Commits liegen bytegleich unter `sites/railatlas-europa`;
 das generierte `tsconfig.tsbuildinfo` ist ausgenommen. Das Herkunftsmanifest
 enthält Git-Blobs, SHA-256 und Dateigrößen. Die Paritätsprüfung läuft vor der
 Installation in GitHub CI. Der Dokumentationscommit selbst ersetzt keinen
@@ -13,7 +13,7 @@ abweichenden App-Quellstand.
 | Styles/Katalog/Leaflet | lokale Assets | lokale Assets | Assets mit Repository-Präfix |
 | API | `lib/api.mjs` | derselbe Handler | ausdrücklich eingerichteter eigener Server |
 | Anbieterparser | gemeinsame Module | dieselben Module | über den eigenen Server |
-| OSM-Netze | gemeinsame API | derselbe API-Pfad | eigene API oder direkter OSM-Abruf |
+| Allgemeine Netze | gemeinsame EFA-/OSM-API | derselbe API-Pfad | eigene API oder erlaubter Direktzugriff |
 
 ## Ausführen
 
@@ -34,15 +34,18 @@ Bindung im eigenen Container; Standard ist lokale Bindung.
 
 ## Tatsächlich geprüft
 
-- 72 App-Regressionen, TypeScript, Worker-, Pages- und Standalone-Clientbuild.
-- Version 20 wurde nativ veröffentlicht; die vorhandene öffentliche Testfreigabe
+- 80 App-Regressionen, TypeScript, Worker-, Pages- und Standalone-Clientbuild.
+- Version 21 wurde nativ veröffentlicht; die vorhandene öffentliche Testfreigabe
   blieb erhalten: https://railatlas-europa.cocoaamber33.chatgpt.site .
-- Öffentliche API und eigener Node-HTTP-Pfad: je HTTP 200 und drei Fußweg-Optionen
+- Historische Prüfung von Version 20, öffentliche API und eigener Node-HTTP-Pfad: je HTTP 200 und drei Fußweg-Optionen
   für Rohdental → Berliner Zielpunkt bei U Turmstraße am 26.10.2026, erste Reise
   06:53–12:49 Europe/Berlin. Bus 27/20, S5, ICE 553, S7 und echte Quellfußwege.
 - Öffentliche API und Node: Tannenweg → Punkt am Bahnhof Hessisch Oldendorf,
   drei Optionen; erste 06:45–07:14. Erster Gehweg 341 m/sechs Minuten, berechneter
   früherer Start für zwei Minuten Reserve, unveränderte Busabfahrt 06:53.
+- Version 21: allgemeines Busnetz im Welsede-Ausschnitt ohne Fahrtsuche.
+  Node-HTTP-Pfad und öffentliche API liefern HTTP 200 mit Linien 40/45,
+  Mitte, Hanebülten und Jägereiche. Die folgende Nur-Halte-Abfrage nutzt den vorhandenen Cache.
 - Gebaute eigenständige JS-/CSS-/Leaflet-Dateien liefern HTTP 200 mit richtigen
   MIME-Typen. Eine neue visuelle Browserabnahme wird damit nicht behauptet.
 
@@ -60,7 +63,7 @@ für den aufgezeichneten Fall funktioniert. Dieser Zugriffsgrenze wird nicht
 über Proxies oder andere Identitäten ausgewichen. EFA-Fußwegoptionen sind eine
 eigenständige Abfrage der bereits angebundenen Quelle.
 
-Die visuelle Abnahme der neuen Bedienelemente ist offen. Die zuvor fehlgeschlagene
-verwaltete Vorschau und Browser-Sicherheitsgrenze wurden nicht umgangen.
+Die visuelle Abnahme der neuen Bedienelemente ist offen. Die aktuelle Browser-Erweiterung war nicht verfügbar. Frühere Vorschau- und
+Browser-Sicherheitsgrenzen wurden nicht umgangen.
 Echtzeit-/Sperrungsabdeckung und europaweite ÖPNV-Abdeckung bleiben partiell.
 [Ausweichplanung und nächster Ausbau](routing-resilience.md).
