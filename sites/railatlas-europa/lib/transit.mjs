@@ -10,11 +10,11 @@ export function hafasTime(date,time,offset){
 
 // HAFAS cfg.polyEnc=GPA uses Google's documented delta polyline encoding (1e-5 degrees).
 // Keep source fragments separate: joining them would invent a path across missing geometry.
-export function decodePolyline(encoded){
- if(typeof encoded!=='string'||encoded.length>2000000)return [];
+export function decodePolyline(encoded,precision=5){
+ if(typeof encoded!=='string'||encoded.length>2000000||!Number.isInteger(precision)||precision<0||precision>7)return [];
  let i=0,lat=0,lon=0;const points=[];
  const value=()=>{let n=0,shift=0,b;do{if(i>=encoded.length||shift>30)throw Error('Ungültige Geometrie');b=encoded.charCodeAt(i++)-63;if(b<0||b>63)throw Error('Ungültige Geometrie');n|=(b&31)<<shift;shift+=5;}while(b>=32);return n&1?~(n>>>1):n>>>1;};
- try{while(i<encoded.length){lat+=value();lon+=value();const p=[lat/1e5,lon/1e5];if(Math.abs(p[0])>90||Math.abs(p[1])>180)return [];points.push(p);}return points.length>1?points:[];}catch{return [];}
+ try{while(i<encoded.length){lat+=value();lon+=value();const p=[lat/10**precision,lon/10**precision];if(Math.abs(p[0])>90||Math.abs(p[1])>180)return [];points.push(p);}return points.length>1?points:[];}catch{return [];}
 }
 export function routeGeometry(raw,common,from,to){
  const owner=raw.jny||raw.gis||{},refs=owner.polyG?.polyXL||[],polys=refs.length?refs.map(i=>common.polyL?.[i]):owner.poly?[owner.poly]:[];

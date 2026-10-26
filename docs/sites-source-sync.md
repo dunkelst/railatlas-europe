@@ -1,7 +1,7 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **22**, Quellcommit `668d4edfb38e7a4c00974b1944bad297b4f4567b`.
-**189** Dateien dieses Commits liegen bytegleich unter `sites/railatlas-europa`;
+Sites-Version **23**, Quellcommit `ab76062553afa3566ba35cca9a1b50e80f32d69d`.
+**193** Dateien dieses Commits liegen bytegleich unter `sites/railatlas-europa`;
 das generierte `tsconfig.tsbuildinfo` ist ausgenommen. Das Herkunftsmanifest
 enthält Git-Blobs, SHA-256 und Dateigrößen. Die Paritätsprüfung läuft vor der
 Installation in GitHub CI. Der Dokumentationscommit selbst ersetzt keinen
@@ -34,8 +34,8 @@ Bindung im eigenen Container; Standard ist lokale Bindung.
 
 ## Tatsächlich geprüft
 
-- 82 App-Regressionen, TypeScript, Worker-, Pages- und Standalone-Clientbuild.
-- Version 22 wurde nativ veröffentlicht; die vorhandene öffentliche Testfreigabe
+- 88 App-Regressionen, TypeScript, Worker-, Pages- und Standalone-Clientbuild.
+- Version 23 wurde nativ veröffentlicht; die vorhandene öffentliche Testfreigabe
   blieb erhalten: https://railatlas-europa.cocoaamber33.chatgpt.site .
 - Historische Prüfung von Version 20, öffentliche API und eigener Node-HTTP-Pfad: je HTTP 200 und drei Fußweg-Optionen
   für Rohdental → Berliner Zielpunkt bei U Turmstraße am 26.10.2026, erste Reise
@@ -56,6 +56,14 @@ Bindung im eigenen Container; Standard ist lokale Bindung.
   geprüften Sichtbereich, auch auf der öffentlichen API. Diese Datenlücke bleibt
   ausdrücklich offen. Seite, neues App-CSS und Leaflet-CSS liefern HTTP 200;
   dies bestätigt die Auslieferung, keine visuelle Browserabnahme.
+
+- Version 23: Maßstabsprüfung im Karten-Cache und explizites Neuladen über die
+  gemeinsame API repariert. Echter Node-HTTP-Pfad bestätigt neue Abfragen bei
+  Heranzoomen/Neuladen und Wiederverwendung bei identischem Ausschnitt. Die
+  öffentliche API bestätigt den engeren Ausschnitt und frische Daten beim Neuladen.
+- Leichter manueller internationaler Halteprototyp in vier Ländern erfolgreich.
+  Er ist nicht öffentlich angeschlossen; Lizenzfreigabe und verlässliche
+  Liniengeometrie sind offen. [Quellen und Entscheidung](transit-network-coverage.md).
 
 ## Veröffentlichungsgrenzen
 

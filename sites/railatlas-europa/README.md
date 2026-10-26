@@ -1,5 +1,30 @@
 # RailAtlas Europa
 
+## Netzabruf und europäische Abdeckung (26.10.2026)
+
+Wesentliches Heranzoomen fragt einen engeren Ausschnitt neu ab. Eine grobe,
+unvollständige Netzauswahl wird dabei nicht weiter aus dem Cache übernommen.
+`Ausschnitt neu laden` erneuert den gemeinsamen Kartenabruf tatsächlich;
+Anbieterpausen bleiben erhalten. Fehlende Netzdaten bestätigen keine fehlende
+Busbedienung. Die regionale EFA-Abdeckung und die Verfügbarkeit öffentlicher
+Overpass-Dienste genügen weiterhin nicht für ein verlässliches europäisches Netz.
+
+`scripts/probe-transitous.mjs` prüft eine mögliche gemeinsame GTFS-Datenquelle
+manuell und mit begrenzten Antworten. Es ist **kein öffentlicher App-Anschluss**.
+Bushalte sind in vier Ländern live bestätigt; die experimentellen Heilbronner
+Linienwege sind berechnet und werden entsprechend gekennzeichnet. Vor einer
+öffentlichen Anbindung verlangt die API eine geeignete Open-Source-Lizenz für
+das Projekt. Eine solche Freigabe wurde noch nicht erteilt. Beispiele:
+
+```bash
+node scripts/probe-transitous.mjs 49.138,9.224,49.147,9.243 /tmp/heilbronn-stops.json
+```
+
+Quellen und Bedingungen: https://transitous.org/api/ und
+https://transitous.org/sources/. Keine Serienabfragen und kein Ersatz fehlender
+Quellgeometrie durch Luftlinien. `--routes` ist ein ausdrücklicher, größerer
+Prototypabruf des experimentellen Linienendpunkts, kein Laufzeit-Fallback.
+
 ## Konsistente Darstellung (26.10.2026)
 
 Automatische Auskunft, Fußweg-Einstellung und Neuplanung folgen der dunklen

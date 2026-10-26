@@ -66,6 +66,28 @@ test('An EFA map outage can use the existing independent OSM source',async t=>{
  const data=await module.fetchNetwork(bbox,['bus']);assert.match(data.source,/OpenStreetMap/);assert.equal(data.layers.bus.stops[0].name,'OSM source stop');assert.equal(osm,1);
 });
 
+test('Zooming into a partial overview fetches closer data while small pans still reuse it',async t=>{
+ clock(t);const module=await import('../lib/network.mjs?zoom-cache'),calls=mockMap(t);
+ const broad=[51.98,9.30,52.02,9.37];await module.fetchNetwork(broad,['bus'],undefined,'stops');assert.equal(calls.length,1);
+ assert.equal(networkCovers({bounds:broad,modes:['bus']},bbox,['bus']),false);
+ await module.fetchNetwork(bbox,['bus'],undefined,'stops');assert.equal(calls.length,2,'A closer query must not remain trapped in an incomplete large cache entry');
+ await module.fetchNetwork([51.996,9.33,52.002,9.35],['bus'],undefined,'stops');assert.equal(calls.length,2);
+});
+
+test('Explicit map refresh passes through the common API and bypasses its data cache',async t=>{
+ clock(t);const calls=mockMap(t),url='https://railatlas.example/api/network?'+new URLSearchParams({bbox:bbox.join(','),modes:'bus',detail:'stops'});
+ assert.equal((await handleApi(new Request(url))).status,200);assert.equal(calls.length,1);
+ assert.equal((await handleApi(new Request(url))).status,200);assert.equal(calls.length,1);
+ assert.equal((await handleApi(new Request(url+'&refresh=1'))).status,200);assert.equal(calls.length,2);
+});
+
+test('Explicit refresh also bypasses the independent OSM cache',async t=>{
+ clock(t);const module=await import('../lib/network.mjs?osm-refresh');let calls=0;
+ t.mock.method(globalThis,'fetch',async()=>{calls++;return Response.json({elements:[]});});
+ await module.fetchOsmNetwork(bbox,['bus']);await module.fetchOsmNetwork(bbox,['bus']);assert.equal(calls,1);
+ await module.fetchOsmNetwork(bbox,['bus'],undefined,true);assert.equal(calls,2);
+});
+
 test('A line-geometry outage preserves real stops with an explicit partial-data warning',async t=>{
  clock(t);const module=await import('../lib/network.mjs?geometry-failure');const calls=mockMap(t,u=>u.pathname.endsWith('XML_GEOOBJECT_REQUEST')?new Response('down',{status:503}):null);
  const data=await module.fetchNetwork(bbox,['bus']);assert.equal(data.layers.bus.stops.length,2);assert.equal(data.layers.bus.lines.length,0);assert.match(data.warning,/Halte bleiben sichtbar/);assert.ok(calls.every(u=>u.hostname==='www.efa.de'));

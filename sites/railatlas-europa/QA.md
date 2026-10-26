@@ -1,5 +1,48 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
+## Fortsetzung 26.10.2026: Zuverlässigkeit und europaweite Quellenprüfung
+
+- 88 Regressionen und TypeScript bestanden. Drei neue Regressionen sichern
+  maßstabsabhängige Caches und den tatsächlich erneuten Abruf über den
+  gemeinsamen API- und OSM-Pfad. Kleine Verschiebungen nutzen weiterhin den
+  Cache; wesentlich engere Ausschnitte übernehmen keine grobe Teilauswahl.
+- `Ausschnitt neu laden` übergibt `refresh=1` an die API. Anbieterpausen und
+  Abbruch bleiben gültig. Bisher konnte die Aktion erneut dieselben Daten aus
+  dem gemeinsamen Cache liefern. Heranzoomen konnte ebenfalls an einer
+  unvollständigen großen Antwort hängen bleiben. Beide Fehler sind behoben.
+- Echter Node-HTTP-Nachweis ohne Fahrtsuche: Der weite Welsede-Abruf liefert
+  13 Bushalte nach einer Quellenanfrage. Der engere Ausschnitt fragt die Quelle
+  erneut und liefert Mitte und Hanebülten. Die Wiederholung desselben Ausschnitts
+  bleibt bei zwei Quellenaufrufen; explizites Neuladen erhöht sie auf drei.
+  Alle vier HTTP-Antworten sind erfolgreich, Abdeckung und Cachewirkung getrennt
+  nachgewiesen.
+- Eine leere Sichtauswahl wird ausdrücklich als fehlende Netzdaten beschrieben,
+  nicht als erfolgreiche Bestätigung einer fehlenden Bedienung.
+- Die echte EFA-Koordinatenabfrage im Heilbronner Testbereich
+  `[49.138,9.224,49.147,9.243]` lieferte nur Finanzamt, Friedensplatz und Pfühlpark
+  mit Produktklasse 1 bzw. 1/17, keine als Bus ausgewiesenen Halte. Das ist eine
+  Grenze der Datenquelle zusätzlich zum Cachefehler.
+- Leichter manueller Transitous-/MOTIS-Prototyp mit ausdrücklichem Projekt-
+  User-Agent: BUS-Kartenabfrage liefert sieben Halte in Heilbronn, zwölf in
+  London, vier in Amsterdam und neun in Prag, jeweils HTTP 200. Die
+  Heilbronner Karmeliterstraße bleibt im eigenen GTFS-Quellnamensraum erhalten.
+- Die experimentelle Linienabfrage ist keine verlässliche Quelle bestätigter
+  Linienverläufe: Im kleinen Heilbronner Ausschnitt sind 47 Varianten mit vier
+  verschiedenen gelieferten Bezeichnungen sichtbar; sämtliche Wege tragen
+  `pathSource=ROUTED`, sind also berechnet. Das Probeskript kennzeichnet dies
+  ausdrücklich und verwirft fehlende Geometrien. Es ist nicht an die öffentliche
+  Anwendung angebunden. Eine Anfrage wurde bei zu großer Antwort begrenzt.
+- Die bestehende Polyline-Funktion unterstützt die von MOTIS explizit gelieferte
+  Genauigkeit sechs; ihr bisheriger HAFAS-Standard fünf bleibt unverändert.
+  Drei neue Offline-Tests prüfen echte Halte-/Polyline-Ausschnitte und die
+  Unterscheidung zwischen berechnetem und geliefertem Fahrplanpfad.
+- Transitous verlangt für die dauerhafte öffentliche Nutzung eine geeignete
+  Open-Source-Lizenz. Das GitHub-Repository ist öffentlich, besitzt aber keine
+  solche Lizenz. Die dafür nötige Freigabe des Eigentümers wird nicht aus der
+  früher erlaubten öffentlichen Testnutzung abgeleitet. Keine Kontaktaufnahme,
+  kein neues Konto und keine Infrastruktur beauftragt. Vollständige europäische
+  Abdeckung und eine neue visuelle Browserabnahme bleiben unbestätigt.
+
 ## Fortsetzung 26.10.2026: konsistente Einstellungen und sichtbare Netzdaten
 
 - 82 Regressionen und TypeScript erfolgreich. Zwei neue Fälle prüfen den

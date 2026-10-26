@@ -31,7 +31,8 @@ export function networkRequestBounds(bounds) {
   const expanded=[Math.floor(s/dy)*dy,Math.floor(w/dx)*dx,Math.ceil(n/dy)*dy,Math.ceil(e/dx)*dx].map((v,i)=>(i<2?Math.floor(v*1e5):Math.ceil(v*1e5))/1e5);
   try{return validateBounds(expanded);}catch{return bounds;}
 }
-export const networkCovers = (data, bounds, modes) => containsBounds(data?.bounds,bounds) && modes.every(mode=>data.modes?.includes(mode));
+// A partial overview is not a substitute for a substantially closer query.
+export const networkCovers = (data, bounds, modes) => containsBounds(data?.bounds,bounds) && modes.every(mode=>data.modes?.includes(mode)) && [0,1].every(axis=>data.bounds[axis+2]-data.bounds[axis]<=2*(bounds[axis+2]-bounds[axis]));
 export function networkMode(tags = {}) {
   const route = tags.route;
   if (route === 'bus' || route === 'trolleybus') return 'bus';
@@ -116,11 +117,11 @@ export function parseNetwork(data, bounds, modes) {
 }
 const cache = new Map();
 let nextRequestAt = 0;
-export async function fetchOsmNetwork(bounds, modes, signal) {
+export async function fetchOsmNetwork(bounds, modes, signal, refresh=false) {
   if(signal?.aborted)throw new DOMException('Abgebrochen', 'AbortError');
   const query = networkQuery(bounds, modes), key = query, found = cache.get(key);
-  if (found && Date.now() - found.at < 300000) return found.data;
-  for(const item of cache.values())if(Date.now()-item.at<300000 && networkCovers(item.data,bounds,modes))return item.data;
+  if (!refresh && found && Date.now() - found.at < 300000) return found.data;
+  if(!refresh)for(const item of cache.values())if(Date.now()-item.at<300000 && networkCovers(item.data,bounds,modes))return item.data;
   if (Date.now() < nextRequestAt) throw Error('Die Kartendatenquelle ist ausgelastet. Bitte in etwa einer Minute erneut laden.');
   let timedOut = false;
   const controller = new AbortController(), abort = () => controller.abort(), timer = setTimeout(() => {timedOut = true; controller.abort();}, NETWORK_TIMEOUT_MS);
@@ -231,13 +232,13 @@ export async function fetchEfaNetwork(bounds,modes,signal,detail='all'){
  if(warning)result.warning=warning;
  return result;
 }
-export async function fetchNetwork(bounds,modes,signal,detail='all'){
+export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=false){
  signal?.throwIfAborted();networkQuery(bounds,modes);
  if(!['all','stops'].includes(detail))throw Error('Ungültige Auswahl für die Netzdaten.');
- for(const entry of mapCache.values())if(Date.now()-entry.at<300000&&networkCovers(entry.data,bounds,modes)&&(entry.data.detail==='all'||detail==='stops'))return entry.data;
+ if(!refresh)for(const entry of mapCache.values())if(Date.now()-entry.at<300000&&networkCovers(entry.data,bounds,modes)&&(entry.data.detail==='all'||detail==='stops'))return entry.data;
  let result,efaError;
  try{const data=await fetchEfaNetwork(bounds,modes,signal,detail);if(modes.some(m=>data.layers[m].lines.length||data.layers[m].stops.length))result=data;}catch(error){signal?.throwIfAborted();efaError=error;}
- if(!result)try{result=await fetchOsmNetwork(bounds,modes,signal);result.detail='all';}catch(error){signal?.throwIfAborted();throw Error('Die allgemeinen Netzdaten sind gerade nicht erreichbar. '+(efaError?'Auch die ergänzende Haltestellen-/Linienauskunft ist ausgefallen. ':'')+error.message);}
+ if(!result)try{result=await fetchOsmNetwork(bounds,modes,signal,refresh);result.detail='all';}catch(error){signal?.throwIfAborted();throw Error('Die allgemeinen Netzdaten sind gerade nicht erreichbar. '+(efaError?'Auch die ergänzende Haltestellen-/Linienauskunft ist ausgefallen. ':'')+error.message);}
  if(mapCache.size>=8)mapCache.delete(mapCache.keys().next().value);
  mapCache.set(detail+':'+modes.join(',')+':'+bounds.join(','),{data:result,at:Date.now()});return result;
 }

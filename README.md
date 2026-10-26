@@ -2,9 +2,35 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Stand entspricht Sites-Version **22**, Quellcommit `668d4edfb38e7a4c00974b1944bad297b4f4567b`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Stand entspricht Sites-Version **23**, Quellcommit `ab76062553afa3566ba35cca9a1b50e80f32d69d`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
-## Neu in Version 22: konsistente Darstellung und sichtbare Netzdaten
+## Neu in Version 23: Zoom-/Neuladen-Reparatur und ehrliche Quellenprüfung
+
+Ein unvollständiger großer Ladeausschnitt wird beim wesentlichen Heranzoomen
+nicht mehr als passende Detailauskunft wiederverwendet. **Ausschnitt neu laden**
+fragt die gemeinsame Quelle tatsächlich erneut ab; Anbieterpausen bleiben gültig.
+Kleine Bewegungen nutzen weiterhin passende Cacheantworten. Eine leere Sicht
+wird als fehlende Netzdaten beschrieben und bestätigt keine fehlende Bedienung.
+
+Echter Node-HTTP-Pfad: weiter Welsede-Abruf 13 Halte, enger Abruf zwei Halte nach
+einer neuen Quellenanfrage, identische Wiederholung aus dem Cache, manuelles
+Neuladen mit erneutem Quellenaufruf. Alle Antworten HTTP 200.
+**88 Tests, TypeScript und alle drei Builds bestanden.**
+
+**Die europaweite Busnetzabdeckung ist weiterhin nicht verlässlich.** EFA
+liefert im Heilbronner Prüfausschnitt keine Busklassifikation. Ein leichter
+manueller Transitous-Prototyp liefert Bushalte in Heilbronn, London, Amsterdam
+und Prag. Die getesteten experimentellen Linienwege sind berechnet und werden
+nicht als bestätigte Linienführung ausgegeben. Der Prototyp ist nicht an den
+öffentlichen App-Abruf angeschlossen.
+
+Die neue API verlangt für dauerhafte öffentliche Nutzung eine geeignete
+Open-Source-Projektlizenz; das öffentliche RailAtlas-Repository hat bisher keine.
+Der [konkrete MIT-Vorschlag, Quellenvergleich und nächste Schritt](docs/transit-network-coverage.md)
+liegen zur Entscheidung vor. Es wurde keine Lizenz erteilt, kein Zugang beantragt
+und niemand kontaktiert. Die bisherige öffentliche Testfreigabe bleibt erhalten.
+
+## Seit Version 22: konsistente Darstellung und sichtbare Netzdaten
 
 Automatische Auskunft, Fußweg-Option und Neuplanung verwenden die dunklen
 Seitenleistenfarben. Auskunftswahl, Sortierung und die neuen Einstellungen
@@ -144,14 +170,14 @@ Die bestehende [Pages-Veröffentlichung](https://dunkelst.github.io/railatlas-eu
 - Der gebaute eigenständige Server liefert App-CSS, Leaflet-CSS und Leaflet-JS mit HTTP 200, korrekten MIME-Typen und bytegleichem Inhalt. Die externe visuelle Abnahme bleibt offen.
 
 
-- **82 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
+- **88 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
 - Neuer echter lokaler HTTP-Servertest einschließlich Dateien, Health, CORS, JSON-, Datums- und Größenfehlern.
 - Veröffentlichte ÖBB-Auskunft: Wien Karlsplatz → Stephansplatz am 24.10.2026, U1 18:27–18:29, Wiener Linien, einschließlich eines gelieferten Bauhinweises.
 - Die vollständige visuelle Live-Abnahme ist offen. Frühere Prüfungen trafen auf eine CSS-Sicherheitsgrenze; aktuell war die Browser-Erweiterung nicht verfügbar. Neue EFA-Netzdaten sind live bestätigt, Overpass-Livedaten weiterhin nicht. Quellenfehler werden nicht mit Beispieldaten verdeckt.
 - Sperrungs-/Echtzeitabdeckung bleibt partiell. VRR / EFA ist ein Testzugang ohne garantierte Verfügbarkeit. Der direkte DB-Web-Fallback ist eingebaut, wurde auf dem Worker jedoch mit HTTP 403 blockiert. EFA-BW, direkter VBB-Zugang und Trainline Partner Solutions sind nicht angeschlossen.
 - [Gemeinsamer Prüfstand](sites/railatlas-europa/QA.md) · [Fortführungsstand](docs/continuation-2026-10-24.md)
 
-`node tools/verify-sites-source.mjs` prüft die 189 übernommenen Dateien gegen das Herkunftsmanifest. `npm run test:app` führt die aktuellen App-Regressionen aus. Die bestehende OSM-/Graph-Pipeline, ihre Daten und Regressionen bleiben erhalten; `npm test` führt deren Node-/Python-Prüfungen aus. Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenzen liegen unter `sites/railatlas-europa/public`.
+`node tools/verify-sites-source.mjs` prüft die 193 übernommenen Dateien gegen das Herkunftsmanifest. `npm run test:app` führt die aktuellen App-Regressionen aus. Die bestehende OSM-/Graph-Pipeline, ihre Daten und Regressionen bleiben erhalten; `npm test` führt deren Node-/Python-Prüfungen aus. Stationskatalog: Trainline EU / stations, ODbL 1.0; Lizenzen liegen unter `sites/railatlas-europa/public`.
 
 
 

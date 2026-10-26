@@ -52,8 +52,8 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
   const timer=setTimeout(async()=>{setLoading(true);setStatus('Linien und Halte für diesen Ausschnitt laden …');try{
    let data;
    const config=runtime();
-   if(config.requiresApiOrigin&&!config.apiOrigin)data=await fetchNetwork(bounds,modes.split(','),controller.signal,requestDetail);
-   else{const response=await fetch(apiUrl('/api/network?'+new URLSearchParams({bbox:bounds.join(','),modes,detail:requestDetail})),{signal:controller.signal});const body=await response.json() as NetworkData&{error?:string};if(!response.ok)throw Error(body.error||'Netzebenen nicht erreichbar.');data=body;}
+   if(config.requiresApiOrigin&&!config.apiOrigin)data=await fetchNetwork(bounds,modes.split(','),controller.signal,requestDetail,forced);
+   else{const response=await fetch(apiUrl('/api/network?'+new URLSearchParams({bbox:bounds.join(','),modes,detail:requestDetail,...(forced?{refresh:'1'}:{})})),{signal:controller.signal});const body=await response.json() as NetworkData&{error?:string};if(!response.ok)throw Error(body.error||'Netzebenen nicht erreichbar.');data=body;}
    if(!active)return;setNetwork(data);const count=modes.split(',').reduce((n,m)=>n+data.layers[m].lines.length+data.layers[m].stops.length,0);setNetworkError(false);setStatus(count?'Netzdaten geladen.':'Für diesen Ausschnitt wurden keine passenden Netzdaten geliefert.');
   }catch(e){if(active&&!controller.signal.aborted){setNetworkError(true);setStatus(((e as Error).message||'Die Netzebenen sind gerade nicht erreichbar.')+(networkRef.current?' Bereits geladene Netzdaten bleiben sichtbar.':''));}}finally{if(active)setLoading(false);}},1000);
   return()=>{active=false;clearTimeout(timer);controller.abort();};
@@ -71,6 +71,8 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
   }
  },[ready,visibleNetwork,layerState]);
  const toggle=(mode:string,field:'lines'|'stops',value:boolean)=>setLayerState(old=>({...old,[mode]:{...old[mode],[field]:value}}));
+ const visibleObjects=visibleNetwork?NETWORK_MODES.reduce((n,m)=>n+(layerState[m.id].stops?visibleNetwork.layers[m.id].stops.length:0)+(layerState[m.id].lines&&m.id!=='rail'?visibleNetwork.layers[m.id].lines.length:0),0):0;
+ const visibleStatus=visibleNetwork&&!loading&&!networkError&&!visibleObjects?'Für den sichtbaren Ausschnitt fehlen passende Netzdaten. Das bestätigt keine fehlende Bedienung.':status;
  return <section className={'map-stage '+(picking?'picking':'')} aria-label="Europäische Bahnkarte">
   <div ref={container} className="map-canvas"/>
   {error&&<div role="alert" className="map-message">{error} Die Reiseplanung steht weiterhin zur Verfügung.</div>}
@@ -84,7 +86,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
      <label><input type="checkbox" aria-label={mode.label+' Halte'} checked={layerState[mode.id].stops} onChange={e=>toggle(mode.id,'stops',e.target.checked)}/><span className="sr-only">{mode.label} Halte</span></label>
     </div>)}
    </div>
-   <p className={'network-status '+(networkError?'has-error':'')} role="status">{loading&&<span className="network-spinner"/>}{status}</p>
+   <p className={'network-status '+(networkError?'has-error':'')} role="status">{loading&&<span className="network-spinner"/>}{visibleStatus}</p>
    {visibleNetwork&&<>
     <div className="network-counts"><b>Im sichtbaren Ausschnitt</b>
      {NETWORK_MODES.filter(m=>(layerState[m.id].lines||layerState[m.id].stops)&&visibleNetwork.modes?.includes(m.id)).map(m=><span key={m.id}>

@@ -13,9 +13,31 @@ erhalten. Keine zweite Anwendung, keine Weiterleitung als GitHub-Ersatz.
 
 ## Aktuell gesichert und veröffentlicht
 
-Version **22**, Quelle `668d4edfb38e7a4c00974b1944bad297b4f4567b`,
-189 App-Dateien im Herkunftsmanifest. Nativ auf der bestehenden öffentlichen Site
-veröffentlicht. 82 Tests, TypeScript und alle drei Builds bestanden.
+Version **23**, Quelle `ab76062553afa3566ba35cca9a1b50e80f32d69d`,
+193 App-Dateien im Herkunftsmanifest. Nativ auf der bestehenden öffentlichen Site
+veröffentlicht. 88 Tests, TypeScript und alle drei Builds bestanden.
+
+Version 23 repariert einen tatsächlichen Cachefehler: Ein unvollständiger großer
+Ausschnitt durfte beim Heranzoomen weiterverwendet werden. Jetzt wird bei
+wesentlich engerem Ausschnitt neu abgefragt. Der Neuladen-Knopf übergibt
+`refresh=1` an die gemeinsame API und umgeht deren Cache, weiterhin unter
+Beachtung der Anbieterpausen. Kleine Bewegungen bleiben effizient. Eine leere
+Sichtauswahl wird als Datenlücke, nicht als fehlende Bedienung beschrieben.
+Echter Node-HTTP-Pfad: Welsede weit 13 Halte, eng zwei, mit neuer Quellenanfrage;
+gleiche Abfrage wiederverwendet, explizites Neuladen erneut bei der Quelle.
+Die öffentliche Version-23-API bestätigt die engeren Grenzen und einen neuen
+Abrufzeitpunkt beim Neuladen, jeweils HTTP 200.
+
+Europäische Busabdeckung ist weiter offen. Der aktuelle EFA-Kartenabruf liefert
+im Heilbronner Beispiel nur drei Schienenhalte. Ein manuelles Transitous/MOTIS-
+Probeskript bestätigt sieben Bushalte in Heilbronn, zwölf in London, vier in
+Amsterdam, neun in Prag. Experimentelle Linienwege sind `ROUTED`, berechnet.
+Sie werden nicht als belegte originale Linienführung übernommen. Der Prototyp
+wird von keiner öffentlichen App-Route geladen. Die API erfordert für dauerhafte
+Nutzung eine geeignete Open-Source-Projektlizenz. Das Repository hat keine;
+MIT für den eigenen Programmcode ist vorgeschlagen, noch nicht freigegeben.
+Daten/Drittanbieter behalten ihre eigenen Bedingungen. Details und konkreter
+nächster Schritt: [transit-network-coverage.md](transit-network-coverage.md).
 
 Version 22 gleicht automatische Auskunft, Fußweg-Option und Neuplanung an die
 bestehende dunkle Seitenleiste und ihre Auswahlfelder an. Das helle Kartenpanel
@@ -59,15 +81,21 @@ daraus keine bestätigte echte Ausweichfahrt ableiten.
 
 ## Nächste sachliche Schritte
 
-1. Konsistente Planungsfelder, allgemeines Netz und Halteübernahme im Browser abnehmen, sobald die zulässige Vorschau
-   funktioniert. Keine Sicherheitsgrenze umgehen.
-2. Gezielte Ausweichsuche über verschiedene Umstiegspunkte und anfängliche Fahrten
+1. Entscheidung des Eigentümers über die vorgeschlagene MIT-Lizenz abwarten.
+   Ohne Freigabe keine Lizenzdatei ergänzen und Transitous nicht öffentlich
+   anschließen. Nach Freigabe den stabilen Haltestellenabruf in den gemeinsamen
+   Karten-/Start-/Ziel-/Zwischenzielpfad übernehmen; Quellkennungen erhalten.
+2. Linienabdeckung mit Original-GTFS-Shapes bzw. OSM-Routen ausbauen.
+   Berechnete Wege nicht als bestätigte Liniengeometrie ausgeben.
+3. Konsistente Planungsfelder, allgemeines Netz und Halteübernahme im Browser
+   abnehmen, sobald eine zulässige Vorschau funktioniert.
+4. Gezielte Ausweichsuche über verschiedene Umstiegspunkte und anfängliche Fahrten
    vom Ziel weg ausbauen, auf vollständigen echten Fahrplanantworten basierend.
    Die bisherige Zulassung solcher Routen ist keine umfassende eigene Suche.
-3. Reguläre Fahrplanabdeckung für weitere europäische Bus-/ÖPNV-Halte erweitern,
+5. Reguläre Fahrplanabdeckung für weitere europäische Bus-/ÖPNV-Halte erweitern,
    ohne einen OSM-Treffer als bestätigte Bedienung auszugeben. DB-403 im Worker
    nicht wiederholt testen oder umgehen; zulässige Quellen verwenden.
-4. Für den neuen Pages-Rollout einen eigenen öffentlichen HTTPS-Auskunftsserver
+6. Für den neuen Pages-Rollout einen eigenen öffentlichen HTTPS-Auskunftsserver
    einrichten, wenn ein freigegebenes Ziel vorhanden ist. Bis dahin bleibt die
    bestehende Pages-Version 12 erhalten; keine kostenpflichtige Infrastruktur
    oder Zugangsanträge ohne entsprechenden Auftrag erzeugen.
