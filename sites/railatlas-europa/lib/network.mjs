@@ -1,6 +1,8 @@
 // Independent EFA/OSM network overlays. These are infrastructure, not a timetable.
 import {requestEfaMap,parseVrrStation,vrrProduct,EFA_PROVIDER,EFA_SOURCE} from './vrr.mjs';
 import {berlinInput,distanceKm} from './rail.mjs';
+import {sameNearbyStation} from './journey.mjs';
+import {fetchTransitousStops,parseTransitousStation,transitousModes,TRANSITOUS_SOURCE,TRANSITOUS_ATTRIBUTIONS} from './transitous.mjs';
 export const NETWORK_MODES = [
   {id: 'rail', label: 'Bahn', color: '#405d74'},
   {id: 'suburban', label: 'S-Bahn', color: '#21834a'},
@@ -229,16 +231,53 @@ export async function fetchEfaNetwork(bounds,modes,signal,detail='all'){
  }
  const result=parseEfaNetwork(relevant,lines,geometry,bounds,modes,byStop);result.detail=detail;
  if(detail!=='stops'&&modes.some(m=>m!=='rail')&&relevant.length&&!modes.some(m=>result.layers[m].lines.length)&&!warning)warning='Die Quelle liefert Halte, aber keine Linienverläufe für diesen Ausschnitt.';
- if(warning)result.warning=warning;
+ if(warning){result.warning=warning;result.warningScope='lines';}
  return result;
+}
+function sameNetworkStop(a,b,mode,cos){return Math.abs(a.lat-b.lat)<.003&&Math.abs(a.lon-b.lon)<.003/cos&&sameNearbyStation({...(a.station||a),networkMode:mode},{...(b.station||b),networkMode:mode});}
+const transitousFeed=id=>id.includes('_')?id.slice(0,id.indexOf('_')):'';
+export function parseTransitousNetwork(raw,bounds,modes){
+ validateBounds(bounds);
+ const layers=Object.fromEntries(NETWORK_MODES.map(m=>[m.id,{lines:[],stops:[]}])),seen=new Set(),cos=Math.max(.05,Math.cos((bounds[0]+bounds[2])/2*Math.PI/180));
+ for(const item of raw){
+  const station=parseTransitousStation(item);
+  if(!station||seen.has(station.id)||!insideBounds(bounds,[station.lat,station.lon]))continue;
+  seen.add(station.id);
+  const stop={id:station.id,name:station.name,lat:station.lat,lon:station.lon,station,source:TRANSITOUS_SOURCE,lines:[]},feed=transitousFeed(station.transitousId);
+  for(const mode of transitousModes(item))if(modes.includes(mode)){
+   const index=feed?layers[mode].stops.findIndex(p=>!(p.station.transitousIds||[p.station.transitousId]).some(id=>transitousFeed(id)===feed)&&sameNetworkStop(p,stop,mode,cos)):-1;
+   if(index<0)layers[mode].stops.push(stop);
+   else{const first=layers[mode].stops[index];layers[mode].stops[index]={...first,station:{...first.station,transitousIds:[...(first.station.transitousIds||[first.station.transitousId]),station.transitousId]}};}
+  }
+ }
+ return {layers,bounds,modes:[...modes],detail:'stops',source:TRANSITOUS_SOURCE,attributions:TRANSITOUS_ATTRIBUTIONS,fetchedAt:new Date().toISOString(),coverage:'partial',...(raw.length>=8192?{warning:'Sehr viele Halte geliefert; für weitere Details bitte näher heranzoomen.',warningScope:'stops'}:{})};
+}
+export function mergeNetworkStops(primary,regional,modes){
+ if(!primary)return regional;if(!regional)return primary;
+ const layers=Object.fromEntries(NETWORK_MODES.map(m=>[m.id,{lines:regional.layers[m.id].lines,stops:[...primary.layers[m.id].stops]}]));
+ const cos=Math.max(.05,Math.cos((primary.bounds[0]+primary.bounds[2])/2*Math.PI/180));
+ for(const mode of modes)for(const stop of regional.layers[mode].stops){
+  const index=layers[mode].stops.findIndex(p=>sameNetworkStop(p,stop,mode,cos));
+  if(index<0)layers[mode].stops.push(stop);
+  else{const first=layers[mode].stops[index];layers[mode].stops[index]={...first,lines:[...new Set([...first.lines,...stop.lines])],source:[...new Set([first.source,stop.source].filter(Boolean))].join(' + ')};}
+ }
+ return {...primary,layers,source:primary.source+' + '+regional.source};
 }
 export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=false){
  signal?.throwIfAborted();networkQuery(bounds,modes);
  if(!['all','stops'].includes(detail))throw Error('Ungültige Auswahl für die Netzdaten.');
  if(!refresh)for(const entry of mapCache.values())if(Date.now()-entry.at<300000&&networkCovers(entry.data,bounds,modes)&&(entry.data.detail==='all'||detail==='stops'))return entry.data;
- let result,efaError;
- try{const data=await fetchEfaNetwork(bounds,modes,signal,detail);if(modes.some(m=>data.layers[m].lines.length||data.layers[m].stops.length))result=data;}catch(error){signal?.throwIfAborted();efaError=error;}
+ let result,efaError,transitousError,primary,regional;
+ const hasData=data=>data&&modes.some(m=>data.layers[m].lines.length||data.layers[m].stops.length),needLines=detail==='all'&&modes.some(m=>m!=='rail');
+ const replies=await Promise.allSettled([fetchTransitousStops(bounds,modes,signal),...(needLines?[fetchEfaNetwork(bounds,modes,signal,detail)]:[])]);signal?.throwIfAborted();
+ if(replies[0].status==='fulfilled')primary=parseTransitousNetwork(replies[0].value,bounds,modes);else transitousError=replies[0].reason;
+ if(needLines){if(replies[1].status==='fulfilled')regional=replies[1].value;else efaError=replies[1].reason;}
+ else if(!hasData(primary))try{regional=await fetchEfaNetwork(bounds,modes,signal,detail);}catch(error){signal?.throwIfAborted();efaError=error;}
+ result=mergeNetworkStops(hasData(primary)?primary:null,hasData(regional)?regional:null,modes);
  if(!result)try{result=await fetchOsmNetwork(bounds,modes,signal,refresh);result.detail='all';}catch(error){signal?.throwIfAborted();throw Error('Die allgemeinen Netzdaten sind gerade nicht erreichbar. '+(efaError?'Auch die ergänzende Haltestellen-/Linienauskunft ist ausgefallen. ':'')+error.message);}
+ const warnings=[primary?.warning,needLines?regional?.warning:'',transitousError?'Die europäische Haltestellenquelle ist gerade nicht erreichbar; ergänzende Quelldaten werden gezeigt.':'',needLines&&efaError?'Die ergänzende Linienauskunft ist gerade nicht erreichbar; gelieferte Halte bleiben sichtbar.':''];
+ if(needLines&&!efaError&&!modes.some(m=>result.layers[m].lines.length)&&!regional?.warning)warnings.push('Für diesen Ausschnitt liefert die Linienquelle keine Verläufe; die Halte bleiben nutzbar.');
+ result.detail=detail;if(warnings.some(Boolean)){result.warning=[...new Set(warnings.filter(Boolean))].join(' ');result.warningScope=primary?.warning||transitousError?'all':'lines';}
  if(mapCache.size>=8)mapCache.delete(mapCache.keys().next().value);
  mapCache.set(detail+':'+modes.join(',')+':'+bounds.join(','),{data:result,at:Date.now()});return result;
 }

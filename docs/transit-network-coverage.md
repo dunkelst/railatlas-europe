@@ -1,90 +1,67 @@
-# Buslinien und Halte: Datenbasis und Freigabe
+# Buslinien und Halte: Datenbasis und AGPL-Freigabe
 
-Stand 26.10.2026. Die europaweite Anzeige ist weiterhin nicht verlässlich
-abgedeckt. Die Korrektur von Darstellung und Cache darf nicht als vollständige
-Datengrundlage ausgegeben werden.
+Stand 26.10.2026, Quellversion 24. Die zusätzliche Haltequelle verbessert die
+belegte Abdeckung. Vollständige europäische Netz- oder Fahrplanabdeckung ist
+weiterhin nicht nachgewiesen.
 
-## Belegter Fehler und aktuelle Reparatur
+## Freigegeben und umgesetzt
 
-Der Kartenabruf konnte eine unvollständige große Antwort beim Heranzoomen
-weiter aus dem Cache übernehmen. Der Rat zum Heranzoomen war dann wirkungslos.
-Außerdem umging der bisherige Neuladen-Knopf nur die lokale Entscheidung,
-nicht den Cache der gemeinsamen API. Jetzt gelten Maßstabsgrenzen für die
-Wiederverwendung. `refresh=1` erneuert den Abruf; Anbieterpausen bleiben gültig.
-Kleine Bewegungen werden weiterhin aus passenden bereits geladenen Daten bedient.
+Der Eigentümer hat AGPL ausdrücklich gegenüber MIT bevorzugt und freigegeben.
+Der eigene Programmcode steht unter **AGPL-3.0-only**; vollständiger Standardtext
+und Umfang stehen in [LICENSE](../LICENSE) und [LICENSE_SCOPE.md](../LICENSE_SCOPE.md).
+Daten und fremde Bibliotheken behalten ihre jeweiligen Bedingungen. Die
+Oberfläche verlinkt den vollständigen entsprechenden Quellcode sichtbar.
 
-Echter unabhängiger HTTP-Server: weiter Welsede-Ausschnitt 13 Bushalte,
-enger Ausschnitt zwei Halte nach einer erneuten Quellenanfrage. Derselbe enge
-Ausschnitt wird wiederverwendet. Explizites Neuladen verursacht einen dritten
-Quellenaufruf. Alle Antworten HTTP 200. Die öffentliche Version-23-API bestätigt ebenfalls
-13 bzw. zwei Halte, die exakten engeren Grenzen und einen neuen Abrufzeitpunkt
-bei explizitem Neuladen. Offline-Regressionen sichern zusätzlich
-Zoomwechsel, gemeinsamen API-Pfad und unabhängigen OSM-Cache ab.
+Der stabile Transitous-Endpunkt `/api/v6/map/stops` ist in das bestehende
+Kartenmodell eingebunden. Halte sind für alle fünf bestehenden Verkehrsmittel
+einzeln schaltbar und ohne Reise sichtbar. Bus fragt BUS und COACH gemeinsam ab.
+GTFS-Kennungen und Originalkoordinaten bleiben erhalten. Bestehende Resolver
+prüfen Halte für Start, Ziel und Zwischenziel; fremde IDs werden nicht ungeprüft
+als Kennungen anderer Anbieter verwendet. Ein Treffer bestätigt keine Fahrt.
 
-## Quellenprüfung
+Gleiche Halte verschiedener Feeds werden nach Name und maximal 250 m vereinigt;
+Plattformen desselben Feeds bleiben getrennt. Alle Kennungen bleiben verfügbar.
+EFA ergänzt echte Liniengeometrie und Halte. Quellenfehler entfernen verfügbare
+Daten der anderen Quelle nicht. Größe, Timeout, Retry-After und Cache begrenzen
+die Last. Keine /plan-Anfragen an Transitous.
 
-| Quelle | Tatsächlicher Nachweis | Grenze |
-| --- | --- | --- |
-| EFA-Karte | Welsede 40/45 und örtliche Halte | Im kleinen Heilbronner Prüfbereich nur drei Schienenhalte, keine Busklassifikation |
-| Öffentliche Overpass-Instanz | Vorherige kleine echte Anfrage und Worker-Abruf liefen in Timeout | Keine garantierte Anwendungsverfügbarkeit; keine gesperrte Hauptinstanz als Umgehung |
-| Transitous `/api/v6/map/stops` | BUS-Halte in vier Ländern, siehe Tabelle | Offene Feeds bleiben unterschiedlich vollständig; geeignete Open-Source-Projektlizenz nötig |
-| Transitous experimentelle Linienkarte | 47 sichtbare Heilbronner Varianten, vier Bezeichnungen | Sämtliche Wege `ROUTED`, keine bestätigten Original-Linienverläufe; große Antwort |
+Die [API-Bedingungen](https://transitous.org/api/) verlangen ein nichtkommerzielles
+Open-Source-Projekt und angemessene Ressourcennutzung. Sichtbare Attribution
+verweist auf https://transitous.org/sources/ und OpenStreetMap. Der Dienst bleibt
+best effort. AGPL ändert diese API-Bedingungen nicht.
 
-Die experimentellen Linienwege stammen aus der Quelle, sind jedoch berechnet.
-Sie dürfen nicht als belegte originale Buslinienführung ausgegeben werden.
-Fehlende Geometrie wird auch im Prototyp nicht durch Stations-Luftlinien ersetzt.
+## Echte gemeinsame Node-HTTP-Proben
 
-## Leichte manuelle Haltestellenproben
-
-Alle Antworten am 26.10.2026 von der dokumentierten Produktionsadresse
-`https://api.transitous.org`, mit Projektname, Version und Kontakt-URL im
-User-Agent. Keine /plan-Anfragen, kein Scraping und kein laufender öffentlicher
-Anschluss dieser Quelle.
-
-| Gebiet | Prüfbereich süd,west,nord,ost | Bushalte | Beispiel |
+| Gebiet | Prüfbereich süd,west,nord,ost | BUS und COACH | Ergebnis |
 | --- | --- | ---: | --- |
-| Heilbronn | 49.138,9.224,49.147,9.243 | 7 | Karmeliterstraße, Schillerstraße |
-| London | 51.510,-0.124,51.517,-0.111 | 12 | Lancaster Place, Savoy Street |
-| Amsterdam | 52.372,4.890,52.384,4.908 | 4 | Prins Hendrikkade, Dam |
-| Prag | 50.085,14.430,50.095,14.444 | 9 | Florenc, Bílá labuť |
+| Heilbronn | 49.138,9.224,49.147,9.243 | 7 | HTTP 200 |
+| London | 51.510,-0.124,51.517,-0.111 | 12 | HTTP 200 |
+| Amsterdam | 52.372,4.890,52.384,4.908 | 6 | HTTP 200 |
+| Prag | 50.085,14.430,50.095,14.444 | 10 | HTTP 200 |
 
-Das manuell startbare Probeskript ist in
-`sites/railatlas-europa/scripts/probe-transitous.mjs` enthalten. Es verwendet den
-bestehenden Polyline- und Ausschnittscode, begrenzt Antworten und bezeichnet
-berechnete Linien ausdrücklich als solche. Es wird von keiner App-Route geladen.
-Echte kleine Regressionsevidenz und Quellenhinweise liegen in `tests/fixtures`.
-Keine der Proben beweist vollständige Länder- oder Fahrplanabdeckung.
+Frühere reine BUS-Proben lieferten in Amsterdam vier und Prag neun Halte.
+Die App berücksichtigt zusätzlich COACH. Originaldaten und Attribution bleiben
+erhalten. Welsede liefert echte EFA-Linien 40/45 und zwei Halte statt vier doppelter
+DELFI-/VBN-Einträge. Keine Probe beweist vollständige Länderabdeckung.
 
-## Konkreter Lizenzvorschlag, noch nicht freigegeben
+## Offene Liniengeometrie
 
-Vorgeschlagen ist die **MIT-Lizenz für den selbst erstellten RailAtlas-
-Programmcode**. Ihre Bedingungen stehen vollständig bei der
-[Open Source Initiative](https://opensource.org/license/mit).
-Sie erlaubt anderen Nutzung, Änderung und Weitergabe, auch kommerziell,
-unter Erhalt des Copyright- und Lizenzhinweises. Das ist ein weitergehendes Recht
-als der bisher erlaubte öffentliche Testbetrieb.
+Die experimentelle Transitous-Linienkarte lieferte im Heilbronner Testbereich
+47 sichtbare Varianten mit vier Bezeichnungen; alle Pfade trugen
+`pathSource=ROUTED`. Diese berechneten Wege werden nicht als originale
+Linienführung eingeblendet. Das manuelle Skript
+`sites/railatlas-europa/scripts/probe-transitous.mjs` bleibt getrennt von der
+Laufzeit und kennzeichnet berechnete Pfade. Keine Luftlinien als Ersatz.
 
-Daten, Stationskatalog, Karten, fremde Bibliotheken und Marken bleiben unter ihren
-jeweiligen bestehenden Bedingungen. Die MIT-Freigabe für eigenen Programmcode
-würde weder diese Daten umlizenzieren noch die nichtkommerzielle Transitous-API
-für kommerzielle Nutzung freigeben.
+EFA ist regional nützlich, lieferte im Heilbronner Prüfausschnitt jedoch keine
+Busklassifikation. OSM bleibt ergänzend; vorherige Overpass-Abfragen liefen in
+Timeout. Belastbare europaweite Linien brauchen Original-GTFS-Shapes bzw.
+verlässlich erfasste OSM-Routen und eine geeignete Datenversorgung.
 
-Es wurde **keine LICENSE-Datei ergänzt und keine Lizenz erteilt**. Der Eigentümer
-muss diesen Vorschlag erst freigeben. Das öffentliche Repository besitzt aktuell
-keine erkannte Open-Source-Lizenz.
+## Vorhandene Cachekorrektur
 
-Die [Transitous-API-Bedingungen](https://transitous.org/api/) verlangen ein
-nichtkommerzielles Open-Source-Projekt und angemessene Ressourcennutzung; leichte
-Prototypentests vor der Lizenzierung sind ausdrücklich erlaubt. Attribution zu
-https://transitous.org/sources/ sowie zu OpenStreetMap gehört zu einer späteren
-sichtbaren Anbindung. Der Dienst bleibt best effort.
-
-## Nächster sachlicher Schritt
-
-Nach Lizenzfreigabe den stabilen Transitous-Haltestellenabruf an das gemeinsame
-Kartenmodell anbinden, Quellkennungen erhalten und Start/Ziel/Zwischenziel über
-den bestehenden Resolver prüfen. Die bestätigte breitere Halteabdeckung kann
-sofort genutzt werden. Linienpfade bleiben eine eigene offene Aufgabe: bevorzugt
-Original-GTFS-Shapes bzw. verlässlich erfasste OSM-Routen; berechnete Wege nur mit
-klarer Kennzeichnung und ausdrücklicher eigener Anzeigeoption. Eine umfassende
-Netzkarte braucht eine passende Datenbasis, nicht nur weitere Einzelabfragen.
+Seit Version 23 führen wesentlich engere Ausschnitte zu neuen Abfragen.
+`Ausschnitt neu laden` übergibt `refresh=1` durch den gemeinsamen API- und
+OSM-Pfad, weiterhin unter Beachtung der Anbieterpausen. Kleine Bewegungen nutzen
+passende Caches. Leere Sichtauswahl bestätigt keine fehlende Bedienung.
+97 Regressionen sichern den aktuellen gemeinsamen Stand ab.

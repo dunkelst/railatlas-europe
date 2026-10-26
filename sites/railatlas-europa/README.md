@@ -1,5 +1,30 @@
 # RailAtlas Europa
 
+## AGPLv3 und internationale Kartenhalte (26.10.2026)
+
+Der selbst erstellte Programmcode steht mit Freigabe des Eigentümers unter
+**AGPL-3.0-only**. LICENSE und LICENSE_SCOPE.md erklären den Umfang. Der
+Quellcode-Link ist direkt im Kopf der App sichtbar; der vollständige Lizenztext
+wird mitgeliefert. Fremde Bibliotheken, Karten und Daten behalten ihre Lizenzen.
+
+Der gemeinsame Kartenabruf verwendet jetzt die stabile Transitous/MOTIS-
+Haltestellenschnittstelle für alle vorhandenen Verkehrsmittel. Bus umfasst auch
+Fernbus. Native GTFS-Quellkennungen und Koordinaten bleiben erhalten; sie werden
+nicht als DB-/EFA-Kennungen ausgegeben. Start, Ziel und Zwischenziel verwenden
+die bestehende Namens-/Lageprüfung innerhalb eines kleinen Stationskomplexes.
+
+Regionale EFA-Linien und -Halte ergänzen diese Daten. Übereinstimmende Halte
+werden anhand von Name und Lage zusammengeführt; unbekannte zusätzliche Halte
+bleiben erhalten. Ein Ausfall der Linienquelle entfernt keine gelieferten
+Transitous-Halte. Die tatsächlichen Quellen und Attribution sind sichtbar.
+Antworten sind auf vier MiB begrenzt; Anbieterpausen beachten Retry-After.
+
+Der echte Node-HTTP-Pfad bestätigt im jeweiligen Testausschnitt sieben Bus-/
+Fernbushalte in Heilbronn, zwölf in London, sechs in Amsterdam und zehn in Prag.
+Das ist keine Zusage vollständiger Länderabdeckung oder bestätigter Fahrten.
+Die experimentellen berechneten Transitous-Linienwege sind weiter ausgeschaltet.
+Öffentliche API-Nutzung bleibt auf das nichtkommerzielle Projekt beschränkt.
+
 ## Netzabruf und europäische Abdeckung (26.10.2026)
 
 Wesentliches Heranzoomen fragt einen engeren Ausschnitt neu ab. Eine grobe,
@@ -14,7 +39,8 @@ manuell und mit begrenzten Antworten. Es ist **kein öffentlicher App-Anschluss*
 Bushalte sind in vier Ländern live bestätigt; die experimentellen Heilbronner
 Linienwege sind berechnet und werden entsprechend gekennzeichnet. Vor einer
 öffentlichen Anbindung verlangt die API eine geeignete Open-Source-Lizenz für
-das Projekt. Eine solche Freigabe wurde noch nicht erteilt. Beispiele:
+das Projekt. Die Freigabe für AGPLv3 wurde inzwischen erteilt; der stabile
+Haltestellenabruf ist oben beschrieben. Beispiele für die separate manuelle Probe:
 
 ```bash
 node scripts/probe-transitous.mjs 49.138,9.224,49.147,9.243 /tmp/heilbronn-stops.json

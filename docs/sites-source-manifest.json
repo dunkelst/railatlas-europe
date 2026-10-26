@@ -1,6 +1,6 @@
 {
-  "site_version": 23,
-  "site_source_commit": "ab76062553afa3566ba35cca9a1b50e80f32d69d",
+  "site_version": 24,
+  "site_source_commit": "202529ae7200ecd354bcbb7597e3f70c80932b48",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.cocoaamber33.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -30,18 +30,32 @@
       "bytes": 91
     },
     {
+      "path": "LICENSE",
+      "mode": "100644",
+      "git_blob": "0c97efd25b5974b974ed9a8a18207bc4f55bb338",
+      "sha256": "d8a6cc31abc16b6748c7a21f21611f5a1ec33f67d22ca23d7da1c19b95496bee",
+      "bytes": 34020
+    },
+    {
+      "path": "LICENSE_SCOPE.md",
+      "mode": "100644",
+      "git_blob": "a32a6ee0d1f5f83df569912de6a10705c7cd49ec",
+      "sha256": "ea351fae9eb08d4a4a9dd783735f057791435a3b8ba9f2efe4f3a698531d6633",
+      "bytes": 1226
+    },
+    {
       "path": "QA.md",
       "mode": "100644",
-      "git_blob": "ffbd8f42665167069fdda4742464c5b9bc76e9a6",
-      "sha256": "d700195200afd4ff67102451ff65803cd345b12a65def08901ec83fc0b9f8d38",
-      "bytes": 31545
+      "git_blob": "bec325d01ff052f0f14b134a18a145baf8c9f328",
+      "sha256": "9966cbe2386aad11d5ddb14de21608b331f5e068dd2535416fb96fc13a63ecb9",
+      "bytes": 34422
     },
     {
       "path": "README.md",
       "mode": "100644",
-      "git_blob": "163a3dbce08639cd4e25c43ee2709670eadf79c2",
-      "sha256": "867be2f9418f2b25261ee07770141d96aef4e6c15f59244684a5079e948fe60b",
-      "bytes": 19001
+      "git_blob": "a6b4a248012d9aebe69f898c683c16c63fafdd15",
+      "sha256": "8c75a2446e1e54c67183d1da716901967a2b06fa38ec5a978e72b848fecabecc",
+      "bytes": 20638
     },
     {
       "path": "app/api/health/route.ts",
@@ -81,9 +95,9 @@
     {
       "path": "app/globals.css",
       "mode": "100644",
-      "git_blob": "d9fd024357ec59f27d107925f6c276f148eb48cb",
-      "sha256": "5a4f36700b817ad0949765587bee532bbe985285f7382d1852a2919112ea570b",
-      "bytes": 24583
+      "git_blob": "2bdefdb2dc94330b60231118d706eb6883f878c5",
+      "sha256": "ec171ce3f95f0f2c27632d60eae6bafffa03896ce3e97dea0d6c89ec14ddc8c1",
+      "bytes": 25182
     },
     {
       "path": "app/layout.tsx",
@@ -95,9 +109,9 @@
     {
       "path": "app/page.tsx",
       "mode": "100644",
-      "git_blob": "e3cd76dc792cb769e3a0785322cb1fbeaf444cc7",
-      "sha256": "d3282597e9cae0b492664ef221837b402a0ccee21c06899aaa9e4c27c00f1de3",
-      "bytes": 31073
+      "git_blob": "b50476c6245850be532520204a5858ff563d3c1c",
+      "sha256": "c27d16e5a23fe64215e7910c660be45b0c92702a0f929587572bf5cec56960cf",
+      "bytes": 31938
     },
     {
       "path": "build/connector-preview-plugin.mjs",
@@ -179,9 +193,9 @@
     {
       "path": "components/rail-map.tsx",
       "mode": "100644",
-      "git_blob": "93026f6010629f3179c26a1220aec7bd835928a5",
-      "sha256": "4c56e1e8687e5791a0f1588dbfcd2aa5bf2219ea73c5068120e9c3bb9793c148",
-      "bytes": 13807
+      "git_blob": "2db9682bc8856888da82811c274192ec23c34bb8",
+      "sha256": "0217351bfb93351a88386a90d681b94ac747a0cbe15b0d1fc4b256828fa88df4",
+      "bytes": 14042
     },
     {
       "path": "components/ui/accordion.tsx",
@@ -746,23 +760,23 @@
     {
       "path": "lib/journey.mjs",
       "mode": "100644",
-      "git_blob": "d9f683dcae2f33c1f376bb39cc15b676acb5d241",
-      "sha256": "fad511e591816372e7a26ac0c24dd078942e914a837c5a1834aeb7a22f1a922b",
-      "bytes": 19179
+      "git_blob": "4f55139d9c03b11681daabfdf190d23517532d8a",
+      "sha256": "f5d77b3e69b555e2698073bdc358ed7536ed686c189c64fddf971441bbb41dc8",
+      "bytes": 19663
     },
     {
       "path": "lib/network.mjs",
       "mode": "100644",
-      "git_blob": "a9ae899d941c36c3e863184c3094894a3c6bd5fe",
-      "sha256": "c7811872ab35b5c8b8f0b49defd37f794d97c2eccc8212bb05d636faa81392cf",
-      "bytes": 19515
+      "git_blob": "73aeb9a90c9071d16006b2cab977d49cb42f041b",
+      "sha256": "b8b70cf2b3886de3b7a5c6d8a0425945b6f1fe62ac55edfecb1d3b2a6bb3292a",
+      "bytes": 23593
     },
     {
       "path": "lib/rail.mjs",
       "mode": "100644",
-      "git_blob": "fb5116464cc17936f1c687b01c90e01967bea278",
-      "sha256": "b1bcfc7586fbe3d34aa4d5ebb45d8fa4277047bf4f6d81481ad34ce3da221b22",
-      "bytes": 5806
+      "git_blob": "ae59aafc4fd2fc67e9b11b7cb9dfeef38575257d",
+      "sha256": "eaaaefbd576f053009763119184102c258f95d521554169c14741374eae3dfd7",
+      "bytes": 5915
     },
     {
       "path": "lib/stations.ts",
@@ -793,11 +807,18 @@
       "bytes": 7096
     },
     {
+      "path": "lib/transitous.mjs",
+      "mode": "100644",
+      "git_blob": "9bfba253d53a0919bb96e7dc96ae8b581cb37eab",
+      "sha256": "b370cdfc5e10f198ac235a74d24d0eaa4f515abcf0ea50caf2212ba50373eabd",
+      "bytes": 2341
+    },
+    {
       "path": "lib/types.ts",
       "mode": "100644",
-      "git_blob": "d9cb43e8fd881961deca6902afd44f60ed87bc0b",
-      "sha256": "ce4fd08b2c140f17e25a20b8374a29f41c50d1b4c116d6d9287497adbc8cfccd",
-      "bytes": 2027
+      "git_blob": "485559f01da02432728ed408573aa00d7e9fd67a",
+      "sha256": "cd15806feb6381aa1ac7ba0353c4644805d6e15e3d11e92b207bf1ce1ea98606",
+      "bytes": 2072
     },
     {
       "path": "lib/urls.mjs",
@@ -816,9 +837,9 @@
     {
       "path": "lib/vrr.mjs",
       "mode": "100644",
-      "git_blob": "0f364bcea24b6f4adf03dacd71013995fd6ad55c",
-      "sha256": "713c7e150ad50c4646e8de4242ab808f78000eda0e06c7eba80f49e30d9bfac2",
-      "bytes": 22094
+      "git_blob": "5fc8204cd0c22e4c5febc7e3aca4e348a9b6ad90",
+      "sha256": "b97364dc4c8da2d33538242b011154eed24b8e114ce77de95b1b30466e06564e",
+      "bytes": 22022
     },
     {
       "path": "next.config.ts",
@@ -830,9 +851,9 @@
     {
       "path": "package.json",
       "mode": "100644",
-      "git_blob": "231618d2d2748c244153e56155cc23261132ace7",
-      "sha256": "67ec4f529052b3ec37285fea3dd5a37cb4ce9199cbcd5cdf69b34f0c946ab846",
-      "bytes": 2351
+      "git_blob": "4b252f7e9215caf99c5737b21d7ad97f5dea187d",
+      "sha256": "d06207aee8d85957015f01c7c2be54eb85a7e52a9ac5cd77255fc94004cb9f10",
+      "bytes": 2381
     },
     {
       "path": "pnpm-lock.yaml",
@@ -854,6 +875,13 @@
       "git_blob": "61e36849cf7cfa9f1f71b4a3964a4953e3e243d3",
       "sha256": "dfac7ac2d86d326a0e5adb024e7943c181393ed17a5fcb8f0315b24c7da6ddde",
       "bytes": 94
+    },
+    {
+      "path": "public/LICENSE.txt",
+      "mode": "100644",
+      "git_blob": "0c97efd25b5974b974ed9a8a18207bc4f55bb338",
+      "sha256": "d8a6cc31abc16b6748c7a21f21611f5a1ec33f67d22ca23d7da1c19b95496bee",
+      "bytes": 34020
     },
     {
       "path": "public/data/ODbL.txt",
@@ -1054,9 +1082,9 @@
     {
       "path": "tests/fixtures/TRANSITOUS.md",
       "mode": "100644",
-      "git_blob": "8f853f59d0cbb8d408f7c50b7b81f20f9f5efb07",
-      "sha256": "0f68e8d8ebe801398d89f536b9ea7b2006876c2298e13eed55ed6fc4b3d67a1f",
-      "bytes": 1479
+      "git_blob": "8db06a115c99e1cd37783163bfe7acfec2a18a76",
+      "sha256": "1afda177efa114ddcc1162ca5316fc6bfa69c778030837eb171d0a6b0c464329",
+      "bytes": 1573
     },
     {
       "path": "tests/fixtures/db-amsterdam-berlin.json",
@@ -1250,9 +1278,9 @@
     {
       "path": "tests/network-map.test.mjs",
       "mode": "100644",
-      "git_blob": "48e0644b361de11c031a5ab9fbf9f3491999a4bc",
-      "sha256": "837d1a7c5fc48754117969ec46e8d60f4d45033b4e7ca0156bc6fe9049b006a7",
-      "bytes": 10456
+      "git_blob": "cfbcd23356e3b3188af8fa1be860d1d364d027f7",
+      "sha256": "5a770bceeb6d171d839ce5349bdc1932475ab40a64d0ceca8805cc085f9986a5",
+      "bytes": 10582
     },
     {
       "path": "tests/network.test.mjs",
@@ -1316,6 +1344,13 @@
       "git_blob": "31f7c635485506e64bfa5ca455a7ada5f6919b56",
       "sha256": "b555a47c7bb6dc06367bc10df6c888e00450793a38d99edd1bac9c31f291f771",
       "bytes": 2505
+    },
+    {
+      "path": "tests/transitous.test.mjs",
+      "mode": "100644",
+      "git_blob": "c3200235c5c010d5409d339ca8ae47f3240403ac",
+      "sha256": "099f281ca157da25b27b242ba0b359cb9b97ec3577cacfab50fc5b32071a8700",
+      "bytes": 8372
     },
     {
       "path": "tests/vrr.test.mjs",

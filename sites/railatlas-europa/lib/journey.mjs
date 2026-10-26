@@ -1,4 +1,4 @@
-import {localBerlinISO,berlinInput,distanceKm,normalize} from './rail.mjs';
+import {localBerlinISO,berlinInput,distanceKm,normalize,isMapStop} from './rail.mjs';
 import {hafasTime,routeGeometry,transportProduct,noticeReferences,parseNotices,mergeNotices} from './transit.mjs';
 export {hafasTime} from './transit.mjs';
 const countryCodes={80:'DE',81:'AT',82:'LU',83:'IT',84:'NL',85:'CH',86:'DK',87:'FR',88:'BE',70:'GB',71:'ES',94:'PT',51:'PL',54:'CZ',55:'HU',56:'SK'};
@@ -15,11 +15,11 @@ export function sameNearbyStation(a,b){
   let n=normalize(part.replace(/\((?:U|S)\s*\d*\)/gi,'')).replace(/\b([a-z0-9]+)str\b/g,'$1strasse').replace(/\bstr\b/g,'strasse');
   for(const place of places){if(n===place)return '';if(n.startsWith(place+' '))n=n.slice(place.length+1);if(n.endsWith(' '+place))n=n.slice(0,-place.length-1);}
   return n.replace(/^[us]\s+|\s+[us]$/g,'').trim();
- }).filter(n=>n.length>=4))];
+ }).filter(n=>n.length>=4||n==='hbf'))];
  return forms(a).some(first=>forms(b).some(second=>{const shorter=first.length<=second.length?first:second,longer=first.length>second.length?first:second;return first===second||shorter.length>=5&&longer.endsWith(' '+shorter);}));
 }
 export function sameStation(a,b){
- if([a,b].some(s=>typeof s?.id==='string'&&s.id.startsWith('osm:')))return sameNearbyStation(a,b);
+ if([a,b].some(isMapStop))return sameNearbyStation(a,b);
  if(a.dbId&&a.dbId===b.dbId)return true;
  // Large stations have separate IDs for platforms, levels and S-Bahn stops.
  // Accept these only with matching names and verified physical proximity.
@@ -50,7 +50,19 @@ export function parseJourneys(data,from,to,requested){
  return parsed.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));
 }
 const stationsCache=new Map();
-export async function fetchJSON(url,init={},signal,timeout=16000){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout),abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});try{if(signal?.aborted)controller.abort();const r=await fetch(url,{...init,signal:controller.signal,headers:{Accept:'application/json','User-Agent':'RailAtlas-Europa/1.0',...(init.headers||{})}});if(!r.ok)throw Object.assign(new Error('Fahrplandienst HTTP '+r.status),{code:'UPSTREAM_UNAVAILABLE',status:r.status,retryAfterMs:(()=>{const value=r.headers.get('Retry-After')||'';return /^\d+$/.test(value)?Number(value)*1000:Math.max(0,Date.parse(value)-Date.now())||0;})()});return await r.json();}catch(e){if(!signal?.aborted&&!e.code)e.code=e.name==='SyntaxError'?'SOURCE_RESPONSE_INVALID':'UPSTREAM_UNAVAILABLE';throw e;}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}}
+export async function fetchJSON(url,init={},signal,timeout=16000,maxBytes){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout),abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});
+ try{
+  if(signal?.aborted)controller.abort();
+  const r=await fetch(url,{...init,signal:controller.signal,headers:{Accept:'application/json','User-Agent':'RailAtlas-Europa/1.0',...(init.headers||{})}});
+  if(!r.ok)throw Object.assign(new Error('Fahrplandienst HTTP '+r.status),{code:'UPSTREAM_UNAVAILABLE',status:r.status,retryAfterMs:(()=>{const value=r.headers.get('Retry-After')||'';return /^\d+$/.test(value)?Number(value)*1000:Math.max(0,Date.parse(value)-Date.now())||0;})()});
+  if(!maxBytes)return await r.json();
+  const reader=r.body.getReader(),chunks=[];let size=0;
+  while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>maxBytes){await reader.cancel();throw Object.assign(Error('Zu viele Haltestellendaten. Bitte näher heranzoomen.'),{code:'SOURCE_RESPONSE_INVALID'});}chunks.push(value);}
+  const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+  return JSON.parse(new TextDecoder().decode(bytes));
+ }catch(e){if(!signal?.aborted&&!e.code)e.code=e.name==='SyntaxError'?'SOURCE_RESPONSE_INVALID':'UPSTREAM_UNAVAILABLE';throw e;}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
+}
 // ÖBB's public HAFAS protocol profile is documented by hafas-client (ISC).
 const hafasProfile={lang:'de',client:{type:'IPH',id:'OEBB',v:'6030600',name:'oebbPROD-ADHOC'},ver:'1.45',auth:{type:'AID',aid:'OWDL4fE4ixNiPBBm'}};
 async function hafas(method,req,signal){const body=await fetchJSON('https://fahrplan.oebb.at/bin/mgate.exe',{method:'POST',headers:{'Content-Type':'application/json','User-Agent':'RailAtlas-Europa/1.0 (+https://github.com/dunkelst/railatlas-europe)'},body:JSON.stringify({...hafasProfile,svcReqL:[{cfg:{polyEnc:'GPA'},meth:method,req}]})},signal,22000);const service=body.svcResL?.[0];if(body.err!=='OK'||service?.err!=='OK')throw new Error(service?.errTxt||body.errTxt||'Keine passende Fahrplanauskunft verfügbar.');return service.res;}
@@ -60,7 +72,7 @@ export async function resolveLid(station,signal){
  if(/^\d{7,9}$/.test(station.dbId||''))return `A=1@O=${station.name.replace(/[@$]/g,' ')}@X=${Math.round(station.lon*1e6)}@Y=${Math.round(station.lat*1e6)}@L=${station.dbId}@`;
  const data=await hafas('LocGeoPos',{ring:{cCrd:{x:Math.round(station.lon*1e6),y:Math.round(station.lat*1e6)},minDist:0,maxDist:800},getStops:true,getPOIs:false,maxLoc:20},signal);
  const matches=(data.locL||[]).filter(s=>s.type==='S').map(s=>({...parseStation(s),lid:s.lid})).filter(s=>sameStation(station,s));
- if(typeof station.id==='string'&&station.id.startsWith('osm:'))matches.sort((a,b)=>distanceKm(station,a)-distanceKm(station,b));
+ if(isMapStop(station))matches.sort((a,b)=>distanceKm(station,a)-distanceKm(station,b));
  const match=matches[0];
  if(!match){const error=new Error(`„${station.name}“ ist im Katalog erfasst, aber in dieser Fahrplanauskunft nicht eindeutig zugeordnet. Bitte einen Halt aus den Online-Vorschlägen oder die andere Auskunft wählen.`);error.code='STATION_NOT_FOUND';throw error;}
  return match.lid;

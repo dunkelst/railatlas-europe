@@ -20,7 +20,8 @@ Attribution and underlying source licences:
 - OpenStreetMap contributors, ODbL 1.0 for the calculated road geometry:
   https://www.openstreetmap.org/copyright.
 
-API policy: https://transitous.org/api/. Existing public source code alone is
-not an open-source licence. The RailAtlas owner has not yet approved such a
-licence. Do not activate this prototype as the application's public source or
-contact the service maintainers without the owner's instruction.
+API policy: https://transitous.org/api/. The RailAtlas owner approved AGPLv3 on
+26 October 2026. The stable stop API is now integrated through lib/transitous.mjs;
+the experimental calculated-line probe remains disconnected from the public app.
+Data and third-party licences remain separate from the project's own code.
+Do not contact the service maintainers without the owner's instruction.

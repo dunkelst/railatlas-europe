@@ -4,110 +4,57 @@ Aktualisiert am 26.10.2026. Projekt `appgprj_6ad7024dce688191b17cca024104c456`.
 Site: https://railatlas-europa.cocoaamber33.chatgpt.site
 Repository: https://github.com/dunkelst/railatlas-europe
 
-## Verbindlicher Auftrag
+## Auftrag und aktueller Quellstand
 
-Bestehendes Projekt und gemeinsame App-Basis fortführen. GitHub soll denselben
+Bestehende Site und gemeinsame App-Basis fortführen. GitHub soll denselben
 funktionsfähigen Quellstand enthalten und eigenständig betreibbar sein.
-Öffentliche Testnutzung ist ausdrücklich erlaubt; die aktuelle Freigabe bleibt
-erhalten. Keine zweite Anwendung, keine Weiterleitung als GitHub-Ersatz.
+Öffentliche Testnutzung ist erlaubt. Der Eigentümer hat am 26.10.2026 ausdrücklich
+AGPL für den eigenen Programmcode und die Nutzung der breiteren Haltequelle
+freigegeben. AGPL-3.0-only ist umgesetzt; Fremddaten behalten ihre Bedingungen.
+Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
-## Aktuell gesichert und veröffentlicht
+Version **24**, Quelle `202529ae7200ecd354bcbb7597e3f70c80932b48`,
+198 App-Dateien im Herkunftsmanifest. 97 Tests, TypeScript und alle drei Builds
+bestanden. Veröffentlichung folgt nach bytegleichem GitHub-Abgleich auf der
+bestehenden Site; Publikum bleibt unverändert.
 
-Version **23**, Quelle `ab76062553afa3566ba35cca9a1b50e80f32d69d`,
-193 App-Dateien im Herkunftsmanifest. Nativ auf der bestehenden öffentlichen Site
-veröffentlicht. 88 Tests, TypeScript und alle drei Builds bestanden.
+Der stabile Transitous-/MOTIS-Kartenhaltepfad ist im gemeinsamen Netzwerkmodell
+angebunden. Eigene GTFS-IDs und Originalkoordinaten, keine aus Feednamen erfundenen
+Länder. Der vorhandene Namens-/Standortresolver prüft Start, Ziel und Zwischenziel.
+Ein Hbf-Kurzname nach Entfernen des bestätigten Stadtpräfixes wird jetzt korrekt
+verglichen; fremde Orte und unpassende Produktklassen bleiben ausgeschlossen.
 
-Version 23 repariert einen tatsächlichen Cachefehler: Ein unvollständiger großer
-Ausschnitt durfte beim Heranzoomen weiterverwendet werden. Jetzt wird bei
-wesentlich engerem Ausschnitt neu abgefragt. Der Neuladen-Knopf übergibt
-`refresh=1` an die gemeinsame API und umgeht deren Cache, weiterhin unter
-Beachtung der Anbieterpausen. Kleine Bewegungen bleiben effizient. Eine leere
-Sichtauswahl wird als Datenlücke, nicht als fehlende Bedienung beschrieben.
-Echter Node-HTTP-Pfad: Welsede weit 13 Halte, eng zwei, mit neuer Quellenanfrage;
-gleiche Abfrage wiederverwendet, explizites Neuladen erneut bei der Quelle.
-Die öffentliche Version-23-API bestätigt die engeren Grenzen und einen neuen
-Abrufzeitpunkt beim Neuladen, jeweils HTTP 200.
+Node-HTTP-Nachweis: Heilbronn 7, London 12, Amsterdam 6 und Prag 10 Bus-/Fernbushalte,
+jeweils HTTP 200. EFA ergänzt echte Linien und weitere Halte. In Welsede bleiben
+40/45; vier DELFI-/VBN-Einträge werden als zwei Halte mit allen IDs dargestellt.
+Plattformen innerhalb desselben Feeds werden nicht vereinigt. Quellenfehler
+entfernen verfügbare Daten der anderen Quelle nicht. OSM-Fallback nur bei
+fehlenden Daten beider Quellen. Vier-MiB-Grenze, Timeout und Retry-After gelten.
+Die experimentelle Transitous-Linienkarte bleibt nur im manuellen Probeskript.
 
-Europäische Busabdeckung ist weiter offen. Der aktuelle EFA-Kartenabruf liefert
-im Heilbronner Beispiel nur drei Schienenhalte. Ein manuelles Transitous/MOTIS-
-Probeskript bestätigt sieben Bushalte in Heilbronn, zwölf in London, vier in
-Amsterdam, neun in Prag. Experimentelle Linienwege sind `ROUTED`, berechnet.
-Sie werden nicht als belegte originale Linienführung übernommen. Der Prototyp
-wird von keiner öffentlichen App-Route geladen. Die API erfordert für dauerhafte
-Nutzung eine geeignete Open-Source-Projektlizenz. Das Repository hat keine;
-MIT für den eigenen Programmcode ist vorgeschlagen, noch nicht freigegeben.
-Daten/Drittanbieter behalten ihre eigenen Bedingungen. Details und konkreter
-nächster Schritt: [transit-network-coverage.md](transit-network-coverage.md).
+Version-20–23-Funktionen bleiben erhalten: freiwillige rote Fußweg-Notlösungen
+mit Budget je Teilstrecke, Neuplanung mit offenen Zwischenzielen, Gegenrichtung
+nicht geografisch ausgeschlossen, gemeinsame dunkle Formularfelder, allgemeines
+Netz ohne Reise, sichtbereichsgleiche Zähler, Maßstabscache und echtes Neuladen.
+Historische Fahrplanbelege stehen im App-QA-Protokoll.
 
-Version 22 gleicht automatische Auskunft, Fußweg-Option und Neuplanung an die
-bestehende dunkle Seitenleiste und ihre Auswahlfelder an. Das helle Kartenpanel
-bekommt explizit helle native Schalter. Die rote Fußwegkennzeichnung gilt auch
-für die Verlaufsspur der Reiseliste. Quelle, Warnung und Fehler sind getrennt.
-Netzzähler und tatsächlich gezeichnete Ebenen verwenden dieselbe Sichtauswahl;
-der größere Cache wird bei Kartenbewegungen nicht verändert oder verkleinert.
+## Nächste Schritte und Grenzen
 
-Echte Neudenau-Prüfung: Ladebereich `[49.25,9.1875,49.34375,9.375]`, Sichtbereich
-`[49.27,9.22,49.32,9.32]`. Zwölf Halte/eine Linie (835) sind geladen; vier Halte
-und keine gelieferte Linie liegen im Sichtbereich. Der Zähler darf diese
-Quellenlücke nicht als vorhandenes Netz ausgeben. Keine erfundene Geometrie.
-Die öffentliche Version-22-API bestätigt diese Daten mit HTTP 200. Seite,
-neues App-CSS und Leaflet-CSS liefern ebenfalls HTTP 200. Die aktuelle
-Browser-Erweiterung ist nicht erreichbar; visuelle Abnahme offen.
+1. Nach GitHub-Abgleich nativ veröffentlichen, öffentliche API und Browser prüfen.
+   Interne Vorschau ist in der verbundenen Browser-Erweiterung wegen DNS nicht
+   erreichbar. Keine Ersatzhosts oder Ports zur Umgehung verwenden.
+2. Linienabdeckung mit Original-GTFS-Shapes bzw. OSM-Routen ausbauen. Berechnete
+   Wege nicht als bestätigte Liniengeometrie ausgeben.
+3. Eigene Ausweichsuche mit mehreren Umstiegspunkten und anfänglicher Rückfahrt
+   auf Basis vollständiger echter Fahrplanantworten ausbauen.
+4. Europäische Fahrplanabdeckung verbessern; ein Kartenhalt bestätigt keine
+   verfügbare Verbindung. DB-403 nicht wiederholt testen oder umgehen.
+5. Neuer Pages-Rollout erst mit freigegebenem eigenem öffentlichen HTTPS-Server.
+   Bis dahin bleibt Pages Version 12. Keine bezahlte Infrastruktur beauftragen.
 
-Die allgemeinen Netzschalter arbeiten ab Zoom 12 unabhängig von einer geplanten
-Reise. Die frühere Overpass-Abfrage hing 40 Sekunden ohne Quelldaten; die bereits
-angebundene EFA-Auskunft liefert nun Kartenhalte, deren bedienende Linien und
-Geometrien über ihre nativen Kartenmethoden, ohne Fahrtsuche. OSM bleibt als
-weitere Quelle erhalten. Stabile Rasterausschnitte und begrenzte Caches vermeiden
-ständige Neuabfragen. Geladene Daten bleiben beim Nachladen und Fehlern sichtbar.
-
-Live im echten Node-HTTP-Pfad und auf der öffentlichen Version-21-API:
-Bus 40/45, Welsede Mitte und Hanebülten;
-im erweiterten Clientausschnitt zusätzlich Jägereiche. `/api/network` liefert
-HTTP 200; eine folgende Nur-Halte-Abfrage nutzt die vorhandenen Daten.
-Die EFA-Stop-IDs werden für Start, Ziel und Zwischenziel erhalten, nicht als OSM
-oder EVA umetikettiert. Die Quelle und partielle Abdeckung bleiben sichtbar.
-Höchstens vier repräsentative Halte und zwölf Linienvarianten je Ausschnitt;
-begrenzte Auswahl ausdrücklich benennen. Source-Geometriefragmente nicht verbinden.
-
-Alle Version-20-Funktionen bleiben erhalten: freiwillige Fußweg-Optionen mit
-Budget (15/30/60 Min. und 3 km je Teilstrecke), rote gestrichelte Quellwege,
-mehrere vollständige Alternativen und Neuplanung ab Reisehalt mit offenen
-Zwischenzielen. Historische echte Version-20-Prüfungen beider API-Pfade:
-Rohdental → Punkt nahe U Turmstraße am 26.10.2026, 06:53–12:49, und Tannenweg →
-Punkt am Bahnhof Hessisch Oldendorf, 06:45–07:14, je drei Optionen.
-Ein künstliches Testnetz bestätigt bessere Ankunft trotz anfänglicher Rückfahrt;
-daraus keine bestätigte echte Ausweichfahrt ableiten.
-
-## Nächste sachliche Schritte
-
-1. Entscheidung des Eigentümers über die vorgeschlagene MIT-Lizenz abwarten.
-   Ohne Freigabe keine Lizenzdatei ergänzen und Transitous nicht öffentlich
-   anschließen. Nach Freigabe den stabilen Haltestellenabruf in den gemeinsamen
-   Karten-/Start-/Ziel-/Zwischenzielpfad übernehmen; Quellkennungen erhalten.
-2. Linienabdeckung mit Original-GTFS-Shapes bzw. OSM-Routen ausbauen.
-   Berechnete Wege nicht als bestätigte Liniengeometrie ausgeben.
-3. Konsistente Planungsfelder, allgemeines Netz und Halteübernahme im Browser
-   abnehmen, sobald eine zulässige Vorschau funktioniert.
-4. Gezielte Ausweichsuche über verschiedene Umstiegspunkte und anfängliche Fahrten
-   vom Ziel weg ausbauen, auf vollständigen echten Fahrplanantworten basierend.
-   Die bisherige Zulassung solcher Routen ist keine umfassende eigene Suche.
-5. Reguläre Fahrplanabdeckung für weitere europäische Bus-/ÖPNV-Halte erweitern,
-   ohne einen OSM-Treffer als bestätigte Bedienung auszugeben. DB-403 im Worker
-   nicht wiederholt testen oder umgehen; zulässige Quellen verwenden.
-6. Für den neuen Pages-Rollout einen eigenen öffentlichen HTTPS-Auskunftsserver
-   einrichten, wenn ein freigegebenes Ziel vorhanden ist. Bis dahin bleibt die
-   bestehende Pages-Version 12 erhalten; keine kostenpflichtige Infrastruktur
-   oder Zugangsanträge ohne entsprechenden Auftrag erzeugen.
-
-## Prüf- und Produktgrenzen
-
-Geometrien und Gehzeiten werden nicht erfunden. Früher berechnete Fußwegzeiten
-behalten Quellgehzeit und -verlauf; Fahrzeugzeiten werden nicht verschoben.
-Koordinaten-Endpunkte sind auf 30 m begrenzt. Ein um 65 m verschobener EFA-Punkt
-wird verworfen. Der Nutzer muss bei Neuplanung tatsächlichen Halt und Zeit prüfen.
-Kein GPS-Livenachweis oder neue visuelle Browserabnahme wird behauptet.
-Störungs- und europäische Fahrplanabdeckung bleiben partiell.
-
-Vor Änderungen neueste gesicherte Quelle lesen, keine parallelen Änderungen am
-selben Projekt erzeugen und nur echten geprüften Fortschritt veröffentlichen. [Ausbauvertrag](routing-resilience.md).
+Geometrien und Gehzeiten werden nicht erfunden. Fahrzeugzeiten bleiben
+unverändert; Koordinaten-Endpunkte auf 30 m begrenzt. Kein GPS-Livenachweis.
+Europaweite Quellen-, Echtzeit- und Sperrungsabdeckung bleiben partiell.
+Die frühere stündliche Automation ist deaktiviert/gelöscht und wird ohne neuen
+Auftrag nicht eingeschaltet. Vor Änderungen neueste Quelle lesen und nur echten
+geprüften Fortschritt veröffentlichen. [Ausbauvertrag](routing-resilience.md).

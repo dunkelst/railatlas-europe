@@ -12,5 +12,6 @@
     "build:pages": "npm --prefix sites/railatlas-europa run build:pages",
     "build:standalone": "npm --prefix sites/railatlas-europa run build:standalone",
     "start:standalone": "npm --prefix sites/railatlas-europa run start:standalone"
-  }
+  },
+  "license": "AGPL-3.0-only"
 }

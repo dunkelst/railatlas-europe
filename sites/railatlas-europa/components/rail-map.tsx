@@ -6,7 +6,7 @@ import {NETWORK_MODES,NETWORK_MIN_ZOOM,defaultNetworkLayers,validateBounds,netwo
 declare global {interface Window {L:any}}
 type LayerState=Record<string,{lines:boolean;stops:boolean}>;
 type NetworkStop={id:string;name:string;lat:number;lon:number;lines:string[];station?:Station;source?:string};
-type NetworkData={layers:Record<string,{lines:{id:string;name:string;ref:string;segments:[number,number][][]}[];stops:NetworkStop[]}>;bounds:number[];modes:string[];detail?:string;source:string;warning?:string;fetchedAt:string};
+type NetworkData={layers:Record<string,{lines:{id:string;name:string;ref:string;segments:[number,number][][]}[];stops:NetworkStop[]}>;bounds:number[];modes:string[];detail?:string;source:string;warning?:string;warningScope?:string;attributions?:{label:string;url:string}[];fetchedAt:string};
 let leaflet:Promise<any>|undefined;
 function loadLeaflet(){if(window.L)return Promise.resolve(window.L);if(!leaflet)leaflet=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=assetUrl('vendor/leaflet.js');script.onload=()=>resolve(window.L);script.onerror=()=>{leaflet=undefined;reject(new Error('Die Karte konnte nicht geladen werden.'));};document.head.appendChild(script);});return leaflet;}
 export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stations:Station[];parts:Journey[];picking:string|null;onPick:(lat:number,lon:number)=>void;onStopPick:(station:Station,target?:'start'|'end'|'via')=>void}){
@@ -17,7 +17,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
  const networkRef=useRef<NetworkData|null>(null),loadedRetry=useRef(0);networkRef.current=network;
  let requestKey='';if(view)try{requestKey=networkRequestBounds(view.bounds).join(',');}catch{requestKey='outside';}
  const detailVisible=Boolean(view&&view.zoom>=NETWORK_MIN_ZOOM);
- const visibleNetwork=useMemo(()=>network&&view&&detailVisible?networkInView(network,view.bounds):null,[network,view,detailVisible]);
+ const visibleNetwork=useMemo<NetworkData|null>(()=>network&&view&&detailVisible?networkInView(network,view.bounds):null,[network,view,detailVisible]);
  const requestDetail=NETWORK_MODES.some(m=>m.id!=='rail'&&layerState[m.id].lines)?'all':'stops';
  useEffect(()=>{let active=true;loadLeaflet().then(L=>{if(!active||!container.current)return;
   const m=L.map(container.current,{zoomControl:false,scrollWheelZoom:true,preferCanvas:true}).setView([49.3,8.5],5);map.current=m;
@@ -93,8 +93,8 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
       {m.label}: {layerState[m.id].lines&&m.id!=='rail'?visibleNetwork.layers[m.id].lines.length+' Linien'+(layerState[m.id].stops?' · ':''):''}{layerState[m.id].stops?visibleNetwork.layers[m.id].stops.length+' Halte':''}
      </span>)}
     </div>
-    <p className="network-source">Quelle: {visibleNetwork.source}</p>
-    {requestDetail==='all'&&visibleNetwork.warning&&<p className="network-warning" role="status">{visibleNetwork.warning}</p>}
+    <p className="network-source">Quelle: {visibleNetwork.source}{visibleNetwork.attributions?.map(a=><a key={a.url} href={a.url} target="_blank" rel="noreferrer">{a.label}</a>)}</p>
+    {(requestDetail==='all'||visibleNetwork.warningScope!=='lines')&&visibleNetwork.warning&&<p className="network-warning" role="status">{visibleNetwork.warning}</p>}
    </>}
    {tileError&&layerState.rail.lines&&<p className="network-status has-error">Einige Kacheln des Bahnnetzes konnten nicht geladen werden.</p>}
    <button type="button" onClick={()=>{setTileError(false);railway.current?.redraw();setRetry(n=>n+1);}} disabled={loading}>Ausschnitt neu laden</button>

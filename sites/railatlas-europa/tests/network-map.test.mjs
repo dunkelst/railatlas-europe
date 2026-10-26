@@ -6,6 +6,7 @@ const read=(name,gzip=false)=>JSON.parse(gzip?gunzipSync(fs.readFileSync(new URL
 const stops=()=>read('efa-map-welsede-stops'),lines=()=>read('efa-map-welsede-lines'),geometry=()=>read('efa-map-welsede-geometry',true);
 function clock(t){let now=baseTime+(step++)*600000;t.mock.method(Date,'now',()=>now);return delta=>now+=delta;}
 function mockMap(t,override){const calls=[];t.mock.method(globalThis,'fetch',async(url,init)=>{const u=new URL(url);calls.push(u);if(override){const result=await override(u,init);if(result)return result;}
+ if(u.hostname==='api.transitous.org')return Response.json([]);
  assert.equal(u.hostname,'www.efa.de');
  if(u.pathname.endsWith('XML_COORD_REQUEST'))return Response.json(stops());
  if(u.pathname.endsWith('XML_SERVINGLINES_REQUEST')){assert.equal(u.searchParams.get('type_sl'),'stopID');assert.ok(['de:03252:4450','de:03252:4440'].includes(u.searchParams.get('name_sl')));return Response.json(lines());}
@@ -17,7 +18,7 @@ test('Real Welsede map data produces general bus lines and selectable source sto
  const r=await handleApi(new Request('https://railatlas.example/api/network?'+new URLSearchParams({bbox:bbox.join(','),modes:'bus'})));assert.equal(r.status,200);const data=await r.json();
  assert.match(data.source,/EFA/);assert.deepEqual(data.layers.bus.lines.map(l=>l.ref).sort(),['40','45']);assert.equal(data.layers.bus.stops.length,2);assert.ok(data.layers.bus.lines.every(l=>l.segments.length>0));assert.ok(data.layers.rail.lines.length===0);
  const stop=data.layers.bus.stops.find(s=>s.station.efaId==='de:03252:4450');assert.ok(stop);assert.equal(stop.station.id,'efa:de:03252:4450');assert.equal(stop.station.dbId,'');assert.equal(stop.station.vrrId,undefined);assert.ok(!stop.id.startsWith('osm:'));
- assert.ok(calls.every(u=>!u.pathname.includes('TRIP')&&!u.pathname.includes('mgate')),'The independent network never computes a journey');assert.equal(calls.length,4);
+ assert.ok(calls.every(u=>!u.pathname.includes('TRIP')&&!u.pathname.includes('mgate')),'The independent network never computes a journey');assert.equal(calls.length,5);
 });
 
 test('Map geometry keeps source fragments and uses authoritative line metadata instead of generic GeoObject class zero',()=>{
@@ -55,30 +56,30 @@ test('Visibility requires an actual edge crossing and preserves separate source 
 
 test('Stops-only activation avoids geometry calls and a cached containing area avoids new upstream requests',async t=>{
  clock(t);const module=await import('../lib/network.mjs?stops-cache'),calls=mockMap(t);
- const data=await module.fetchNetwork(bbox,['bus'],undefined,'stops');assert.equal(data.layers.bus.stops.length,2);assert.equal(data.layers.bus.lines.length,0);assert.equal(calls.length,1);
- await module.fetchNetwork([bbox[0]+.0001,bbox[1]+.0001,bbox[2]-.0001,bbox[3]-.0001],['bus'],undefined,'stops');assert.equal(calls.length,1);
+ const data=await module.fetchNetwork(bbox,['bus'],undefined,'stops');assert.equal(data.layers.bus.stops.length,2);assert.equal(data.layers.bus.lines.length,0);assert.equal(calls.length,2);
+ await module.fetchNetwork([bbox[0]+.0001,bbox[1]+.0001,bbox[2]-.0001,bbox[3]-.0001],['bus'],undefined,'stops');assert.equal(calls.length,2);
  const full=await module.fetchNetwork(bbox,['bus']);assert.equal(full.layers.bus.lines.length,2);assert.ok(calls.length>1,'Enabling lines cannot reuse a stops-only result');
 });
 
 test('An EFA map outage can use the existing independent OSM source',async t=>{
  clock(t);const module=await import('../lib/network.mjs?source-fallback');let osm=0;
- t.mock.method(globalThis,'fetch',async url=>{if(new URL(url).hostname==='www.efa.de')return new Response('busy',{status:503});osm++;return Response.json({elements:[{type:'node',id:1,lat:51.998,lon:9.34,tags:{highway:'bus_stop',name:'OSM source stop'}}]});});
+ t.mock.method(globalThis,'fetch',async url=>{if(['www.efa.de','api.transitous.org'].includes(new URL(url).hostname))return new Response('busy',{status:503});osm++;return Response.json({elements:[{type:'node',id:1,lat:51.998,lon:9.34,tags:{highway:'bus_stop',name:'OSM source stop'}}]});});
  const data=await module.fetchNetwork(bbox,['bus']);assert.match(data.source,/OpenStreetMap/);assert.equal(data.layers.bus.stops[0].name,'OSM source stop');assert.equal(osm,1);
 });
 
 test('Zooming into a partial overview fetches closer data while small pans still reuse it',async t=>{
  clock(t);const module=await import('../lib/network.mjs?zoom-cache'),calls=mockMap(t);
- const broad=[51.98,9.30,52.02,9.37];await module.fetchNetwork(broad,['bus'],undefined,'stops');assert.equal(calls.length,1);
+ const broad=[51.98,9.30,52.02,9.37];await module.fetchNetwork(broad,['bus'],undefined,'stops');assert.equal(calls.length,2);
  assert.equal(networkCovers({bounds:broad,modes:['bus']},bbox,['bus']),false);
- await module.fetchNetwork(bbox,['bus'],undefined,'stops');assert.equal(calls.length,2,'A closer query must not remain trapped in an incomplete large cache entry');
- await module.fetchNetwork([51.996,9.33,52.002,9.35],['bus'],undefined,'stops');assert.equal(calls.length,2);
+ await module.fetchNetwork(bbox,['bus'],undefined,'stops');assert.equal(calls.length,4,'A closer query must not remain trapped in an incomplete large cache entry');
+ await module.fetchNetwork([51.996,9.33,52.002,9.35],['bus'],undefined,'stops');assert.equal(calls.length,4);
 });
 
 test('Explicit map refresh passes through the common API and bypasses its data cache',async t=>{
  clock(t);const calls=mockMap(t),url='https://railatlas.example/api/network?'+new URLSearchParams({bbox:bbox.join(','),modes:'bus',detail:'stops'});
- assert.equal((await handleApi(new Request(url))).status,200);assert.equal(calls.length,1);
- assert.equal((await handleApi(new Request(url))).status,200);assert.equal(calls.length,1);
- assert.equal((await handleApi(new Request(url+'&refresh=1'))).status,200);assert.equal(calls.length,2);
+ assert.equal((await handleApi(new Request(url))).status,200);assert.equal(calls.length,2);
+ assert.equal((await handleApi(new Request(url))).status,200);assert.equal(calls.length,2);
+ assert.equal((await handleApi(new Request(url+'&refresh=1'))).status,200);assert.equal(calls.length,4);
 });
 
 test('Explicit refresh also bypasses the independent OSM cache',async t=>{
@@ -90,13 +91,13 @@ test('Explicit refresh also bypasses the independent OSM cache',async t=>{
 
 test('A line-geometry outage preserves real stops with an explicit partial-data warning',async t=>{
  clock(t);const module=await import('../lib/network.mjs?geometry-failure');const calls=mockMap(t,u=>u.pathname.endsWith('XML_GEOOBJECT_REQUEST')?new Response('down',{status:503}):null);
- const data=await module.fetchNetwork(bbox,['bus']);assert.equal(data.layers.bus.stops.length,2);assert.equal(data.layers.bus.lines.length,0);assert.match(data.warning,/Halte bleiben sichtbar/);assert.ok(calls.every(u=>u.hostname==='www.efa.de'));
+ const data=await module.fetchNetwork(bbox,['bus']);assert.equal(data.layers.bus.stops.length,2);assert.equal(data.layers.bus.lines.length,0);assert.match(data.warning,/Halte bleiben sichtbar/);assert.ok(calls.every(u=>['www.efa.de','api.transitous.org'].includes(u.hostname)));
 });
 
 test('User abort cancels map retrieval without falling through to another source',async t=>{
  clock(t);const module=await import('../lib/network.mjs?map-abort'),controller=new AbortController();let calls=0;
  t.mock.method(globalThis,'fetch',(_url,init)=>new Promise((_resolve,reject)=>{calls++;init.signal.addEventListener('abort',()=>reject(new DOMException('Abgebrochen','AbortError')),{once:true});}));
- const first=assert.rejects(module.fetchNetwork(bbox,['bus'],controller.signal),{name:'AbortError'});controller.abort();await first;assert.equal(calls,1);
+ const first=assert.rejects(module.fetchNetwork(bbox,['bus'],controller.signal),{name:'AbortError'});controller.abort();await first;assert.equal(calls,2);
 });
 
 test('Map rate-limit cooldown respects the provider Retry-After duration',async t=>{

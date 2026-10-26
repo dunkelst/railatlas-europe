@@ -1,6 +1,46 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
-## Fortsetzung 26.10.2026: Zuverlässigkeit und europaweite Quellenprüfung
+## Fortsetzung 26.10.2026: AGPLv3 und gemeinsame GTFS-Kartenhalte
+
+- 97 Regressionen und TypeScript erfolgreich. Die neuen Fälle prüfen den
+  gemeinsamen API-Pfad, Quellenzusammenführung, strikte Halteübernahme,
+  Größenbegrenzung, Anbieterpause und Ausfälle beider Quellen.
+- Der Eigentümer hat AGPL ausdrücklich freigegeben. Der eigene Programmcode
+  verwendet AGPL-3.0-only; vollständiger Standardtext, Lizenzumfang und sichtbarer
+  Quellcode-Link sind ergänzt. Daten und Fremdbestandteile behalten ihre Regeln.
+- Die stabile API `/api/v6/map/stops` ist im gemeinsamen Kartenpfad angebunden.
+  Alle fünf bestehenden Netzebenen verwenden Quellklassifikationen. Bus enthält
+  BUS und COACH. Ein ausländischer Halt in einem deutschen Feed erhält keine
+  erfundene deutsche Länderzuordnung. GTFS-IDs bleiben im eigenen Namensraum.
+- EFA ergänzt Linien und Halte; identische Halte werden streng nach Name und
+  maximal 250 m abgeglichen. Primärkoordinaten und Kennungen bleiben erhalten;
+  reine Namensgleichheit und nahe anders benannte Halte genügen nicht.
+- Gleiche Halte verschiedener GTFS-Feeds werden ebenfalls zusammengeführt;
+  Plattformen innerhalb desselben Feeds bleiben getrennt. Die echte Welsede-
+  Antwort mit vier DELFI-/VBN-Einträgen ergibt zwei Marker mit allen vier
+  Originalkennungen; die echten EFA-Linien 40 und 45 bleiben erhalten.
+- Der vorhandene Stationsresolver unterstützt diese Kartenhalte für Start,
+  Ziel und Zwischenziel. Quell-IDs werden nicht ungeprüft an andere Auskünfte
+  weitergereicht. Dabei wurde auch der bisher nicht erkannte kurze Stationsname
+  Hbf nach Entfernung des bestätigten Stadtpräfixes korrigiert. Echte U77-Daten
+  prüfen die Übernahme und Zwischenzielvalidierung; Gegenfälle bleiben gesperrt.
+- Der unabhängige Node-HTTP-Server liefert HTTP 200 für Heilbronn (sieben),
+  London (zwölf), Amsterdam (sechs) und Prag (zehn Bus-/Fernbushalte). Jeder
+  Nur-Halte-Abruf verwendet eine einzelne stabile Kartenabfrage. Native IDs,
+  Source-Attribution und Originalkoordinaten werden ausgeliefert.
+- Quellen- und Geometrieausfälle lassen verfügbare Halte bestehen. Beide
+  Ausfallrichtungen sind geprüft. Antwortgröße vier MiB, Abbruch und Retry-After
+  sind abgedeckt. Linienwarnungen werden bei reiner Halteauswahl ausgeblendet;
+  Quellenwarnungen bleiben sichtbar.
+- Die experimentelle Transitous-Linienkarte ist weiterhin nur im manuellen
+  Probeskript vorhanden; keine berechneten Linienwege in der öffentlichen Karte.
+  Ein gefundener Kartenhalt bestätigt keine Fahrt in ÖBB/EFA/VRR/DB.
+- Die lokale Browser-Anbindung ist diesmal verfügbar. Die interne Vorschau war
+  darüber jedoch nicht erreichbar (ERR_NAME_NOT_RESOLVED). Die Prüfung der
+  veröffentlichten Oberfläche erfolgt erst nach der Bereitstellung. Kein
+  anderer Vorschauhost oder Port wurde zur Umgehung eingesetzt.
+
+## Historischer Stand 23 vom 26.10.2026: Quellenprüfung vor Lizenzfreigabe
 
 - 88 Regressionen und TypeScript bestanden. Drei neue Regressionen sichern
   maßstabsabhängige Caches und den tatsächlich erneuten Abruf über den

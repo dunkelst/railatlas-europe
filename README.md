@@ -2,33 +2,43 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Stand entspricht Sites-Version **23**, Quellcommit `ab76062553afa3566ba35cca9a1b50e80f32d69d`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **24**, Quellcommit `202529ae7200ecd354bcbb7597e3f70c80932b48`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
-## Neu in Version 23: Zoom-/Neuladen-Reparatur und ehrliche Quellenprüfung
+## Version 24: AGPLv3 und breitere Kartenhalte
 
-Ein unvollständiger großer Ladeausschnitt wird beim wesentlichen Heranzoomen
-nicht mehr als passende Detailauskunft wiederverwendet. **Ausschnitt neu laden**
-fragt die gemeinsame Quelle tatsächlich erneut ab; Anbieterpausen bleiben gültig.
-Kleine Bewegungen nutzen weiterhin passende Cacheantworten. Eine leere Sicht
-wird als fehlende Netzdaten beschrieben und bestätigt keine fehlende Bedienung.
+Der eigene Programmcode steht nach ausdrücklicher Freigabe unter
+**AGPL-3.0-only**. [Lizenztext](LICENSE) und [Lizenzumfang](LICENSE_SCOPE.md)
+liegen bei; Fremddaten und Bibliotheken behalten ihre bisherigen Bedingungen.
+Die Oberfläche verlinkt den vollständigen entsprechenden Quellcode sichtbar.
 
-Echter Node-HTTP-Pfad: weiter Welsede-Abruf 13 Halte, enger Abruf zwei Halte nach
-einer neuen Quellenanfrage, identische Wiederholung aus dem Cache, manuelles
-Neuladen mit erneutem Quellenaufruf. Alle Antworten HTTP 200.
-**88 Tests, TypeScript und alle drei Builds bestanden.**
+Der stabile Transitous-/MOTIS-Endpunkt `/api/v6/map/stops` ergänzt das gemeinsame
+Kartenmodell. Bus umfasst BUS und COACH; alle fünf Verkehrsmittel bleiben einzeln
+schaltbar. Halte funktionieren unabhängig von einer Fahrtsuche. Originalkennungen
+bleiben erhalten und werden für Start, Ziel und Zwischenziel durch die vorhandenen
+Anbieterresolver geprüft. Ein Kartenhalt bestätigt noch keine verfügbare Fahrt.
+Gleiche Halte verschiedener Feeds werden zusammengeführt; Plattformen desselben
+Feeds bleiben getrennt. Quellkoordinaten und sämtliche Kennungen bleiben erhalten.
 
-**Die europaweite Busnetzabdeckung ist weiterhin nicht verlässlich.** EFA
-liefert im Heilbronner Prüfausschnitt keine Busklassifikation. Ein leichter
-manueller Transitous-Prototyp liefert Bushalte in Heilbronn, London, Amsterdam
-und Prag. Die getesteten experimentellen Linienwege sind berechnet und werden
-nicht als bestätigte Linienführung ausgegeben. Der Prototyp ist nicht an den
-öffentlichen App-Abruf angeschlossen.
+Der echte unabhängige Node-HTTP-Pfad liefert Bus-/Fernbushalte in Heilbronn (7),
+London (12), Amsterdam (6) und Prag (10), jeweils HTTP 200. In Welsede ergänzt EFA
+weiterhin die tatsächlichen Linien 40/45; vier DELFI-/VBN-Einträge werden als zwei
+Halte mit allen Originalkennungen dargestellt. Quellenausfälle lassen vorhandene
+Halte bestehen. **97 Regressionen, TypeScript und alle drei Builds bestanden.**
+Der Quellstand ist gespeichert und vor Veröffentlichung der neuen Oberfläche
+auf GitHub verfügbar; der Bereitstellungsnachweis steht im Abgleich.
 
-Die neue API verlangt für dauerhafte öffentliche Nutzung eine geeignete
-Open-Source-Projektlizenz; das öffentliche RailAtlas-Repository hat bisher keine.
-Der [konkrete MIT-Vorschlag, Quellenvergleich und nächste Schritt](docs/transit-network-coverage.md)
-liegen zur Entscheidung vor. Es wurde keine Lizenz erteilt, kein Zugang beantragt
-und niemand kontaktiert. Die bisherige öffentliche Testfreigabe bleibt erhalten.
+Die breitere Haltequelle beseitigt keine vollständige europäische Datenlücke.
+EFA bleibt für echte Liniengeometrien angebunden; experimentelle berechnete
+Transitous-Linienwege werden nicht eingeblendet. Öffentliche API-Nutzung bleibt
+nichtkommerziell, ressourcenschonend und unter den Anbieterbedingungen.
+[Quellen und offene Linienabdeckung](docs/transit-network-coverage.md).
+
+## Seit Version 23: korrekte Zoom- und Neuladen-Abfragen
+
+Wesentlich engere Ausschnitte fragen die Quelle erneut ab. **Ausschnitt neu laden**
+umgeht die gemeinsamen Daten-Caches unter Beachtung der Anbieterpausen. Kleine
+Bewegungen verwenden passende Cacheantworten. Fehlende Netzdaten werden nicht
+als fehlende Bedienung ausgegeben.
 
 ## Seit Version 22: konsistente Darstellung und sichtbare Netzdaten
 

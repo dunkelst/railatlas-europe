@@ -1,4 +1,4 @@
-import {berlinInput, berlinSearchDays, distanceKm, localBerlinISO, normalize, walkingMinutes} from './rail.mjs';
+import {berlinInput, berlinSearchDays, distanceKm, localBerlinISO, normalize, walkingMinutes, isMapStop} from './rail.mjs';
 import {fetchJSON, sameStation} from './journey.mjs';
 import {mergeNotices, plainText} from './transit.mjs';
 
@@ -42,7 +42,7 @@ export async function findVrrStations(query, signal, provider=VRR_PROVIDER) {
 }
 export function sameVrrStation(a,b,provider=VRR_PROVIDER) {
  if([a,b].some(s=>s?.locationType==='coordinate'))return [a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<=.03;
- if([a,b].some(s=>typeof s?.id==='string'&&s.id.startsWith('osm:')))return sameStation(a,b);
+ if([a,b].some(isMapStop))return sameStation(a,b);
  if(a[provider.idField] && b[provider.idField]) return a[provider.idField]===b[provider.idField];
  const key=s=>normalize(s.name).replace(/\b(hauptbahnhof|hbf|bahnhof|station)\b/g,'').replace(/[^a-z0-9]/g,'');
  return sameStation(a,b)||key(a)===key(b)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<.8;
@@ -50,7 +50,7 @@ export function sameVrrStation(a,b,provider=VRR_PROVIDER) {
 async function resolveStation(station, signal, provider=VRR_PROVIDER) {
  if(validVrrId(station[provider.idField]))return station;
  const matches=await findVrrStations(station.name,signal,provider);
- if(typeof station.id==='string'&&station.id.startsWith('osm:'))matches.sort((a,b)=>distanceKm(station,a)-distanceKm(station,b));
+ if(isMapStop(station))matches.sort((a,b)=>distanceKm(station,a)-distanceKm(station,b));
  const match=matches.find(s=>sameVrrStation(station,s,provider));
  if(!match){const error=Error('Bitte „'+station.name+'“ aus den Online-Vorschlägen von '+provider.label+' auswählen. Der gewählte Halt ist dort nicht eindeutig zugeordnet.');error.code='STATION_NOT_FOUND';throw error;}
  return match;
