@@ -1,5 +1,33 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
+## Fortsetzung 26.10.2026: konsistente Einstellungen und sichtbare Netzdaten
+
+- 82 Regressionen und TypeScript erfolgreich. Zwei neue Fälle prüfen den
+  tatsächlich sichtbaren Ausschnitt, unveränderte Cache-/Stationsdaten,
+  Zurückschwenken sowie echte Segmentüberschneidungen statt bloß überlappender
+  Begrenzungsrechtecke. Originalpunkte und getrennte Fragmente bleiben erhalten.
+- Darstellung und Zähler verwenden dieselbe `networkInView`-Auswahl. Der größere
+  Lade-/Cacheausschnitt bleibt für kleine Kartenbewegungen erhalten; außerhalb
+  des sichtbaren Bereichs liegende Halte und Linien erhöhen dessen Zähler nicht.
+  Die Beschriftung nennt ausdrücklich den sichtbaren Ausschnitt.
+- Quellangabe, erfolgreicher Abruf, begrenzte Linienauswahl und Ladefehler werden
+  getrennt dargestellt. Eine Einschränkung färbt die erfolgreiche Quellabfrage
+  nicht mehr als Fehler. Nur-Halte-Auswahl zeigt keine überholte Linienwarnung.
+- Automatische Auskunft, Fußweg-Einstellung, Auskunftswahl, Sortierung und
+  Neuplanung verwenden die dunklen Seitenleistenfarben und gemeinsame
+  Auswahlfeldregeln. Nur aktive Fußweg-Notlösungen erhalten eine warme Warnfarbe.
+  Ihre Verlaufsspur ist auch in der Reiseliste rot gestrichelt. Das helle
+  Kartenpanel erhält eine explizit helle native Darstellung für seine Schalter.
+- Echter Node-Abruf rund um Neudenau: Ladebereich
+  `[49.25,9.1875,49.34375,9.375]`, sichtbarer Bereich
+  `[49.27,9.22,49.32,9.32]`. Die Quelle liefert zwölf Bushalte und Linie 835 im
+  Ladebereich; im sichtbaren Bereich liegen vier Halte und keine der gelieferten
+  Liniengeometrien. Diese Quellenlücke wird nicht durch erfundene Linien
+  aufgefüllt. Die frühere Gesamtzahl wäre für den sichtbaren Ausschnitt falsch.
+- Die Browser-Erweiterung war auch in dieser Sitzung nicht erreichbar. Die
+  verwaltete Vorschau meldet ihren Start; eine neue visuelle Browserabnahme
+  wird nicht behauptet. Referenz ist der vom Nutzer gelieferte Screenshot.
+
 ## Fortsetzung 26.10.2026: allgemeines Busnetz ohne Reise
 
 - 80 Regressionen bestanden (`node --test --test-reporter=tap tests/*.test.mjs`),

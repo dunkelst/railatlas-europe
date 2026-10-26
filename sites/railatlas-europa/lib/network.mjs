@@ -150,14 +150,32 @@ export async function fetchOsmNetwork(bounds, modes, signal) {
 const efaServingCache=new Map(),mapCache=new Map();
 const mapMode=transport=>({train:'rail','replacement-bus':'bus'})[vrrProduct(transport).mode]||vrrProduct(transport).mode;
 const insideBounds=(bounds,point)=>point[0]>=bounds[0]&&point[0]<=bounds[2]&&point[1]>=bounds[1]&&point[1]<=bounds[3];
+function edgeInBounds(a,b,[s,w,n,e]){
+ const dy=b[0]-a[0],dx=b[1]-a[1];let from=0,to=1;
+ for(const [p,q] of [[-dx,a[1]-w],[dx,e-a[1]],[-dy,a[0]-s],[dy,n-a[0]]]){
+  if(p===0){if(q<0)return false;continue;}
+  const t=q/p;if(p<0)from=Math.max(from,t);else to=Math.min(to,t);
+  if(from>to)return false;
+ }
+ return true;
+}
 // Keep original neighbouring points at the viewport edge and never join gaps.
 export function visibleNetworkSegments(sequences,bounds){
  const output=[];
  for(const sequence of sequences){let run=[];for(let i=1;i<sequence.length;i++){
-  const a=sequence[i-1],b=sequence[i],touches=Math.min(a[0],b[0])<=bounds[2]&&Math.max(a[0],b[0])>=bounds[0]&&Math.min(a[1],b[1])<=bounds[3]&&Math.max(a[1],b[1])>=bounds[1];
+  const a=sequence[i-1],b=sequence[i],touches=edgeInBounds(a,b,bounds);
   if(touches){if(!run.length)run.push(a);run.push(b);}else{if(run.length>1)output.push(run);run=[];}
  }if(run.length>1)output.push(run);}
  return output;
+}
+// The cache can cover a larger area. Rendering and counts use this same view.
+export function networkInView(data,bounds){
+ if(!data)return null;
+ const layers=Object.fromEntries(Object.entries(data.layers).map(([mode,layer])=>[mode,{
+  lines:layer.lines.map(line=>({...line,segments:visibleNetworkSegments(line.segments,bounds)})).filter(line=>line.segments.length),
+  stops:layer.stops.filter(stop=>insideBounds(bounds,[stop.lat,stop.lon]))
+ }]));
+ return {...data,bounds,layers};
 }
 export function parseEfaNetwork(locations,lines,geometry,bounds,modes,servingByStop=new Map()){
  validateBounds(bounds);

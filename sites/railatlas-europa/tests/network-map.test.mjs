@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {gunzipSync} from 'node:zlib';
-import {parseEfaNetwork,networkRequestBounds,containsBounds,networkCovers} from '../lib/network.mjs';
+import {parseEfaNetwork,networkRequestBounds,containsBounds,networkCovers,networkInView,visibleNetworkSegments} from '../lib/network.mjs';
 import {handleApi} from '../lib/api.mjs';
 const bbox=[51.99572,9.3293,52.00299,9.35194],baseTime=Date.parse('2026-10-26T08:00:00Z');let step=0;
 const read=(name,gzip=false)=>JSON.parse(gzip?gunzipSync(fs.readFileSync(new URL('./fixtures/'+name+'.json.gz',import.meta.url))):fs.readFileSync(new URL('./fixtures/'+name+'.json',import.meta.url)));
@@ -33,6 +33,24 @@ test('Stable viewport cells contain the view, reuse covered data and reject miss
  const b=networkRequestBounds(bbox);assert.ok(containsBounds(b,bbox));assert.deepEqual(networkRequestBounds(bbox.map(x=>x+0.000001)),b);
  const data={bounds:b,modes:['bus','tram']};assert.equal(networkCovers(data,bbox,['bus']),true);assert.equal(networkCovers(data,bbox,['subway']),false);assert.equal(networkCovers(data,[52.1,9.3,52.2,9.4],['bus']),false);
  assert.throws(()=>networkRequestBounds([30,-10,70,30]));
+});
+
+test('Visible network excludes cached off-screen objects while retaining canonical stops and source fragments',()=>{
+ const data=parseEfaNetwork(stops().locations,lines().lines,geometry(),bbox,['bus']);
+ const original=JSON.stringify(data),view=[51.997,9.339,51.999,9.342];
+ const visible=networkInView(data,view);
+ assert.equal(data.layers.bus.stops.length,2);assert.equal(visible.layers.bus.stops.length,1);
+ assert.equal(visible.layers.bus.stops[0].station.efaId,'de:03252:4450');assert.equal(visible.layers.bus.stops[0],data.layers.bus.stops[0]);
+ assert.equal(visible.layers.bus.lines.length,2);assert.equal(JSON.stringify(data),original,'Panning must not shrink the cached source data');
+ const elsewhere=networkInView(data,[52.1,9.3,52.2,9.4]);assert.equal(elsewhere.layers.bus.lines.length,0);assert.equal(elsewhere.layers.bus.stops.length,0);
+ const back=networkInView(data,bbox);assert.deepEqual(back.layers.bus,data.layers.bus);
+});
+
+test('Visibility requires an actual edge crossing and preserves separate source fragments without creating points',()=>{
+ const view=[0,0,1,1];
+ assert.deepEqual(visibleNetworkSegments([[[-1,.5],[.5,2]]],view),[],'Overlapping edge bounding boxes alone do not establish visibility');
+ const fragments=[[[.25,-1],[.25,2]],[[.75,-1],[.75,2]]];assert.deepEqual(visibleNetworkSegments(fragments,view),fragments);
+ assert.deepEqual(visibleNetworkSegments([[[0,-1],[0,2]]],view),[[[0,-1],[0,2]]],'Source edges on the boundary remain visible');
 });
 
 test('Stops-only activation avoids geometry calls and a cached containing area avoids new upstream requests',async t=>{

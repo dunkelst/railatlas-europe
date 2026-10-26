@@ -1,5 +1,18 @@
 # RailAtlas Europa
 
+## Konsistente Darstellung (26.10.2026)
+
+Automatische Auskunft, Fußweg-Einstellung und Neuplanung folgen der dunklen
+Seitenleiste; ihre Auswahlfelder verwenden dieselben Regeln wie Auskunft und
+Sortierung. Die helle Kartensteuerung verwendet passende native Schalter.
+Fußweg-Notlösungen bleiben durch Text und rote gestrichelte Verläufe erkennbar.
+
+Netzzähler und gezeichnete Ebenen verwenden denselben **sichtbaren Ausschnitt**.
+Der größere Ladebereich bleibt im Cache, damit kleine Kartenbewegungen keine
+erneute Quellabfrage erfordern. Quelle, Einschränkungen der Linienauswahl und
+Ladefehler erscheinen getrennt. Eine gelieferte Linie außerhalb des sichtbaren
+Bereichs wird dort nicht mitgezählt. Datenlücken bleiben ausdrücklich offen.
+
 ## Allgemeine Buslinien und Halte (26.10.2026)
 
 Die vorhandenen Netzschalter laden Linien und Halte für den sichtbaren

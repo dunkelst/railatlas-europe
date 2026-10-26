@@ -1,8 +1,8 @@
 "use client";
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useMemo,useRef,useState} from 'react';
 import type {Station,Journey} from '@/lib/types';
 import {assetUrl,apiUrl,runtime} from '@/lib/urls.mjs';
-import {NETWORK_MODES,NETWORK_MIN_ZOOM,defaultNetworkLayers,validateBounds,networkRequestBounds,networkCovers,fetchNetwork} from '@/lib/network.mjs';
+import {NETWORK_MODES,NETWORK_MIN_ZOOM,defaultNetworkLayers,validateBounds,networkRequestBounds,networkCovers,networkInView,fetchNetwork} from '@/lib/network.mjs';
 declare global {interface Window {L:any}}
 type LayerState=Record<string,{lines:boolean;stops:boolean}>;
 type NetworkStop={id:string;name:string;lat:number;lon:number;lines:string[];station?:Station;source?:string};
@@ -17,6 +17,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
  const networkRef=useRef<NetworkData|null>(null),loadedRetry=useRef(0);networkRef.current=network;
  let requestKey='';if(view)try{requestKey=networkRequestBounds(view.bounds).join(',');}catch{requestKey='outside';}
  const detailVisible=Boolean(view&&view.zoom>=NETWORK_MIN_ZOOM);
+ const visibleNetwork=useMemo(()=>network&&view&&detailVisible?networkInView(network,view.bounds):null,[network,view,detailVisible]);
  const requestDetail=NETWORK_MODES.some(m=>m.id!=='rail'&&layerState[m.id].lines)?'all':'stops';
  useEffect(()=>{let active=true;loadLeaflet().then(L=>{if(!active||!container.current)return;
   const m=L.map(container.current,{zoomControl:false,scrollWheelZoom:true,preferCanvas:true}).setView([49.3,8.5],5);map.current=m;
@@ -47,19 +48,19 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
   if(!detailVisible){setNetwork(null);setStatus('Für Linien und Halte näher heranzoomen (ab Zoom 12).');return;}
   let bounds:number[];try{bounds=validateBounds(requestKey.split(',').map(Number));}catch{setStatus('Für die Detailnetze bitte näher heranzoomen.');return;}
   const forced=loadedRetry.current!==retry;loadedRetry.current=retry;
-  if(!forced&&networkCovers(networkRef.current,bounds,modes.split(','))&&networkRef.current&&(requestDetail==='stops'||networkRef.current.detail==='all')&&Date.now()-Date.parse(networkRef.current.fetchedAt)<300000){setNetworkError(Boolean(networkRef.current.warning));setStatus(networkRef.current.source+' · Daten für diesen Ausschnitt geladen.'+(networkRef.current.warning?' '+networkRef.current.warning:''));return;}
+  if(!forced&&networkCovers(networkRef.current,bounds,modes.split(','))&&networkRef.current&&(requestDetail==='stops'||networkRef.current.detail==='all')&&Date.now()-Date.parse(networkRef.current.fetchedAt)<300000){setStatus('Netzdaten geladen.');return;}
   const timer=setTimeout(async()=>{setLoading(true);setStatus('Linien und Halte für diesen Ausschnitt laden …');try{
    let data;
    const config=runtime();
    if(config.requiresApiOrigin&&!config.apiOrigin)data=await fetchNetwork(bounds,modes.split(','),controller.signal,requestDetail);
    else{const response=await fetch(apiUrl('/api/network?'+new URLSearchParams({bbox:bounds.join(','),modes,detail:requestDetail})),{signal:controller.signal});const body=await response.json() as NetworkData&{error?:string};if(!response.ok)throw Error(body.error||'Netzebenen nicht erreichbar.');data=body;}
-   if(!active)return;setNetwork(data);const count=modes.split(',').reduce((n,m)=>n+data.layers[m].lines.length+data.layers[m].stops.length,0);setNetworkError(Boolean(data.warning));setStatus((count?data.source+' · Netzdaten für diesen Ausschnitt geladen.':'Für diesen Ausschnitt wurden keine passenden Netzdaten geliefert.')+(data.warning?' '+data.warning:''));
+   if(!active)return;setNetwork(data);const count=modes.split(',').reduce((n,m)=>n+data.layers[m].lines.length+data.layers[m].stops.length,0);setNetworkError(false);setStatus(count?'Netzdaten geladen.':'Für diesen Ausschnitt wurden keine passenden Netzdaten geliefert.');
   }catch(e){if(active&&!controller.signal.aborted){setNetworkError(true);setStatus(((e as Error).message||'Die Netzebenen sind gerade nicht erreichbar.')+(networkRef.current?' Bereits geladene Netzdaten bleiben sichtbar.':''));}}finally{if(active)setLoading(false);}},1000);
   return()=>{active=false;clearTimeout(timer);controller.abort();};
  },[ready,requestKey,detailVisible,modes,requestDetail,retry]);
  useEffect(()=>{
   if(!ready||!map.current)return;const L=window.L;
-  for(const mode of NETWORK_MODES){const group=networkGroups.current[mode.id];group?.clearLayers();const data=network?.layers[mode.id],enabled=layerState[mode.id];if(!data||!group)continue;
+  for(const mode of NETWORK_MODES){const group=networkGroups.current[mode.id];group?.clearLayers();const data=visibleNetwork?.layers[mode.id],enabled=layerState[mode.id];if(!data||!group)continue;
    if(enabled.lines&&mode.id!=='rail')for(const line of data.lines){const node=document.createElement('div');node.className='map-popup';node.textContent=mode.label+' · '+line.name;for(const segment of line.segments)L.polyline(segment,{color:mode.color,weight:mode.id==='bus'?3:4,opacity:.8,bubblingMouseEvents:false}).bindPopup(node).addTo(group);}
    if(enabled.stops)for(const stop of data.stops){const node=document.createElement('div');node.className='map-popup network-popup';const heading=document.createElement('b');heading.textContent=stop.name;node.appendChild(heading);const text=document.createElement('small');text.textContent=mode.label+(stop.lines.length?' · '+stop.lines.join(', '):'')+' · '+(stop.source||network?.source||'Kartendaten');node.appendChild(text);
     const station:Station=stop.station?{...stop.station,networkMode:mode.id}:{id:'osm:'+stop.id,dbId:'',name:stop.name,lat:stop.lat,lon:stop.lon,country:'',main:false,networkMode:mode.id};
@@ -68,7 +69,36 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
     marker.on('click',()=>{if(modeRef.current){map.current?.closePopup();stopRef.current(station);}});
    }
   }
- },[ready,network,layerState]);
+ },[ready,visibleNetwork,layerState]);
  const toggle=(mode:string,field:'lines'|'stops',value:boolean)=>setLayerState(old=>({...old,[mode]:{...old[mode],[field]:value}}));
- return <section className={'map-stage '+(picking?'picking':'')} aria-label="Europäische Bahnkarte"><div ref={container} className="map-canvas"/>{error&&<div role="alert" className="map-message">{error} Die Reiseplanung steht weiterhin zur Verfügung.</div>}<div className="map-tag"><span className="live-dot"/>EUROPAS BAHN & ÖPNV-NETZE</div><aside ref={controls} className="map-options network-controls" aria-label="Netzebenen"><details open><summary>Netzebenen <span>Linien & Halte</span></summary><div className="network-grid"><span>VERKEHRSMITTEL</span><span>Linien</span><span>Halte</span>{NETWORK_MODES.map(mode=><div key={mode.id} className="network-row"><span><i style={{background:mode.color}}/>{mode.label}</span><label><input type="checkbox" aria-label={mode.label+' Linien'} checked={layerState[mode.id].lines} onChange={e=>toggle(mode.id,'lines',e.target.checked)}/><span className="sr-only">{mode.label} Linien</span></label><label><input type="checkbox" aria-label={mode.label+' Halte'} checked={layerState[mode.id].stops} onChange={e=>toggle(mode.id,'stops',e.target.checked)}/><span className="sr-only">{mode.label} Halte</span></label></div>)}</div><p className={'network-status '+(networkError?'has-error':'')} role="status">{loading&&<span className="network-spinner"/>}{status}</p>{network&&<div className="network-counts">{NETWORK_MODES.filter(m=>(layerState[m.id].lines||layerState[m.id].stops)&&network.modes?.includes(m.id)).map(m=><span key={m.id}>{m.label}: {layerState[m.id].lines&&m.id!=='rail'?network.layers[m.id].lines.length+' Linien · ':''}{layerState[m.id].stops?network.layers[m.id].stops.length+' Halte':''}</span>)}</div>}{tileError&&layerState.rail.lines&&<p className="network-status has-error">Einige Kacheln des Bahnnetzes konnten nicht geladen werden.</p>}<button type="button" onClick={()=>{setTileError(false);railway.current?.redraw();setRetry(n=>n+1);}} disabled={loading}>Ausschnitt neu laden</button><small>Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Quelle steht beim geladenen Netz. Daten können fehlen; keine Zusage zum aktuellen Betrieb.</small></details></aside>{picking&&<div className="pick-banner">Kartenpunkt oder Halt wählen · als {picking}</div>}<div className="map-caption">{parts.length?<>Reiseverlauf: {[...new Set(parts.map(p=>p.source))].join(' · ')} · Grün/Blau: Bahn · Braun: Bus · Grau: Fußweg{parts.some(p=>p.alternativeKind==='walking')?' · Rot gestrichelt: Fußweg-Notlösung':''}{parts.some(p=>p.legs.some(l=>l.geometry?.status!=='complete'))?' · Fehlende Geometrie bleibt offen.':''}</>:'Europa entdecken · Netzebenen unabhängig von deiner Reise einblenden'}</div></section>;
+ return <section className={'map-stage '+(picking?'picking':'')} aria-label="Europäische Bahnkarte">
+  <div ref={container} className="map-canvas"/>
+  {error&&<div role="alert" className="map-message">{error} Die Reiseplanung steht weiterhin zur Verfügung.</div>}
+  <div className="map-tag"><span className="live-dot"/>EUROPAS BAHN & ÖPNV-NETZE</div>
+  <aside ref={controls} className="map-options network-controls" aria-label="Netzebenen"><details open>
+   <summary>Netzebenen <span>Linien & Halte</span></summary>
+   <div className="network-grid"><span>VERKEHRSMITTEL</span><span>Linien</span><span>Halte</span>
+    {NETWORK_MODES.map(mode=><div key={mode.id} className="network-row">
+     <span><i style={{background:mode.color}}/>{mode.label}</span>
+     <label><input type="checkbox" aria-label={mode.label+' Linien'} checked={layerState[mode.id].lines} onChange={e=>toggle(mode.id,'lines',e.target.checked)}/><span className="sr-only">{mode.label} Linien</span></label>
+     <label><input type="checkbox" aria-label={mode.label+' Halte'} checked={layerState[mode.id].stops} onChange={e=>toggle(mode.id,'stops',e.target.checked)}/><span className="sr-only">{mode.label} Halte</span></label>
+    </div>)}
+   </div>
+   <p className={'network-status '+(networkError?'has-error':'')} role="status">{loading&&<span className="network-spinner"/>}{status}</p>
+   {visibleNetwork&&<>
+    <div className="network-counts"><b>Im sichtbaren Ausschnitt</b>
+     {NETWORK_MODES.filter(m=>(layerState[m.id].lines||layerState[m.id].stops)&&visibleNetwork.modes?.includes(m.id)).map(m=><span key={m.id}>
+      {m.label}: {layerState[m.id].lines&&m.id!=='rail'?visibleNetwork.layers[m.id].lines.length+' Linien'+(layerState[m.id].stops?' · ':''):''}{layerState[m.id].stops?visibleNetwork.layers[m.id].stops.length+' Halte':''}
+     </span>)}
+    </div>
+    <p className="network-source">Quelle: {visibleNetwork.source}</p>
+    {requestDetail==='all'&&visibleNetwork.warning&&<p className="network-warning" role="status">{visibleNetwork.warning}</p>}
+   </>}
+   {tileError&&layerState.rail.lines&&<p className="network-status has-error">Einige Kacheln des Bahnnetzes konnten nicht geladen werden.</p>}
+   <button type="button" onClick={()=>{setTileError(false);railway.current?.redraw();setRetry(n=>n+1);}} disabled={loading}>Ausschnitt neu laden</button>
+   <small>Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Daten können fehlen; keine Zusage zum aktuellen Betrieb.</small>
+  </details></aside>
+  {picking&&<div className="pick-banner">Kartenpunkt oder Halt wählen · als {picking}</div>}
+  <div className="map-caption">{parts.length?<>Reiseverlauf: {[...new Set(parts.map(p=>p.source))].join(' · ')} · Grün/Blau: Bahn · Braun: Bus · Grau: Fußweg{parts.some(p=>p.alternativeKind==='walking')?' · Rot gestrichelt: Fußweg-Notlösung':''}{parts.some(p=>p.legs.some(l=>l.geometry?.status!=='complete'))?' · Fehlende Geometrie bleibt offen.':''}</>:'Europa entdecken · Netzebenen unabhängig von deiner Reise einblenden'}</div>
+ </section>;
 }

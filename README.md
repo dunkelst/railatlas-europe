@@ -2,9 +2,31 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Stand entspricht Sites-Version **21**, Quellcommit `6e7635875f32a0dc037d1fd9038b0661f8ee289e`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Stand entspricht Sites-Version **22**, Quellcommit `668d4edfb38e7a4c00974b1944bad297b4f4567b`. Die Anwendung enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
-## Neu in Version 21: Busnetz ohne geplante Reise
+## Neu in Version 22: konsistente Darstellung und sichtbare Netzdaten
+
+Automatische Auskunft, Fußweg-Option und Neuplanung verwenden die dunklen
+Seitenleistenfarben. Auskunftswahl, Sortierung und die neuen Einstellungen
+teilen dieselben Auswahlfeldregeln. Das helle Kartenpanel erhält passende
+native Schalter. Aktive Fußweg-Notlösungen bleiben durch Text und rote
+Gehwegspuren auf Karte und Reiseliste erkennbar.
+
+Zähler und gezeichnete Ebenen verwenden denselben **sichtbaren Kartenausschnitt**.
+Daten des größeren Lade-/Cachebereichs erhöhen die Anzeige außerhalb der Karte
+nicht mehr. Quelle, Einschränkungen der Linienauswahl und Ladefehler stehen
+getrennt. Einschränkungen werden als Warnung neben einer erfolgreichen
+Datenabfrage gezeigt. Die reine Halteauswahl zeigt keine alte Linienwarnung.
+
+**82 App-Tests, TypeScript und alle drei Builds bestanden.** Die echte
+Node- und öffentliche API-Prüfung rund um Neudenau zeigt die wichtige Grenze: zwölf Halte und Linie 835 im größeren
+Ladebereich, vier Halte und keine gelieferte Linie im geprüften sichtbaren
+Ausschnitt. Die Quellenlücke bleibt offen. Die Browser-Erweiterung war in dieser
+Sitzung nicht verfügbar; eine neue visuelle Browserabnahme wird nicht behauptet.
+Seite, neue App-Styles und Leaflet-CSS liefern inzwischen HTTP 200; die neuen
+Stilregeln sind im tatsächlich ausgelieferten Stylesheet enthalten.
+
+## Seit Version 21: Busnetz ohne geplante Reise
 
 **Bus → Linien / Halte** zeigt ab Zoom 12 das allgemeine Netz im sichtbaren
 Kartenausschnitt. Dafür wird keine Reise berechnet. Die Kartenfunktionen der
@@ -122,7 +144,7 @@ Die bestehende [Pages-Veröffentlichung](https://dunkelst.github.io/railatlas-eu
 - Der gebaute eigenständige Server liefert App-CSS, Leaflet-CSS und Leaflet-JS mit HTTP 200, korrekten MIME-Typen und bytegleichem Inhalt. Die externe visuelle Abnahme bleibt offen.
 
 
-- **80 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
+- **82 App-Regressionen**, TypeScript sowie Worker-, Pages- und eigenständiger Clientbuild bestanden.
 - Neuer echter lokaler HTTP-Servertest einschließlich Dateien, Health, CORS, JSON-, Datums- und Größenfehlern.
 - Veröffentlichte ÖBB-Auskunft: Wien Karlsplatz → Stephansplatz am 24.10.2026, U1 18:27–18:29, Wiener Linien, einschließlich eines gelieferten Bauhinweises.
 - Die vollständige visuelle Live-Abnahme ist offen. Frühere Prüfungen trafen auf eine CSS-Sicherheitsgrenze; aktuell war die Browser-Erweiterung nicht verfügbar. Neue EFA-Netzdaten sind live bestätigt, Overpass-Livedaten weiterhin nicht. Quellenfehler werden nicht mit Beispieldaten verdeckt.

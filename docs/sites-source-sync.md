@@ -1,6 +1,6 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **21**, Quellcommit `6e7635875f32a0dc037d1fd9038b0661f8ee289e`.
+Sites-Version **22**, Quellcommit `668d4edfb38e7a4c00974b1944bad297b4f4567b`.
 **189** Dateien dieses Commits liegen bytegleich unter `sites/railatlas-europa`;
 das generierte `tsconfig.tsbuildinfo` ist ausgenommen. Das Herkunftsmanifest
 enthält Git-Blobs, SHA-256 und Dateigrößen. Die Paritätsprüfung läuft vor der
@@ -34,8 +34,8 @@ Bindung im eigenen Container; Standard ist lokale Bindung.
 
 ## Tatsächlich geprüft
 
-- 80 App-Regressionen, TypeScript, Worker-, Pages- und Standalone-Clientbuild.
-- Version 21 wurde nativ veröffentlicht; die vorhandene öffentliche Testfreigabe
+- 82 App-Regressionen, TypeScript, Worker-, Pages- und Standalone-Clientbuild.
+- Version 22 wurde nativ veröffentlicht; die vorhandene öffentliche Testfreigabe
   blieb erhalten: https://railatlas-europa.cocoaamber33.chatgpt.site .
 - Historische Prüfung von Version 20, öffentliche API und eigener Node-HTTP-Pfad: je HTTP 200 und drei Fußweg-Optionen
   für Rohdental → Berliner Zielpunkt bei U Turmstraße am 26.10.2026, erste Reise
@@ -48,6 +48,14 @@ Bindung im eigenen Container; Standard ist lokale Bindung.
   Mitte, Hanebülten und Jägereiche. Die folgende Nur-Halte-Abfrage nutzt den vorhandenen Cache.
 - Gebaute eigenständige JS-/CSS-/Leaflet-Dateien liefern HTTP 200 mit richtigen
   MIME-Typen. Eine neue visuelle Browserabnahme wird damit nicht behauptet.
+
+- Version 22: gemeinsame dunkle Planungsfelder, helle native Kartenschalter,
+  getrennte Quelle/Warnung/Fehler. Zähler und Ebenen nutzen denselben sichtbaren
+  Ausschnitt, während die größeren Quelldaten im Cache bleiben. Neudenau:
+  zwölf Halte/eine Linie im Ladebereich, vier Halte/keine gelieferte Linie im
+  geprüften Sichtbereich, auch auf der öffentlichen API. Diese Datenlücke bleibt
+  ausdrücklich offen. Seite, neues App-CSS und Leaflet-CSS liefern HTTP 200;
+  dies bestätigt die Auslieferung, keine visuelle Browserabnahme.
 
 ## Veröffentlichungsgrenzen
 

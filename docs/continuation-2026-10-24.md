@@ -13,9 +13,24 @@ erhalten. Keine zweite Anwendung, keine Weiterleitung als GitHub-Ersatz.
 
 ## Aktuell gesichert und veröffentlicht
 
-Version **21**, Quelle `6e7635875f32a0dc037d1fd9038b0661f8ee289e`,
+Version **22**, Quelle `668d4edfb38e7a4c00974b1944bad297b4f4567b`,
 189 App-Dateien im Herkunftsmanifest. Nativ auf der bestehenden öffentlichen Site
-veröffentlicht. 80 Tests, TypeScript und alle drei Builds bestanden.
+veröffentlicht. 82 Tests, TypeScript und alle drei Builds bestanden.
+
+Version 22 gleicht automatische Auskunft, Fußweg-Option und Neuplanung an die
+bestehende dunkle Seitenleiste und ihre Auswahlfelder an. Das helle Kartenpanel
+bekommt explizit helle native Schalter. Die rote Fußwegkennzeichnung gilt auch
+für die Verlaufsspur der Reiseliste. Quelle, Warnung und Fehler sind getrennt.
+Netzzähler und tatsächlich gezeichnete Ebenen verwenden dieselbe Sichtauswahl;
+der größere Cache wird bei Kartenbewegungen nicht verändert oder verkleinert.
+
+Echte Neudenau-Prüfung: Ladebereich `[49.25,9.1875,49.34375,9.375]`, Sichtbereich
+`[49.27,9.22,49.32,9.32]`. Zwölf Halte/eine Linie (835) sind geladen; vier Halte
+und keine gelieferte Linie liegen im Sichtbereich. Der Zähler darf diese
+Quellenlücke nicht als vorhandenes Netz ausgeben. Keine erfundene Geometrie.
+Die öffentliche Version-22-API bestätigt diese Daten mit HTTP 200. Seite,
+neues App-CSS und Leaflet-CSS liefern ebenfalls HTTP 200. Die aktuelle
+Browser-Erweiterung ist nicht erreichbar; visuelle Abnahme offen.
 
 Die allgemeinen Netzschalter arbeiten ab Zoom 12 unabhängig von einer geplanten
 Reise. Die frühere Overpass-Abfrage hing 40 Sekunden ohne Quelldaten; die bereits
@@ -44,7 +59,7 @@ daraus keine bestätigte echte Ausweichfahrt ableiten.
 
 ## Nächste sachliche Schritte
 
-1. Allgemeines Netz und Halteübernahme praktisch im Browser abnehmen, sobald die zulässige Vorschau
+1. Konsistente Planungsfelder, allgemeines Netz und Halteübernahme im Browser abnehmen, sobald die zulässige Vorschau
    funktioniert. Keine Sicherheitsgrenze umgehen.
 2. Gezielte Ausweichsuche über verschiedene Umstiegspunkte und anfängliche Fahrten
    vom Ziel weg ausbauen, auf vollständigen echten Fahrplanantworten basierend.
