@@ -19,13 +19,16 @@ Anbieterresolver geprüft. Ein Kartenhalt bestätigt noch keine verfügbare Fahr
 Gleiche Halte verschiedener Feeds werden zusammengeführt; Plattformen desselben
 Feeds bleiben getrennt. Quellkoordinaten und sämtliche Kennungen bleiben erhalten.
 
-Der echte unabhängige Node-HTTP-Pfad liefert Bus-/Fernbushalte in Heilbronn (7),
-London (12), Amsterdam (6) und Prag (10), jeweils HTTP 200. In Welsede ergänzt EFA
+Die veröffentlichte gemeinsame HTTP-API liefert Bus-/Fernbushalte in Heilbronn (7),
+London (12), Amsterdam (6) und Prag (8), jeweils HTTP 200 nach Zusammenführung
+überlappender Feeds. In Welsede ergänzt EFA
 weiterhin die tatsächlichen Linien 40/45; vier DELFI-/VBN-Einträge werden als zwei
 Halte mit allen Originalkennungen dargestellt. Quellenausfälle lassen vorhandene
 Halte bestehen. **97 Regressionen, TypeScript und alle drei Builds bestanden.**
-Der Quellstand ist gespeichert und vor Veröffentlichung der neuen Oberfläche
-auf GitHub verfügbar; der Bereitstellungsnachweis steht im Abgleich.
+Version 24 ist auf der bestehenden öffentlichen Site veröffentlicht. Beide
+GitHub-Prüfläufe sind erfolgreich. Im Browser sind die Halteanzeige ohne Reise
+und die Übernahme als Start, Ziel und Zwischenziel praktisch bestätigt.
+[Prüfprotokoll mit Bildschirmfoto](docs/qa/railatlas-v24.md).
 
 Die breitere Haltequelle beseitigt keine vollständige europäische Datenlücke.
 EFA bleibt für echte Liniengeometrien angebunden; experimentelle berechnete

@@ -7,7 +7,8 @@ und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub C
 
 Der eigene Programmcode ist AGPL-3.0-only. Lizenztext, Umfang, Build- und
 Startanleitung sowie die vollständigen entsprechenden Quellen sind öffentlich.
-Die neue Oberfläche wird erst nach diesem GitHub-Abgleich veröffentlicht.
+Die neue Oberfläche wurde nach diesem GitHub-Abgleich als Version 24 auf der
+bestehenden öffentlichen Site veröffentlicht; beide GitHub-Prüfläufe sind grün.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
 | --- | --- | --- | --- |
@@ -41,9 +42,17 @@ notwendig. Bei eigenem HTTPS-Reverse-Proxy `PUBLIC_ORIGIN` setzen;
 - Quellenzusammenführung, Ausfälle beider Quellen, Größenbegrenzung, Retry-After,
   Abbruch und strikte Stationsübernahme für Start/Ziel/Zwischenziel sind geprüft.
 - Keine öffentlichen Aufrufe der experimentellen Transitous-Linienkarte.
-- Die Browser-Erweiterung ist verbunden; die interne Vorschau war darüber wegen
-  ERR_NAME_NOT_RESOLVED unerreichbar. Prüfung der veröffentlichten Oberfläche
-  und der öffentlichen API folgt nach Bereitstellung.
+- Öffentliche Version-24-API: Heilbronn 7, London 12, Amsterdam 6 und Prag 8
+  Halte, jeweils HTTP 200. Die ursprüngliche Node-Probe mit zehn Prager
+  Einträgen erfolgte vor der Zusammenführung überlappender Feeds.
+- Öffentliche Welsede-API: Linien 40/45 und zwei Halte mit vier Originalkennungen.
+  Ausgelieferter AGPL-Text HTTP 200 und bytegleich mit LICENSE.
+- Verbundener Chrome: Kartenhalte ohne Reise sichtbar; Übernahme als Start
+  (HN Harmonie/Hafenmarktpass.), Zwischenziel (Berliner Platz Ost) und Ziel
+  (Pfühlpark) geklickt und in den jeweiligen Feldern bestätigt.
+  [Protokoll und Bildschirmfoto](qa/railatlas-v24.md).
+- Die interne Vorschau blieb wegen DNS unerreichbar. Öffentliche Oberfläche
+  wurde auf dem regulären Produktionshost geprüft; keine Ersatzhosts.
 
 Frühere bestätigte Funktionen bleiben erhalten: Quellenvergleich, Aufenthalt,
 rote freiwillige Fußweg-Notlösungen und Neuplanung mit offenen Zwischenzielen,

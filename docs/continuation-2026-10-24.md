@@ -15,8 +15,8 @@ Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
 Version **24**, Quelle `202529ae7200ecd354bcbb7597e3f70c80932b48`,
 198 App-Dateien im Herkunftsmanifest. 97 Tests, TypeScript und alle drei Builds
-bestanden. Veröffentlichung folgt nach bytegleichem GitHub-Abgleich auf der
-bestehenden Site; Publikum bleibt unverändert.
+bestanden. Nach bytegleichem GitHub-Abgleich nativ veröffentlicht, beide CI-Läufe
+erfolgreich. Öffentliche API und Chrome-Oberfläche geprüft; Publikum unverändert.
 
 Der stabile Transitous-/MOTIS-Kartenhaltepfad ist im gemeinsamen Netzwerkmodell
 angebunden. Eigene GTFS-IDs und Originalkoordinaten, keine aus Feednamen erfundenen
@@ -40,9 +40,11 @@ Historische Fahrplanbelege stehen im App-QA-Protokoll.
 
 ## Nächste Schritte und Grenzen
 
-1. Nach GitHub-Abgleich nativ veröffentlichen, öffentliche API und Browser prüfen.
-   Interne Vorschau ist in der verbundenen Browser-Erweiterung wegen DNS nicht
-   erreichbar. Keine Ersatzhosts oder Ports zur Umgehung verwenden.
+1. Version 24 ist veröffentlicht und geprüft: API HTTP 200 in vier Ländern;
+   Start, Zwischenziel und Ziel aus echten Busmarkern übernommen. Prager Probe
+   nach Feed-Zusammenführung acht Marker; zehn Einträge vor Zusammenführung.
+   [Prüfprotokoll](qa/railatlas-v24.md). Interne Vorschau blieb wegen DNS
+   unerreichbar, keine Ersatzhosts verwendet.
 2. Linienabdeckung mit Original-GTFS-Shapes bzw. OSM-Routen ausbauen. Berechnete
    Wege nicht als bestätigte Liniengeometrie ausgeben.
 3. Eigene Ausweichsuche mit mehreren Umstiegspunkten und anfänglicher Rückfahrt

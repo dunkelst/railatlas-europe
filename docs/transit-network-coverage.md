@@ -30,16 +30,18 @@ Open-Source-Projekt und angemessene Ressourcennutzung. Sichtbare Attribution
 verweist auf https://transitous.org/sources/ und OpenStreetMap. Der Dienst bleibt
 best effort. AGPL ändert diese API-Bedingungen nicht.
 
-## Echte gemeinsame Node-HTTP-Proben
+## Echte gemeinsame HTTP-Proben
 
 | Gebiet | Prüfbereich süd,west,nord,ost | BUS und COACH | Ergebnis |
 | --- | --- | ---: | --- |
 | Heilbronn | 49.138,9.224,49.147,9.243 | 7 | HTTP 200 |
 | London | 51.510,-0.124,51.517,-0.111 | 12 | HTTP 200 |
 | Amsterdam | 52.372,4.890,52.384,4.908 | 6 | HTTP 200 |
-| Prag | 50.085,14.430,50.095,14.444 | 10 | HTTP 200 |
+| Prag | 50.085,14.430,50.095,14.444 | 8 | HTTP 200 |
 
-Frühere reine BUS-Proben lieferten in Amsterdam vier und Prag neun Halte.
+Diese Ergebnisse sind auf der öffentlichen Version-24-API bestätigt. Die erste
+Node-Probe lieferte vor Feed-Zusammenführung zehn Prager Einträge.
+Frühere reine BUS-Proben lieferten in Amsterdam vier und Prag neun Einträge.
 Die App berücksichtigt zusätzlich COACH. Originaldaten und Attribution bleiben
 erhalten. Welsede liefert echte EFA-Linien 40/45 und zwei Halte statt vier doppelter
 DELFI-/VBN-Einträge. Keine Probe beweist vollständige Länderabdeckung.
