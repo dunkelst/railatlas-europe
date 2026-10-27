@@ -28,7 +28,11 @@ Anbieterpausen, Retry-After und Abbruch gelten.
 Node-HTTP-Server: HTTP 200 mit drei Reisen für 31.10.2026 ab 09:00 Europe/Berlin.
 Erste Reise 10:30–17:13 Berlin, FlixBus 1794 / Bus EA / AVE über Sevilla.
 Die Zeitbasis bleibt Europe/Berlin; die Anfrage entspricht 08:00 in Faro.
-Quellstand gespeichert; Veröffentlichung und Browserprüfung folgen nach Abgleich.
+Version 27 ist veröffentlicht: Die öffentliche API und der Browser bestätigen
+drei Alternativen, den 523-m-Zuordnungshinweis und den 62-m-Stationszugang.
+Auch Heilbronn Friedhof → Neckargartach Römerstraße liefert weiter drei Reisen.
+Beide GitHub-Prüfungen sind erfolgreich; 200 App-Dateien sind bytegleich.
+[Prüfprotokoll mit Bildschirmfotos](docs/qa/railatlas-v27.md).
 
 ## Seit Version 26: Verbindungssuche für die neuen Kartenhalte
 

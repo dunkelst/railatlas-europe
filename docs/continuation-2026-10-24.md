@@ -15,7 +15,8 @@ Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
 Version **27**, Quelle `2ac3e41f0a72fdc25e28b8d1ea56f672a47e7952`,
 200 App-Dateien im Herkunftsmanifest. 109 Tests, TypeScript und alle drei Builds
-bestanden. Gespeichert, Veröffentlichung nach GitHub-Abgleich. Publikum bleibt
+bestanden. Veröffentlicht; öffentliche API und Browserprüfung erfolgreich.
+Beide GitHub-Prüfungen sind erfolgreich, 200 App-Dateien bytegleich. Publikum
 unverändert. Vorige Version-24–26-Nachweise sind historisch.
 
 Der stabile Transitous-/MOTIS-Kartenhaltepfad ist im gemeinsamen Netzwerkmodell
@@ -65,20 +66,20 @@ FlixBus 1794 / EA / AVE. Die Zeitbasis ist weiterhin ausdrücklich Europe/Berlin
 
 ## Nächste Schritte und Grenzen
 
-1. Version 27 nach GitHub-Abgleich veröffentlichen und Faro-Fall über öffentliche
-   API und verfügbaren Testbrowser prüfen. Historische Version 26 ist bestätigt.
-   [Aktuelles Prüfprotokoll](qa/railatlas-v26.md). Historische Version 24: HTTP 200 in vier Ländern;
-   Start, Zwischenziel und Ziel aus echten Busmarkern übernommen. Prager Probe
-   nach Feed-Zusammenführung acht Marker; zehn Einträge vor Zusammenführung.
-   [Prüfprotokoll](qa/railatlas-v24.md). Interne Vorschau blieb wegen DNS
-   unerreichbar, keine Ersatzhosts verwendet.
-2. Linienabdeckung mit Original-GTFS-Shapes bzw. OSM-Routen ausbauen. Berechnete
+Version 27 ist abgenommen: Faro → Madrid und Heilbronn Friedhof → Neckargartach
+Römerstraße jeweils HTTP 200 mit drei Reisen. Faro-Browserprüfung zeigt die
+Alternativen, 523 m Katalogzuordnung und 62 m Stationszugang.
+[Aktuelles Prüfprotokoll](qa/railatlas-v27.md). Historische Version 24: HTTP 200
+in vier Ländern; Start, Zwischenziel und Ziel aus echten Busmarkern übernommen.
+[Historischer Nachweis](qa/railatlas-v24.md).
+
+1. Linienabdeckung mit Original-GTFS-Shapes bzw. OSM-Routen ausbauen. Berechnete
    Wege nicht als bestätigte Liniengeometrie ausgeben.
-3. Eigene Ausweichsuche mit mehreren Umstiegspunkten und anfänglicher Rückfahrt
+2. Eigene Ausweichsuche mit mehreren Umstiegspunkten und anfänglicher Rückfahrt
    auf Basis vollständiger echter Fahrplanantworten ausbauen.
-4. Europäische Fahrplanabdeckung verbessern; ein Kartenhalt bestätigt keine
+3. Europäische Fahrplanabdeckung verbessern; ein Kartenhalt bestätigt keine
    verfügbare Verbindung. DB-403 nicht wiederholt testen oder umgehen.
-5. Neuer Pages-Rollout erst mit freigegebenem eigenem öffentlichen HTTPS-Server.
+4. Neuer Pages-Rollout erst mit freigegebenem eigenem öffentlichen HTTPS-Server.
    Bis dahin bleibt Pages Version 12. Keine bezahlte Infrastruktur beauftragen.
 
 Geometrien und Gehzeiten werden nicht erfunden. Fahrzeugzeiten bleiben

@@ -7,8 +7,9 @@ und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub C
 
 Der eigene Programmcode ist AGPL-3.0-only. Lizenztext, Umfang, Build- und
 Startanleitung sowie die vollständigen entsprechenden Quellen sind öffentlich.
-Version 27 ist gespeichert und lokal geprüft; Veröffentlichung folgt nach
-diesem GitHub-Abgleich. Der vorige veröffentlichte Code ist Version 26.
+Version 27 ist veröffentlicht. Öffentliche API und Browser bestätigen den
+Faro-Fall; beide GitHub-Prüfungen sind erfolgreich. Der Quellabgleich umfasst
+alle 200 App-Dateien. [Prüfprotokoll](qa/railatlas-v27.md).
 Version 24 bleibt als geprüfter historischer Stand unten dokumentiert.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
@@ -42,8 +43,10 @@ Katalogzuordnung zum nativen Flughafenhalt wird mit 523 m Entfernung gezeigt.
 Stationszugänge 62/44 m in Sevilla bleiben als partielle Quellgeometrie sichtbar,
 ohne verbundene Lücken. Koordinaten, GPS und Bushalte behalten ihre strenge
 Prüfung. Konkrete Gehwegablehnung verdrängt irreführende Quellen-Sammelmeldung.
-Die lokale Browser-Anbindung ist aktuell nicht verfügbar; öffentliche UI-Prüfung
-über den verfügbaren Testbrowser folgt nach Veröffentlichung.
+Die öffentliche API bestätigt ebenfalls HTTP 200 und drei Reisen; auch Heilbronn
+Friedhof → Neckargartach Römerstraße liefert drei Reisen. Im Browser sind alle
+drei Faro-Alternativen, der 523-m-Zuordnungshinweis und der 62-m-Stationszugang
+sichtbar. [Bildschirmfotos und Prüfprotokoll](qa/railatlas-v27.md).
 
 ## Historischer Quellstand 26
 
