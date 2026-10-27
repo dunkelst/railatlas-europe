@@ -1,6 +1,6 @@
 # Buslinien und Halte: Datenbasis und AGPL-Freigabe
 
-Stand 26.10.2026, Quellversion 26. Die zusätzliche Haltequelle verbessert die
+Stand 27.10.2026, Quellversion 27. Die zusätzliche Haltequelle verbessert die
 belegte Abdeckung. Vollständige europäische Netz- oder Fahrplanabdeckung ist
 weiterhin nicht nachgewiesen.
 
@@ -68,7 +68,7 @@ Seit Version 23 führen wesentlich engere Ausschnitte zu neuen Abfragen.
 `Ausschnitt neu laden` übergibt `refresh=1` durch den gemeinsamen API- und
 OSM-Pfad, weiterhin unter Beachtung der Anbieterpausen. Kleine Bewegungen nutzen
 passende Caches. Leere Sichtauswahl bestätigt keine fehlende Bedienung.
-103 Regressionen sichern den aktuellen gemeinsamen Stand ab.
+109 Regressionen sichern den aktuellen gemeinsamen Stand ab.
 
 
 ## Fahrplananbindung seit Version 25
@@ -83,3 +83,17 @@ angefragt. Endpunkte, aktive Meldungen, Ausfälle und Zeiten sind verbindlich.
 Original-GTFS-Shapes sind in `/plan` nicht als solche bestätigt. Fahrzeugpfade
 bleiben deshalb offen, geroutete Fußwege werden gezeigt. Die allgemeine
 experimentelle Linienkarte bleibt weiterhin außerhalb der öffentlichen App.
+
+
+## Katalogzuordnung und Stationszugänge seit Version 27
+
+Beim Faro-Fall lag der Katalogpunkt 245 m neben dem Quellweg. Geocoding bestätigt
+einen exakt gleich benannten Flughafenhalt 523 m vom Katalogpunkt entfernt.
+Eindeutige Katalogzuordnung ohne Anbieter-ID: exakter Name, Länderprüfung und
+maximal 800 m. Die Entfernung wird angezeigt. GPS-/Kartenpunkte bleiben strikt.
+Bahn-/U-Bahn-Stationszugänge bis 250 m und maximal Quellgehstrecke bleiben als
+partielle Quellgeometrie erhalten, mit Meterangabe und unveränderten Originalpunkten.
+Keine Verbindung über eine Kartenlücke und keine geänderten Fahrplanzeiten.
+Gemeinsamer Node-HTTP-Pfad: 200, drei echte Reisen Faro Airport → Madrid Atocha
+am 31.10.2026, erste 10:30–17:13 Europe/Berlin. Konkrete Gehwegfehler werden nicht
+mehr von einer allgemeinen Meldung zum Ausfall einer anderen Quelle verdrängt.

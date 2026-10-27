@@ -1,6 +1,6 @@
 # RailAtlas Europa – aktueller Fortführungsstand
 
-Aktualisiert am 26.10.2026. Projekt `appgprj_6ad7024dce688191b17cca024104c456`.
+Aktualisiert am 27.10.2026. Projekt `appgprj_6ad7024dce688191b17cca024104c456`.
 Site: https://railatlas-europa.cocoaamber33.chatgpt.site
 Repository: https://github.com/dunkelst/railatlas-europe
 
@@ -13,10 +13,10 @@ AGPL für den eigenen Programmcode und die Nutzung der breiteren Haltequelle
 freigegeben. AGPL-3.0-only ist umgesetzt; Fremddaten behalten ihre Bedingungen.
 Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
-Version **26**, Quelle `72f0ef86e9e6c89b9b90deb510ec6c0b26ecf917`,
-199 App-Dateien im Herkunftsmanifest. 103 Tests, TypeScript und alle drei Builds
-bestanden. Nativ veröffentlicht, im Browser geprüft, Codecommit in beiden CI-Läufen
-erfolgreich. Publikum unverändert. Vorige Version-24-Nachweise sind historisch.
+Version **27**, Quelle `2ac3e41f0a72fdc25e28b8d1ea56f672a47e7952`,
+200 App-Dateien im Herkunftsmanifest. 109 Tests, TypeScript und alle drei Builds
+bestanden. Gespeichert, Veröffentlichung nach GitHub-Abgleich. Publikum bleibt
+unverändert. Vorige Version-24–26-Nachweise sind historisch.
 
 Der stabile Transitous-/MOTIS-Kartenhaltepfad ist im gemeinsamen Netzwerkmodell
 angebunden. Eigene GTFS-IDs und Originalkoordinaten, keine aus Feednamen erfundenen
@@ -50,9 +50,23 @@ Nur nutzerangestoßen, eine begrenzte Anfrage je Teilstrecke, keine Folgetage.
 Fahrzeuggeometrie ohne bestätigte Herkunft bleibt offen; Quellfußwege sind sichtbar.
 Die gemeinsame UI enthält die Attribution auch im Reiseergebnis.
 
+## Aktueller Fix: Faro → Madrid
+
+Die reale Quelle liefert drei Reisen; der ursprüngliche Katalogpunkt liegt aber
+245 m neben dem gelieferten Zugangsweg. Eine exakte, länder- und lagegeprüfte
+Zuordnung findet den nativen Flughafenhalt 523 m entfernt. Nur Katalogeinträge
+ohne Anbieterkennung werden so aufgelöst; keine GPS-/Kartenpunktverschiebung.
+Native Bahn-/U-Bahn-Stationszugänge bis 250 m und maximal Quellgehstrecke werden
+als teilweise geliefert benannt, ohne Rohpunkte oder Zeiten zu verändern. Die
+30-m-Prüfung bleibt bei Koordinaten, Bus und Tram. Konkrete Fehlermeldung bei
+unbestätigten Wegen. Caches, Ausfallverhalten, Retry-After und Abbruch geprüft.
+Node-HTTP 200, drei Reisen. 31.10.2026 ab 09:00 Berlin: erste 10:30–17:13 Berlin,
+FlixBus 1794 / EA / AVE. Die Zeitbasis ist weiterhin ausdrücklich Europe/Berlin.
+
 ## Nächste Schritte und Grenzen
 
-1. Version 26 ist veröffentlicht und die gemeldete Suche im Browser bestätigt.
+1. Version 27 nach GitHub-Abgleich veröffentlichen und Faro-Fall über öffentliche
+   API und verfügbaren Testbrowser prüfen. Historische Version 26 ist bestätigt.
    [Aktuelles Prüfprotokoll](qa/railatlas-v26.md). Historische Version 24: HTTP 200 in vier Ländern;
    Start, Zwischenziel und Ziel aus echten Busmarkern übernommen. Prager Probe
    nach Feed-Zusammenführung acht Marker; zehn Einträge vor Zusammenführung.

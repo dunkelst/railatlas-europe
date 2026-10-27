@@ -1,14 +1,14 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **26**, Quellcommit `72f0ef86e9e6c89b9b90deb510ec6c0b26ecf917`.
-**199** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
+Sites-Version **27**, Quellcommit `2ac3e41f0a72fdc25e28b8d1ea56f672a47e7952`.
+**200** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
 Der eigene Programmcode ist AGPL-3.0-only. Lizenztext, Umfang, Build- und
 Startanleitung sowie die vollständigen entsprechenden Quellen sind öffentlich.
-Version 26 wurde nach diesem GitHub-Abgleich nativ veröffentlicht und im
-verbundenen Chrome geprüft. Beide Prüfläufe für den Codecommit sind erfolgreich.
+Version 27 ist gespeichert und lokal geprüft; Veröffentlichung folgt nach
+diesem GitHub-Abgleich. Der vorige veröffentlichte Code ist Version 26.
 Version 24 bleibt als geprüfter historischer Stand unten dokumentiert.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
@@ -33,7 +33,19 @@ ChatGPT-Dienst. Ausgehende Verbindungen zu den tatsächlichen Datenquellen bleib
 notwendig. Bei eigenem HTTPS-Reverse-Proxy `PUBLIC_ORIGIN` setzen;
 `HOST=0.0.0.0` erlaubt Bindung im eigenen Container.
 
-## Neuer Quellstand 26
+## Neuer Quellstand 27
+
+109 Regressionen, TypeScript und drei Builds erfolgreich. Die gemeinsame
+Node-HTTP-API bestätigt Faro Airport → Madrid Atocha, 31.10.2026 ab 09:00 Berlin,
+HTTP 200 mit drei Reisen. Erste Reise 10:30–17:13 Berlin, FlixBus 1794 / EA / AVE.
+Katalogzuordnung zum nativen Flughafenhalt wird mit 523 m Entfernung gezeigt.
+Stationszugänge 62/44 m in Sevilla bleiben als partielle Quellgeometrie sichtbar,
+ohne verbundene Lücken. Koordinaten, GPS und Bushalte behalten ihre strenge
+Prüfung. Konkrete Gehwegablehnung verdrängt irreführende Quellen-Sammelmeldung.
+Die lokale Browser-Anbindung ist aktuell nicht verfügbar; öffentliche UI-Prüfung
+über den verfügbaren Testbrowser folgt nach Veröffentlichung.
+
+## Historischer Quellstand 26
 
 103 Regressionen, TypeScript und alle drei Builds erfolgreich. Der gemeinsame
 Node-HTTP-Server liefert für Friedhof → Römerstraße HTTP 200 mit drei echten

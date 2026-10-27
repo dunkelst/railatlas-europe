@@ -1,5 +1,32 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
+## Fortsetzung 27.10.2026: Faro Airport → Madrid Atocha
+
+- Reproduktion mit den echten Katalogeinträgen und Abfahrt 31.10.2026 09:00
+  Europe/Berlin. ÖBB/EFA lösen nicht beide Halte auf. Transitous liefert HTTP 200
+  mit drei Reisen, die vorher sämtlich an der Gehwegprüfung scheiterten.
+- Der Katalogpunkt Faro Airport liegt 245 m neben dem Beginn des gelieferten
+  Zugangswegs. Die eigene Geocoder-Abfrage findet einen exakt passenden
+  Flughafenhalt 523 m entfernt. Nur solche bestätigten Identitäten werden
+  zugeordnet und mit Entfernung sichtbar benannt; keine lokale Sonderregel.
+- Native Stationszugänge in Sevilla mit 62 bzw. 44 m Abstand zur Bahnsteig-
+  koordinaten dürfen einen ausdrücklich partiellen Verlauf behalten. Grenze
+  250 m und höchstens gelieferte Gehstrecke, nur native Bahn-/U-Bahn-Halte.
+  Rohpunkte und Fahrzeug-/Gehzeiten bleiben unverändert; keine ergänzten Linien.
+- Der echte gemeinsame Node-HTTP-Server bestätigt HTTP 200 und drei Reisen.
+  Erste: 10:30–17:13 Europe/Berlin, FlixBus 1794, Bus EA und AVE. Das ursprüngliche
+  Koordinatenrouting bleibt abgelehnt; seine unbestätigten 245 m werden nicht
+  als Gehweg akzeptiert oder mit erfundener Gehzeit ergänzt.
+- 109 Regressionen und TypeScript bestanden. Neue echte Daten prüfen eindeutige
+  Katalogzuordnung, Gegenfälle, räumliche Mehrdeutigkeit, GPS-/Kartenpunkt-Schutz,
+  Stationszugänge, unveränderte Quellpunkte, gemeinsames API-HTTP-200, Lookup- und
+  Antwortcache, optionalen Lookup-Ausfall, Retry-After und konkrete Fehlermeldung
+  auch bei gleichzeitigem Ausfall einer anderen Quelle. Alte Fälle bleiben geprüft.
+- Zeitbasis bleibt ausdrücklich Europe/Berlin. 09:00 am 31.10. entspricht 08:00
+  in Faro; der erste Vorschlag startet dort um 09:30 Ortszeit.
+- Die lokale Browser-Anbindung ist in dieser Sitzung nicht verfügbar. Die
+  veröffentlichte Oberfläche wird über den verfügbaren Testbrowser geprüft.
+
 ## Fortsetzung 26.10.2026: Verbindungssuche Friedhof → Römerstraße
 
 - 103 Regressionen und TypeScript erfolgreich.

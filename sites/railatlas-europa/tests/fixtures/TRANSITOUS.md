@@ -36,3 +36,16 @@ No fixture is runtime data. The application's journey fallback now uses this
 stable endpoint once after the original sources fail, with cache, cancellation,
 size and timeout limits. `/plan` does not identify whether a transit geometry
 is a GTFS shape or inferred; those vehicle paths are deliberately not drawn.
+
+`transitous-faro-madrid.json.gz` wraps the unmodified coordinate-plan response,
+the unmodified native-stop plan response and the first two unmodified geocoder
+records obtained on 27 October 2026, alongside the original catalogue entries.
+Both plan requests used departure 2026-10-31T08:00:00Z. The native request starts
+at eu-flixbus_9e4eeb3c-2721-4e9d-bc41-63cd76b509a4, selected only after exact
+name/country/proximity validation. The original coordinate plan demonstrates
+the 245-m unconfirmed access gap; it is not accepted by relaxing point checks.
+The native plan demonstrates station-access offsets of 62 m and 44 m in Seville.
+Tests retain source coordinates and explicitly partial geometry. Underlying
+GTFS providers include Faro, FlixBus, Seville, RENFE and Ouigo; their licences are
+listed at https://transitous.org/sources/. Street geometry uses OpenStreetMap,
+https://www.openstreetmap.org/copyright. These data are not relicensed by AGPL.

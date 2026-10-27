@@ -1,5 +1,5 @@
 import {fetchJSON,sameStation} from './journey.mjs';
-import {distanceKm} from './rail.mjs';
+import {distanceKm,normalize} from './rail.mjs';
 import {decodePolyline,transportProduct,plainText,mergeNotices} from './transit.mjs';
 
 export const TRANSITOUS_SOURCE='Transitous / MOTIS (GTFS)';
@@ -10,6 +10,26 @@ export function transitousModes(raw){return [...new Set((Array.isArray(raw?.mode
 export function parseTransitousStation(raw){
  if(typeof raw?.stopId!=='string'||!raw.stopId.length||raw.stopId.length>500||typeof raw.name!=='string'||!raw.name.trim()||raw.name.length>=200||![raw.lat,raw.lon].every(Number.isFinite)||Math.abs(raw.lat)>90||Math.abs(raw.lon)>180)return null;
  return {id:'transitous:'+raw.stopId,transitousId:raw.stopId,name:raw.name,lat:raw.lat,lon:raw.lon,dbId:'',country:'',main:false,networkModes:transitousModes(raw).map(m=>m==='rail'?'train':m),lookupSource:TRANSITOUS_SOURCE,timetableStatus:'unverified'};
+}
+const catalogEndpoint=s=>/^\d+$/.test(s?.id||'')&&!s.dbId&&!s.locationType;
+export function matchTransitousCatalogStation(station,locations){
+ if(!catalogEndpoint(station))return null;
+ const matches=(Array.isArray(locations)?locations:[]).filter(raw=>raw.type==='STOP'&&(!station.country||!raw.country||station.country===raw.country)).map(raw=>parseTransitousStation({...raw,stopId:raw.id})).filter(s=>s&&normalize(s.name)===normalize(station.name)&&distanceKm(station,s)<=.8).sort((a,b)=>distanceKm(station,a)-distanceKm(station,b));
+ if(!matches.length||matches.some(s=>distanceKm(matches[0],s)>.25))return null;
+ return matches[0];
+}
+const endpointCache=new Map();
+async function resolveCatalogEndpoint(station,signal){
+ if(!catalogEndpoint(station))return station;
+ const key=JSON.stringify([station.id,station.name,station.lat,station.lon,station.country]),saved=endpointCache.get(key);
+ if(saved&&saved.until>Date.now())return saved.station||station;
+ if(Date.now()<nextJourneyRequestAt)return station;
+ const url=new URL('https://api.transitous.org/api/v1/geocode');url.search=new URLSearchParams({text:station.name,type:'STOP',place:station.lat+','+station.lon,numResults:'10',language:'de'});
+ let raw;
+ try{raw=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/27 (+https://github.com/dunkelst/railatlas-europe)'}},signal,16000,1024*1024);if(!Array.isArray(raw))throw Error('Keine lesbare Haltezuordnung.');}
+ catch(error){signal?.throwIfAborted();if(error.status===429)throw error;endpointCache.set(key,{station:null,until:Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0)});return station;}
+ const resolved=matchTransitousCatalogStation(station,raw);
+ if(endpointCache.size>=128)endpointCache.delete(endpointCache.keys().next().value);endpointCache.set(key,{station:resolved,until:Date.now()+15*60000});return resolved||station;
 }
 let nextRequestAt=0;
 // Bounds and map modes are validated by the shared network handler.
@@ -45,19 +65,28 @@ function alerts(raw,start,end,scope){
  });
 }
 export function parseTransitousJourneys(data,from,to,requested){
- const journeys=[],excluded=[];
+ const journeys=[],excluded=[],walkingErrors=[];
  for(const trip of data.itineraries||[])try{
   const legs=(trip.legs||[]).map(raw=>{
    const a=place(raw.from),b=place(raw.to),departure=iso(raw.startTime),arrival=iso(raw.endTime),walking=raw.mode==='WALK',product=transportProduct({cls:classes[raw.mode]||0},walking);
    if(!departure||!arrival||product.mode==='unknown'||raw.loopedCalendarSince)throw Error('Unbestätigte Fahrplandaten');
    const notes=alerts([...(raw.alerts||[]),...(raw.from.alerts||[]),...(raw.to.alerts||[])],departure,arrival,a.name+' → '+b.name);
    const points=walking?decodePolyline(raw.legGeometry?.points,raw.legGeometry?.precision):[];
-   const close=(p,s)=>p&&distanceKm({lat:p[0],lon:p[1]},s)<=.03;
+   const gap=(p,s)=>p?distanceKm({lat:p[0],lon:p[1]},s)*1000:Infinity;
+   const fromGap=gap(points[0],a),toGap=gap(points.at(-1),b);
+   // Native rail platforms can be located inside a station building, while
+   // OSM routing ends at an entrance. Only these station endpoints allow a
+   // partial source path; selected coordinates and ordinary bus stops stay strict.
+   const stationAccess=(stop,metres)=>stop.vertexType==='TRANSIT'&&typeof stop.stopId==='string'&&(stop.modes||[]).some(m=>['HIGHSPEED_RAIL','LONG_DISTANCE','NIGHT_RAIL','REGIONAL_RAIL','SUBURBAN','SUBWAY'].includes(m))&&metres<=Math.min(250,raw.distance);
    // /plan does not identify whether a transit path is a GTFS shape or inferred.
    // Retain actual ride times; only routed pedestrian geometry is drawn.
-   const complete=points.length>1&&!(points.length===2&&distanceKm(a,b)>.15)&&close(points[0],a)&&close(points.at(-1),b);
-   const geometry={status:complete?'complete':'missing',segments:complete?[points]:[],source:TRANSITOUS_SOURCE,...(!walking?{reason:'unverified'}:{})};
-   if(walking&&(!complete||!Number.isFinite(raw.distance)||raw.distance<0||arrival===departure&&raw.distance>10))throw Error('Kein bestätigter Fußweg');
+   const routed=points.length>1&&!(points.length===2&&distanceKm(a,b)>.15),complete=routed&&fromGap<=30&&toGap<=30;
+   const partial=routed&&!complete&&(fromGap<=30||stationAccess(raw.from,fromGap))&&(toGap<=30||stationAccess(raw.to,toGap));
+   const geometry={status:complete?'complete':partial?'partial':'missing',segments:complete||partial?[points]:[],source:TRANSITOUS_SOURCE,...(!walking?{reason:'unverified'}:partial?{reason:'station-access',gapMeters:Math.round(Math.max(fromGap,toGap))}:{})};
+   if(walking&&(!routed||!Number.isFinite(raw.distance)||raw.distance<0||arrival===departure&&raw.distance>10||!complete&&!partial)){
+    const metres=Math.max(fromGap,toGap),name=fromGap>=toGap?(raw.from.vertexType==='NORMAL'?from.name:a.name):(raw.to.vertexType==='NORMAL'?to.name:b.name);
+    throw Object.assign(Error(Number.isFinite(metres)&&metres>30?'Der gelieferte Fußweg bei „'+name+'“ erreicht den gewählten Punkt nicht ('+Math.round(metres)+' m Abweichung). Bitte einen bestätigten Halt oder einen passenden Kartenzugang wählen.':'Für den Fußweg bei „'+name+'“ fehlt ein nutzbarer Quellverlauf. Bitte einen bestätigten Halt oder einen anderen Zugang wählen.'),{code:'WALKING_PATH_UNCONFIRMED'});
+   }
    const stopovers=(raw.intermediateStops||[]).map(s=>({station:place(s),arrival:iso(s.arrival),departure:iso(s.departure),plannedArrival:iso(s.scheduledArrival),plannedDeparture:iso(s.scheduledDeparture),platform:s.track,cancelled:!!s.cancelled,notices:alerts(s.alerts,departure,arrival,s.name)}));
    return {from:a,to:b,departure,arrival,plannedDeparture:iso(raw.scheduledStartTime),plannedArrival:iso(raw.scheduledEndTime),...product,line:walking?'Fußweg':raw.routeShortName||raw.displayName||raw.tripShortName||raw.mode,operator:raw.agencyName||'',direction:raw.headsign||'',tripId:raw.tripId||null,platform:walking?undefined:raw.from.track,arrivalPlatform:walking?undefined:raw.to.track,plannedPlatform:raw.from.scheduledTrack,plannedArrivalPlatform:raw.to.scheduledTrack,walking,distanceMeters:walking?raw.distance:null,throughService:!!raw.interlineWithPreviousLeg,realtime:raw.realTime===true,cancelled:!!(raw.cancelled||raw.from.cancelled||raw.to.cancelled||raw.from.pickupType==='NOT_ALLOWED'||raw.to.dropoffType==='NOT_ALLOWED'),stops:stopovers.map(s=>s.station),stopovers,notices:notes,notes:walking?[]:['Linienverlauf nicht als Original-GTFS-Pfad bestätigt; auf der Karte bleibt dieser Fahrabschnitt offen.'],geometry};
   });
@@ -68,29 +97,32 @@ export function parseTransitousJourneys(data,from,to,requested){
   if(legs[0].from.locationType==='coordinate')legs[0].from={...legs[0].from,name:from.name};
   if(legs.at(-1).to.locationType==='coordinate')legs.at(-1).to={...legs.at(-1).to,name:to.name};
   journeys.push({departure:legs[0].departure,arrival:legs.at(-1).arrival,legs,notices,transfers:Math.max(0,legs.filter(l=>!l.walking&&!l.throughService).length-1),source:TRANSITOUS_SOURCE,sourceWarning:'Zusätzliche europäische Fahrplanauskunft; Datenabdeckung und Echtzeitdaten sind partiell. Nicht als Originalpfad bestätigte Fahrzeuggeometrien bleiben auf der Karte offen.',disruptionCoverage:'partial',disruptionCheck:'trip-only',routingStatus:'provider-checked',attributions:TRANSITOUS_ATTRIBUTIONS,fetchedAt:new Date().toISOString()});
- }catch{/* A malformed alternative cannot conceal valid connections. */}
+ }catch(error){if(error.code==='WALKING_PATH_UNCONFIRMED')walkingErrors.push(error.message);/* A malformed alternative cannot conceal valid connections. */}
  journeys.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));
  for(const journey of journeys)journey.notices=mergeNotices([journey.notices,excluded]);
- return {journeys,notices:excluded};
+ return {journeys,notices:excluded,walkingErrors:[...new Set(walkingErrors)]};
 }
 let nextJourneyRequestAt=0;const journeyCache=new Map();
 export async function getTransitousJourneys(from,to,departure,signal){
  signal?.throwIfAborted();
+ let origin,destination;
+ try{[origin,destination]=await Promise.all([resolveCatalogEndpoint(from,signal),resolveCatalogEndpoint(to,signal)]);}catch(error){signal?.throwIfAborted();nextJourneyRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
  const endpoint=s=>typeof s.transitousId==='string'&&s.id==='transitous:'+s.transitousId?s.transitousId:s.lat+','+s.lon;
- const key=JSON.stringify([endpoint(from),endpoint(to),departure]),cached=journeyCache.get(key);
+ const key=JSON.stringify([endpoint(origin),endpoint(destination),departure]),cached=journeyCache.get(key);
  // Keep source responses, then revalidate endpoints for every caller.
  let data=cached&&cached.until>Date.now()?cached.data:null;
  if(!data){
   if(Date.now()<nextJourneyRequestAt)throw Object.assign(Error('Die ergänzende europäische Auskunft pausiert nach einem Anbieterfehler.'),{code:'UPSTREAM_UNAVAILABLE'});
   const url=new URL('https://api.transitous.org/api/v6/plan');
-  url.search=new URLSearchParams({fromPlace:endpoint(from),toPlace:endpoint(to),time:departure,directModes:'',numItineraries:'3',maxItineraries:'3',searchWindow:'900',useRoutedTransfers:'true',detailedTransfers:'true',maxPreTransitTime:'900',maxPostTransitTime:'900'});
+  url.search=new URLSearchParams({fromPlace:endpoint(origin),toPlace:endpoint(destination),time:departure,directModes:'',numItineraries:'3',maxItineraries:'3',searchWindow:'900',useRoutedTransfers:'true',detailedTransfers:'true',maxPreTransitTime:'900',maxPostTransitTime:'900'});
   try{
    data=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/25 (+https://github.com/dunkelst/railatlas-europe)'}},signal,22000,4*1024*1024);
    if(!Array.isArray(data.itineraries))throw Object.assign(Error('Die europäische Auskunft hat keine auswertbare Verbindungsliste geliefert.'),{code:'SOURCE_RESPONSE_INVALID'});
    if(journeyCache.size>=64)journeyCache.delete(journeyCache.keys().next().value);journeyCache.set(key,{data,until:Date.now()+30000});
   }catch(error){signal?.throwIfAborted();nextJourneyRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
  }
- const parsed=parseTransitousJourneys(data,from,to,departure);
- if(!parsed.journeys.length)throw Object.assign(Error('Die ergänzende europäische Auskunft hat für diese Halte und Zeit keine nutzbare Verbindung bestätigt.'),{code:'NO_JOURNEY',notices:parsed.notices});
+ const parsed=parseTransitousJourneys(data,origin,destination,departure);
+ if(!parsed.journeys.length)throw Object.assign(Error(parsed.walkingErrors[0]||'Die ergänzende europäische Auskunft hat für diese Halte und Zeit keine nutzbare Verbindung bestätigt.'),{code:parsed.walkingErrors.length?'WALKING_PATH_UNCONFIRMED':'NO_JOURNEY',notices:parsed.notices});
+ for(const journey of parsed.journeys)journey.endpointMappings=[[from,origin,'beginnt'],[to,destination,'endet']].filter(([asked,resolved])=>asked!==resolved).map(([asked,resolved,action])=>'Der Kataloghalt „'+asked.name+'“ wurde dem Haltepunkt „'+resolved.name+'“ zugeordnet ('+Math.round(distanceKm(asked,resolved)*1000)+' m vom Katalogpunkt). Die Reise '+action+' am zugeordneten Halt; bitte den Zugang prüfen.');
  return parsed.journeys.slice(0,3);
 }

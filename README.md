@@ -2,9 +2,35 @@
 
 [**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **26**, Quellcommit `72f0ef86e9e6c89b9b90deb510ec6c0b26ecf917`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **27**, Quellcommit `2ac3e41f0a72fdc25e28b8d1ea56f672a47e7952`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
-## Version 26: Verbindungssuche für die neuen Kartenhalte
+## Version 27: Katalogzuordnung und Stationszugänge
+
+Faro Airport → Madrid Atocha scheiterte an einem 245 m unbestätigten Startweg
+sowie an 44–62 m Differenz zwischen Bahnsteigpunkt und Stationszugang in Sevilla.
+Die Quelle war erreichbar; die bisherige Sammelmeldung verdeckte die Ursachen.
+
+Kataloghalte ohne Anbieterkennung werden nun einmal beim Anbieter aufgelöst:
+exakter Name, passende explizite Länderangaben und höchstens 800 m Abstand.
+Mehrdeutige Treffer werden abgelehnt. Für Faro wird der echte Flughafenhalt
+523 m vom Katalogpunkt gewählt und die Zuordnung im Ergebnis sichtbar benannt.
+Individuelle Koordinaten, GPS und bekannte Anbieterkennungen werden nicht versetzt.
+
+Bei nativen Bahn-/U-Bahn-Halten bleiben gelieferte Stationszugänge mit höchstens
+250 m Abweichung und höchstens der Quellgehstrecke als **partieller Verlauf**
+erhalten. Entfernung wird gezeigt, Originalpunkte und Quellzeiten bleiben gleich,
+Kartenlücken offen. Die 30-m-Kontrolle für Koordinaten und Bus-/Tramhalte gilt weiter.
+Nicht bestätigte Fußwege bekommen eine konkrete Meldung, auch wenn eine andere
+Quelle ausfällt. Optionaler Lookup-Ausfall erhält sichere Koordinatenrouten;
+Anbieterpausen, Retry-After und Abbruch gelten.
+
+**109 Tests, TypeScript und drei Builds bestanden.** Echter gemeinsamer
+Node-HTTP-Server: HTTP 200 mit drei Reisen für 31.10.2026 ab 09:00 Europe/Berlin.
+Erste Reise 10:30–17:13 Berlin, FlixBus 1794 / Bus EA / AVE über Sevilla.
+Die Zeitbasis bleibt Europe/Berlin; die Anfrage entspricht 08:00 in Faro.
+Quellstand gespeichert; Veröffentlichung und Browserprüfung folgen nach Abgleich.
+
+## Seit Version 26: Verbindungssuche für die neuen Kartenhalte
 
 Die letzte Erweiterung verband Transitous mit der Karte; die Fahrtsuche
 verwendete weiterhin nur die bisherigen Auskünfte. Heilbronn Friedhof →

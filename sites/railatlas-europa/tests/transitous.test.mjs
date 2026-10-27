@@ -6,11 +6,13 @@ import {getVrrJourney,parseVrrStation,sameVrrStation,EFA_PROVIDER} from '../lib/
 import {handleApi} from '../lib/api.mjs';
 import {validateChain} from '../lib/rail.mjs';
 import {gunzipSync} from 'node:zlib';
-import {parseTransitousJourneys} from '../lib/transitous.mjs';
+import {parseTransitousJourneys,matchTransitousCatalogStation} from '../lib/transitous.mjs';
 import {getTimetableJourneys} from '../lib/timetable.mjs';
 const plan=()=>JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-heilbronn-roemer-plan.json.gz',import.meta.url))));
 const endpoints=()=>{const d=plan();return [d.from,d.to].map(s=>({...parseTransitousStation(s),networkMode:'bus'}));};
 const requested='2026-10-26T19:51:00Z';
+const faro=()=>JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-faro-madrid.json.gz',import.meta.url))));
+const faroRequested='2026-10-31T08:00:00Z';
 const sample=JSON.parse(fs.readFileSync(new URL('./fixtures/transitous-heilbronn-sample.json',import.meta.url))),bbox=[49.138,9.224,49.147,9.243];let step=0;
 function clock(t){let now=Date.parse('2026-10-26T08:00:00Z')+(step++)*600000;t.mock.method(Date,'now',()=>now);return delta=>now+=delta;}
 
@@ -113,4 +115,51 @@ test('European journey cache rechecks endpoints; source rate limits pause calls 
  assert.equal((await module.getTransitousJourneys(a,b,requested)).length,3);await assert.rejects(module.getTransitousJourneys({...a,name:'Anderer Halt'},b,requested),e=>e.code==='NO_JOURNEY');assert.equal(calls,1);
  now+=31000;await assert.rejects(module.getTransitousJourneys(a,b,requested),/HTTP 429/);now+=119000;await assert.rejects(module.getTransitousJourneys(a,b,requested),/pausiert/);assert.equal(calls,2);
  const controller=new AbortController();controller.abort();await assert.rejects(module.getTransitousJourneys(a,b,requested,controller.signal),{name:'AbortError'});assert.equal(calls,2);
+});
+
+test('Actual Faro catalogue point resolves only to an exact named nearby native stop, never to a coordinate or fuzzy/ambiguous substitute',()=>{
+ const f=faro(),matched=matchTransitousCatalogStation(f.fromCatalog,f.geocode);assert.equal(matched.transitousId,f.geocode[0].id);assert.equal(matched.lat,f.geocode[0].lat);assert.equal(matched.name,'Faro (Airport)');
+ for(const mutate of [s=>s.name='Faro Town',s=>s.lat+=.02,s=>s.country='ES']){const raw=structuredClone(f.geocode[0]);mutate(raw);assert.equal(matchTransitousCatalogStation(f.fromCatalog,[raw]),null);}
+ assert.equal(matchTransitousCatalogStation({...f.fromCatalog,locationType:'coordinate'},f.geocode),null);assert.equal(matchTransitousCatalogStation({...f.fromCatalog,id:'osm:node/123'},f.geocode),null);assert.equal(matchTransitousCatalogStation(matched,f.geocode),null);
+ assert.equal(matchTransitousCatalogStation(f.fromCatalog,[f.geocode[0],{...f.geocode[0],id:'ambiguous-other-stop',lat:f.fromCatalog.lat,lon:f.fromCatalog.lon}]),null);
+});
+
+test('Actual Faro to Madrid native-stop response keeps three complete source journeys and openly marks rail station access geometry gaps',()=>{
+ const f=faro(),origin=matchTransitousCatalogStation(f.fromCatalog,f.geocode),before=JSON.stringify(f.nativePlan),p=parseTransitousJourneys(f.nativePlan,origin,f.toCatalog,faroRequested);
+ assert.equal(p.journeys.length,3);assert.deepEqual(p.journeys[0].legs.map(l=>l.line),['FlixBus 1794','Fußweg','EA','Fußweg','AVE','Fußweg']);assert.equal(p.journeys[0].departure,'2026-10-31T09:30:00.000Z');assert.equal(p.journeys[0].arrival,'2026-10-31T16:13:00.000Z');
+ const partial=p.journeys[0].legs.find(l=>l.geometry.reason==='station-access');assert.equal(partial.geometry.status,'partial');assert.equal(partial.geometry.gapMeters,62);assert.equal(partial.geometry.segments[0].length,partial.geometry.segments.flat().length);assert.ok(partial.distanceMeters>=partial.geometry.gapMeters);
+ assert.deepEqual(partial.geometry.segments[0].at(-1),[37.393025,-5.975122]);assert.equal(p.journeys[1].legs.find(l=>l.geometry.reason==='station-access').geometry.gapMeters,44);assert.equal(JSON.stringify(f.nativePlan),before);assert.equal(validateChain([p.journeys[0]],[origin,f.toCatalog],[]),true);
+});
+
+test('Station access never relaxes coordinate, bus-stop, oversized-gap or missing-path checks',()=>{
+ const f=faro();assert.equal(parseTransitousJourneys(f.coordinatePlan,f.fromCatalog,f.toCatalog,faroRequested).journeys.length,0);assert.match(parseTransitousJourneys(f.coordinatePlan,f.fromCatalog,f.toCatalog,faroRequested).walkingErrors[0],/245 m/);
+ const origin=matchTransitousCatalogStation(f.fromCatalog,f.geocode);
+ for(const mutate of [l=>l.to.vertexType='NORMAL',l=>l.to.modes=['BUS'],l=>l.to.modes=['TRAM'],l=>l.to.lat+=.004,l=>l.distance=10,l=>l.legGeometry.points='']){
+  const data=structuredClone(f.nativePlan);data.itineraries=data.itineraries.slice(0,1);const leg=data.itineraries[0].legs.find(l=>l.to.name==='Sevilla-Santa Justa'&&l.mode==='WALK');mutate(leg);const parsed=parseTransitousJourneys(data,origin,f.toCatalog,faroRequested);assert.equal(parsed.journeys.length,0);assert.equal(parsed.walkingErrors.length,1);
+ }
+});
+
+test('Common API resolves the Faro catalogue identity before one plan, retains mapping/partial geometry, and caches lookup and response',async t=>{
+ const f=faro(),calls=[];t.mock.method(Date,'now',()=>Date.parse('2026-10-27T15:00:00Z'));
+ t.mock.method(globalThis,'fetch',async(url,init)=>{const u=new URL(url);calls.push(u);if(u.hostname==='fahrplan.oebb.at')return Response.json({err:'OK',svcResL:[{err:'OK',res:{locL:[]}}]});if(u.hostname==='www.efa.de')return Response.json({locations:[]});assert.equal(u.hostname,'api.transitous.org');
+  if(u.pathname==='/api/v1/geocode'){assert.equal(u.searchParams.get('text'),'Faro Airport');assert.equal(u.searchParams.get('place'),'37.017596,-7.96972');assert.equal(u.searchParams.get('type'),'STOP');return Response.json(f.geocode);}
+  assert.equal(u.pathname,'/api/v6/plan');assert.equal(u.searchParams.get('fromPlace'),f.geocode[0].id);assert.equal(u.searchParams.get('toPlace'),'40.405963,-3.689757');assert.equal(u.searchParams.get('time'),faroRequested);return Response.json(f.nativePlan);
+ });
+ const request=()=>handleApi(new Request('https://railatlas.example/api/journeys',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from:f.fromCatalog,to:f.toCatalog,departure:faroRequested,source:'auto'})}));
+ for(let i=0;i<2;i++){const r=await request();assert.equal(r.status,200);const body=await r.json();assert.equal(body.journeys.length,3);assert.match(body.journeys[0].endpointMappings[0],/Faro Airport.*Faro \(Airport\).*m vom Katalogpunkt/);assert.ok(body.journeys[0].legs.some(l=>l.geometry.reason==='station-access'));}
+ assert.equal(calls.filter(u=>u.pathname==='/api/v1/geocode').length,1);assert.equal(calls.filter(u=>u.pathname==='/api/v6/plan').length,1);assert.equal(calls.some(u=>u.hostname==='int.bahn.de'),false);
+});
+
+test('An unconfirmed walking path outranks another provider outage in the common API error',async t=>{
+ const f=faro(),from={...f.fromCatalog,id:'coord:37.017596:-7.96972',locationType:'coordinate'};t.mock.method(Date,'now',()=>Date.parse('2026-10-27T16:00:00Z'));
+ t.mock.method(globalThis,'fetch',async(url,init)=>{const u=new URL(url);if(u.hostname==='fahrplan.oebb.at')return Response.json({err:'OK',svcResL:[{err:'OK',res:{locL:[]}}]});if(u.hostname==='www.efa.de')return Response.json({locations:[]});if(u.hostname==='int.bahn.de')return new Response('provider outage',{status:503});assert.equal(u.pathname,'/api/v6/plan');return Response.json(f.coordinatePlan);});
+ const r=await handleApi(new Request('https://railatlas.example/api/journeys',{method:'POST',body:JSON.stringify({from,to:f.toCatalog,departure:faroRequested,source:'auto'})}));assert.equal(r.status,502);const body=await r.json();assert.match(body.error,/Fußweg.*Faro Airport.*245 m/);assert.doesNotMatch(body.error,/Datenquelle ist nicht erreichbar/);
+});
+
+test('Optional catalogue lookup outages preserve safe coordinate routing; rate limiting blocks a new plan',async t=>{
+ const d=plan(),[a,b]=endpoints(),catalog={...a,id:'1999999',transitousId:undefined},module=await import('../lib/transitous.mjs?catalog-outage'),calls=[];t.mock.method(Date,'now',()=>Date.parse('2026-10-27T15:00:00Z'));
+ t.mock.method(globalThis,'fetch',async url=>{const u=new URL(url);calls.push(u.pathname);if(u.pathname==='/api/v1/geocode')return new Response('lookup offline',{status:503});assert.equal(u.searchParams.get('fromPlace'),catalog.lat+','+catalog.lon);return Response.json(d);});
+ const result=await module.getTransitousJourneys(catalog,b,requested);assert.equal(result.length,3);assert.equal(result[0].endpointMappings.length,0);assert.equal((await module.getTransitousJourneys(catalog,b,requested)).length,3);assert.deepEqual(calls,['/api/v1/geocode','/api/v6/plan']);
+ const limited=await import('../lib/transitous.mjs?catalog-limited');let count=0;t.mock.method(globalThis,'fetch',async url=>{count++;assert.equal(new URL(url).pathname,'/api/v1/geocode');return new Response('rate limited',{status:429,headers:{'Retry-After':'120'}});});
+ await assert.rejects(limited.getTransitousJourneys(catalog,b,requested),/HTTP 429/);await assert.rejects(limited.getTransitousJourneys(catalog,b,requested),/pausiert/);assert.equal(count,1);
 });

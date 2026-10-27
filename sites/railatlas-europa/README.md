@@ -1,5 +1,31 @@
 # RailAtlas Europa
 
+## Kataloghalte und Stationszugänge (27.10.2026)
+
+Kataloghalte ohne Fahrplankennung werden vor der zusätzlichen Transitous-Suche
+einmal beim Anbieter aufgelöst. Nur ein exakt passender Name, passende explizite
+Länderangaben und höchstens 800 m Abstand erlauben die Zuordnung; mehrdeutige,
+räumlich getrennte Treffer werden abgelehnt. Die Entfernung zum Katalogpunkt
+steht im Ergebnis. Kartenpunkte, GPS und bereits bekannte Anbieter-IDs werden
+nicht auf einen anderen Halt verschoben. Lookup-Ausfälle erhalten die bisherige
+Koordinatensuche, soweit deren Wegprüfung erfolgreich ist; Rate-Limits gelten.
+
+Bei nativen Bahn-/U-Bahn-Halten darf ein gelieferter Gehweg am Stationszugang
+statt an der Bahnsteigkoordinate enden. Höchstens 250 m und niemals mehr als die
+gelieferte Gehstrecke: Der Verlauf wird ausdrücklich als teilweise geliefert
+markiert, mit Meterangabe. Originalpunkte bleiben unverändert; die Kartenlücke
+wird nicht verbunden. Individuelle Koordinaten und Bus-/Straßenbahnhalte bleiben
+an die 30-m-Prüfung gebunden. Fahrzeug- und Gehzeiten bleiben laut Quelle.
+
+Der gemeldete Fall Faro Airport → Madrid Atocha, 31.10.2026 ab 09:00 Berliner
+Zeit, liefert im unabhängigen Node-HTTP-Server drei Reisen. Der eindeutige
+Flughafenhalt liegt 523 m vom Katalogpunkt entfernt. Erste Reise ab 10:30 bis
+17:13 Berliner Zeit, FlixBus 1794, Bus EA und AVE über Sevilla. Der dortige
+Stationszugang wird mit 62 m Kartenlücke benannt. Nicht bestätigte Zugänge
+erhalten eine konkrete Meldung statt der pauschalen Quellenfehler-Meldung.
+109 Regressionen und TypeScript erfolgreich. Die bestehende Zeitbasis bleibt
+Europe/Berlin; der Test entspricht einer Anfrage ab 08:00 Ortszeit in Faro.
+
 ## Verbindungssuche für neue Kartenhalte (26.10.2026)
 
 Die automatische Auskunft verwendet Transitous/MOTIS als zusätzliche
