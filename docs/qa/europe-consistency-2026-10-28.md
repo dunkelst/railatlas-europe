@@ -104,6 +104,24 @@ Zusatzproben:
 
 Amsterdam wurde anschließend bis zur Originalantwort verfolgt: vier Reisen vorhanden, Null wegen der Namenszuordnung übernommen; der Fix übernimmt alle vier mit unveränderten Zeiten und Quellgeometrien. Athen wurde ebenfalls separat beim Quellanbieter geprüft: die native v6-Antwort enthält tatsächlich keine Itineraries. Rohdental → Heilbronn am gewählten Samstag blieb bei expliziter EFA-Auswahl unbestätigt; das ist kein Nachweis eines generellen EFA-Ausfalls.
 
+## Ergänzende Adapterprüfung
+
+Auch die beiden übrigen Auskunftsadapter wurden live und getrennt geprüft:
+
+- VRR über denselben API-Handler: Düsseldorf Hbf → Heinrich-Heine-Allee U,
+  31.10.2026 ab 09:00 UTC, HTTP 200 und eine bestätigte Reise.
+- DB-Fallback über den tatsächlichen Adapter: Rohdental → U Turmstraße Berlin,
+  gleicher Anfragezeitpunkt, drei Reisen mit Bus, Fußweg, S-Bahn, Bahn und Tram.
+- Beide Antworten bestehen die gemeinsame Prüfung von Zeiten, Endpunkten,
+  Verkehrsmitteln, Ausfällen und Geometrieschema. Der DB-Adapter nutzt seine
+  bestehenden begrenzten Folgetage und seine erneute Verbindungsprüfung.
+
+Damit enthalten die Proben positive echte Antworten von ÖBB, EFA, Transitous,
+VRR und DB. Photon ist in den Suchproben enthalten. Für Overpass lag in dieser
+Runde kein positiver Live-Nachweis vor; seine Fehler-/Pausenfälle und gespeicherte
+OSM-Antworten sind geprüft. Die erfolgreiche DB-Probe macht die ausdrücklich
+fehlgeschlagene reine EFA-Probe nicht nachträglich zu einer erfolgreichen.
+
 ## Reproduzierbarkeit und Validierung
 
 - Manuelles Skript: `sites/railatlas-europa/scripts/audit-europe.mjs`; gleiche Handler und Parser wie in der Anwendung, sequenzielle Aufrufe, eine Sekunde Abstand, kleine Boxen, keine Quellwiederholungen oder Hintergrundjobs.
@@ -112,4 +130,32 @@ Amsterdam wurde anschließend bis zur Originalantwort verfolgt: vier Reisen vorh
 - Die Browseranbindung war in dieser Prüfrunde nicht verfügbar. Diese API-/Parserprüfung ist keine neue visuelle Browserabnahme.
 - Die API-Quelle ist best effort; ihre öffentliche Linienkarte experimentell. Primärquellen: [Transitous-Nutzung](https://transitous.org/api/), [MOTIS-Schema](https://github.com/motis-project/motis/blob/master/openapi.yaml), [EFA-API-Dokumentation](https://mobidata-bw.de/daten/portal/efa-json/EFA_JSON_API_Training_EN_2.9.pdf).
 
-Der aktuelle Rollout-Nachweis wird nach Veröffentlichung ergänzt.
+## Veröffentlichung und öffentliche Nachprüfung
+
+Version **30** ist veröffentlicht auf https://railatlas-europa.dunkelst.chatgpt.site/.
+Quellcommit: `ba9fd5e7c5f49a90227d7a9d20b94adfb9336378`.
+GitHub-Implementierungscommit: `f9013d845f9ff8290cccfc879027afe4edc8dbc1`.
+205 App-Dateien stimmen bytegenau mit der Sites-Quelle überein.
+
+123 Regressionen, TypeScript sowie Sites-, Pages- und Standalone-Build bestanden.
+Die öffentliche v30-API bestätigt nach Veröffentlichung bei Origin GitHub Pages:
+
+- `Αθήνα`: HTTP 200, zwei Treffer; `Київ`: HTTP 200, acht Treffer.
+- Stockholm: HTTP 200, 23 Treffer einschließlich schwedischer globaler EFA-IDs;
+  unbekannte Länder bleiben leer statt pauschal DE.
+- Amsterdam Centraal → Nieuwe Willemsstraat: HTTP 200, drei Alternativen über
+  Transitous; Zeiten, Endpunkte und Geometrieschema ohne Konsistenzfehler.
+  Die gespeicherte Originalantwort enthält vier; die öffentliche API begrenzt
+  diese Quelle weiterhin auf drei Alternativen.
+- Ungültige Netzwerk-Bounding-Box: HTTP 400.
+- Alle Antworten erlauben den bestehenden GitHub-Pages-Origin über CORS.
+
+GitHub-Prüfungen zum Implementierungscommit:
+
+- [Gemeinsame App-Prüfung erfolgreich](https://github.com/dunkelst/railatlas-europe/actions/runs/40763229940)
+- [CI erfolgreich](https://github.com/dunkelst/railatlas-europe/actions/runs/40763230075)
+- [Pages-Veröffentlichung erfolgreich](https://github.com/dunkelst/railatlas-europe/actions/runs/40763229966)
+
+Die öffentliche GitHub-Seite liefert HTTP 200 und das neue App-Asset
+`/railatlas-europe/assets/index-Bdh5eLlp.js`. Der Nachtrag verändert keine
+App-Dateien und löst keine neue Veröffentlichung aus.

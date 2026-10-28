@@ -8754,5 +8754,144 @@
       "GitHub Pages"
     ],
     "newBrowserAcceptance": false
+  },
+  "liveVersion30Acceptance": [
+    {
+      "case": "GR",
+      "status": 200,
+      "count": 2,
+      "cors": "https://dunkelst.github.io",
+      "countries": [
+        "GR"
+      ]
+    },
+    {
+      "case": "UA",
+      "status": 200,
+      "count": 8,
+      "cors": "https://dunkelst.github.io",
+      "countries": [
+        "UA"
+      ]
+    },
+    {
+      "case": "SE",
+      "status": 200,
+      "count": 23,
+      "cors": "https://dunkelst.github.io",
+      "countries": [
+        "",
+        "SE",
+        "DE",
+        "FR",
+        "GB"
+      ]
+    },
+    {
+      "case": "Amsterdam live",
+      "status": 200,
+      "count": 3,
+      "cors": "https://dunkelst.github.io",
+      "errors": [],
+      "source": "Transitous / MOTIS (GTFS)"
+    }
+  ],
+  "vrrAndDbFollowup": [
+    {
+      "source": "VRR",
+      "status": 200,
+      "request": {
+        "from": {
+          "id": "vrr:de:05111:18235",
+          "vrrId": "de:05111:18235",
+          "aliases": "",
+          "locality": "Düsseldorf",
+          "networkModes": [
+            "train",
+            "suburban",
+            "subway",
+            "tram",
+            "bus"
+          ],
+          "dbId": "",
+          "name": "Düsseldorf Hbf",
+          "country": "DE",
+          "lat": 51.220254,
+          "lon": 6.792997,
+          "main": false
+        },
+        "to": {
+          "id": "vrr:de:05111:18036",
+          "vrrId": "de:05111:18036",
+          "aliases": "Heinrich-Heine-Allee U",
+          "locality": "Düsseldorf",
+          "networkModes": [
+            "subway",
+            "bus"
+          ],
+          "dbId": "",
+          "name": "Düsseldorf, D-Heinrich-Heine-Allee U",
+          "country": "DE",
+          "lat": 51.226398,
+          "lon": 6.776828,
+          "main": false
+        },
+        "departure": "2026-10-31T09:00:00.000Z",
+        "source": "vrr"
+      },
+      "count": 1,
+      "error": null,
+      "errors": []
+    },
+    {
+      "source": "DB",
+      "count": 3,
+      "errors": [],
+      "request": {
+        "from": {
+          "id": "efa:de:03252:2320",
+          "efaId": "de:03252:2320",
+          "name": "Rohdenthal, Rohdental",
+          "aliases": "Rohdental Hessisch Oldendorf",
+          "country": "DE",
+          "lat": 52.200076,
+          "lon": 9.249135,
+          "dbId": ""
+        },
+        "to": {
+          "id": "osm:node/3961281940",
+          "name": "U Turmstraße",
+          "locality": "Berlin",
+          "networkMode": "bus",
+          "country": "DE",
+          "lat": 52.525547,
+          "lon": 13.3413274,
+          "dbId": ""
+        },
+        "departure": "2026-10-31T09:00:00.000Z"
+      },
+      "modes": [
+        "bus",
+        "walk",
+        "suburban",
+        "train",
+        "tram"
+      ]
+    }
+  ],
+  "release": {
+    "siteVersion": 30,
+    "sourceCommit": "ba9fd5e7c5f49a90227d7a9d20b94adfb9336378",
+    "implementationCommit": "f9013d845f9ff8290cccfc879027afe4edc8dbc1",
+    "siteDeploymentId": "appgdep_6ae25a06b6208191a19f62d02b75ac35",
+    "siteDeploymentStatus": "succeeded",
+    "sourceParityFiles": 205,
+    "githubWorkflowRuns": [
+      40763229940,
+      40763230075,
+      40763229966
+    ],
+    "pagesClientAsset": "/railatlas-europe/assets/index-Bdh5eLlp.js",
+    "newVisualBrowserAcceptance": false
   }
 }
