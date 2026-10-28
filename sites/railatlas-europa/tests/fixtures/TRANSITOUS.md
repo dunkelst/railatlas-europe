@@ -68,3 +68,14 @@ Datenquellen und deren Lizenzen: https://transitous.org/sources/ .
 Nutzungsrichtlinie: https://transitous.org/api/ . Die öffentliche App ist AGPLv3,
 nichtkommerzieller Testbetrieb; begrenzte Ausschnittsabfragen, Cache und
 Quellenattribution bleiben aktiv. Die experimentelle API kann sich ändern.
+
+## Amsterdam local acceptance, 28 October 2026
+
+`transitous-amsterdam-local.json.gz` records the complete public v6 plan reply
+for the native map stops Amsterdam Centraal (`de-DELFI_000008400058`) and
+Amsterdam, Nieuwe Willemsstraat (`nl-OpenOV_3979903`), requested 31 October
+2026 at 09:00 UTC. The wrapper records those exact inputs. The source's boarding
+stop is spelled Amsterdam, Centraal Station and is 94 m from the map point.
+All four original alternatives, alerts, walking paths and vehicle geometry are
+preserved. Gzip is storage compression only; this fixture is never served as a
+live route. Matching still rejects different stations, cities and remote points.

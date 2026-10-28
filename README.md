@@ -2,7 +2,20 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **29**, Quellcommit `ef812d4fa5830f9717cc25547bdf9222141266ca`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **30**, Quellcommit `ba9fd5e7c5f49a90227d7a9d20b94adfb9336378`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 30: europaweite Schnittstellen- und Datenprüfung
+
+50 Länder/Gebiete und 54.114 Katalogeinträge geprüft. Gemeinsame Fehler bei
+nichtlateinischen Namen, fremden EFA-IDs/Ländern, Antwortgrößen und der
+Amsterdam-Stationszuordnung sind korrigiert. Quellenhinweise und Attribution
+bleiben erhalten; ungültige Netzparameter liefern HTTP 400. 123 Regressionen,
+TypeScript und die drei Produktionsbuilds sind erfolgreich.
+
+Die Stichprobe bestätigt Teilabdeckung: 45 Netzausschnitte mit Halten und 41
+mit Linienverläufen. Offene Abdeckungslücken, negative Reiseproben und die
+fehlende neue Browserabnahme sind ausdrücklich dokumentiert.
+[Europa-Prüfbericht mit Ländertabelle](docs/qa/europe-consistency-2026-10-28.md).
 
 ## Version 29: sichtbare allgemeine Buslinien in Tavira
 

@@ -42,7 +42,7 @@ export async function fetchTransitousRoutes(bounds,signal){
   const data=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/29 (+https://github.com/dunkelst/railatlas-europe)'}},signal,16000,8*1024*1024);
   if(!Array.isArray(data.routes)||!Array.isArray(data.polylines))throw Object.assign(Error('Die ergänzende Linienkarte liefert keine lesbaren Verläufe.'),{code:'SOURCE_RESPONSE_INVALID'});
   return data;
- }catch(error){signal?.throwIfAborted();nextRouteRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
+ }catch(error){signal?.throwIfAborted();if(!error.responseTooLarge)nextRouteRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
 }
 // Bounds and map modes are validated by the shared network handler.
 export async function fetchTransitousStops(bounds,selected,signal){
@@ -56,7 +56,7 @@ export async function fetchTransitousStops(bounds,selected,signal){
   if(!Array.isArray(data))throw Object.assign(Error('Die europäische Haltestellenquelle liefert keine lesbare Liste.'),{code:'SOURCE_RESPONSE_INVALID'});
   return data;
  }catch(error){
-  signal?.throwIfAborted();nextRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;
+  signal?.throwIfAborted();if(!error.responseTooLarge)nextRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;
  }
 }
 
@@ -131,7 +131,7 @@ export async function getTransitousJourneys(from,to,departure,signal){
    data=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/25 (+https://github.com/dunkelst/railatlas-europe)'}},signal,22000,4*1024*1024);
    if(!Array.isArray(data.itineraries))throw Object.assign(Error('Die europäische Auskunft hat keine auswertbare Verbindungsliste geliefert.'),{code:'SOURCE_RESPONSE_INVALID'});
    if(journeyCache.size>=64)journeyCache.delete(journeyCache.keys().next().value);journeyCache.set(key,{data,until:Date.now()+30000});
-  }catch(error){signal?.throwIfAborted();nextJourneyRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
+  }catch(error){signal?.throwIfAborted();if(!error.responseTooLarge)nextJourneyRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
  }
  const parsed=parseTransitousJourneys(data,origin,destination,departure);
  if(!parsed.journeys.length)throw Object.assign(Error(parsed.walkingErrors[0]||'Die ergänzende europäische Auskunft hat für diese Halte und Zeit keine nutzbare Verbindung bestätigt.'),{code:parsed.walkingErrors.length?'WALKING_PATH_UNCONFIRMED':'NO_JOURNEY',notices:parsed.notices});

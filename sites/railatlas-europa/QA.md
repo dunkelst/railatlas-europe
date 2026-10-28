@@ -478,3 +478,26 @@ Die veröffentlichte GitHub-Seite blieb bei allen folgenden Formularabfragen unt
 - Keine visuelle Browserabnahme behauptet: Die bereits festgestellte
   Vorschau-/Browser-Sicherheitsgrenze wurde nicht umgangen. Der neue Screenshot
   des Nutzers bestätigt die Darstellung der vorherigen Version, nicht diese Änderung.
+
+
+## Europaweite Datenkonsistenz, 28.10.2026
+
+- Festes Testset in scripts/audit-europe.mjs: 50 Länder/Gebiete, alle fünf
+  Kartenebenen, kleine Ausschnitte, sequenzielle Anfragen, kein Retry-Loop.
+- 54.114 Katalogeinträge in 38 Ländern: eindeutige IDs, gültige Koordinaten,
+  Länderkennungen und Suchbarkeit; keine ersetzten Katalog-/Fahrplandaten.
+- 50 Suchproben nach Unicode-Fix erfolgreich. 45 Netzantworten mit Halten,
+  41 Ausschnitte mit mindestens einem Linienverlauf; keine Schemazusammenbrüche.
+- 19 nationale Bahnproben über ÖBB/Transitous und drei grenzüberschreitende
+  Proben bestätigt; zusätzliche Nahverkehrsproben enthalten auch echte negative
+  Ergebnisse. Amsterdam lieferte vier Fahrten, die die bisherige Namensprüfung
+  zu Unrecht verwarf. Eine vollständige echte Quellantwort sichert die Korrektur.
+- Schweden-Fixture bestätigt sowohl fremde globale EFA-IDs als auch die falsche
+  bisherige DE-Zuordnung. Unbekannte Länder bleiben ausdrücklich unbekannt.
+- Zu große Antworten werden abgebrochen, lassen andere Ausschnitte jedoch
+  abfragen. 429/Retry-After, echte Ausfallpausen und Benutzerabbruch bleiben.
+- Zoombegrenzung und Attribution überstehen das Zusammenführen. Fehlerhafte
+  Netzparameter verursachen HTTP 400, ohne den Anbieter anzufragen.
+- Die Browseranbindung war in dieser Prüfrunde nicht verfügbar. API- und
+  Parsernachweise werden nicht als neue visuelle Browserabnahme ausgegeben.
+- Vollständiger Bericht: GitHub docs/qa/europe-consistency-2026-10-28.md.

@@ -1,6 +1,12 @@
 EFA regression samples were fetched on 24 October 2026 from the public planner
 at https://www.efa.de/efa/ (rapidJSON version 11.0.6.72).
 
+`efa-stockholm-stops.json.gz` is the complete, unmodified StopFinder response
+for Stockholm from the same public endpoint, fetched 28 October 2026. It includes
+the numeric Stockholm Central key 80012823 and Swedish `se:33001:nvbw_bus_*`
+global stop IDs. A Germany-based service is not evidence of a German stop.
+Gzip only compresses the recorded response; it is never used at runtime.
+
 The three `efa-stops-*.json` files are actual StopFinder replies for Rohdental,
 Hessisch Oldendorf Bahnhof and Heilbronn Finanzamt. Their provider IDs remain
 separate from ÖBB EVA and VRR IDs.

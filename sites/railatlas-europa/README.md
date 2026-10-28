@@ -1,5 +1,44 @@
 # RailAtlas Europa
 
+## Europaweite Schnittstellenprüfung (28.10.2026)
+
+Ein manuelles, festes Testset prüft 50 Länder/Gebiete mit je einer kleinen
+Innenstadt-Bounding-Box und einer Suche in landestypischer Schreibweise.
+`scripts/audit-europe.mjs` verwendet die bestehenden APIs und Parser, fragt
+sequenziell ab und wiederholt fehlgeschlagene Quellanfragen nicht. Es ist kein
+Hintergrundjob und kein Datenimport. Ergebnisse unterscheiden Protokollfehler,
+Parserfehler, Teilabdeckung und fehlende Bestätigung einer Fahrt.
+
+Behoben: Unicode-Namen blieben zuvor für griechische, kyrillische und georgische
+Schrift leer; fremde EFA-Halte wurden pauschal DE und schwedische IDs verworfen.
+Große Antwortdaten blockieren nun keine anderen Städte mehr; echte Anbieterpausen
+und Retry-After gelten weiterhin. Zoombegrenzung, Herkunftshinweise und Attribution
+bleiben beim Zusammenführen erhalten. Ungültige Netzparameter liefern HTTP 400.
+Amsterdam Centraal und Amsterdam, Centraal Station werden mit passendem Stadtteil
+und höchstens 250 m Abstand zusammengeführt; andere Bahnhöfe bleiben getrennt.
+
+50 Suchproben liefern nach der Unicode-Korrektur HTTP 200. Netzantworten enthalten
+in 45 von 50 Ausschnitten Halte und in 41 mindestens einen Linienverlauf. Das ist
+keine Vollständigkeitszusage: große Zürcher Linienantworten überschreiten weiterhin
+die geschützte Antwortgröße; externe Ausfälle und regionale Fahrplanlücken bleiben.
+Der vollständige Länderbericht und maschinenlesbare Messwerte stehen im GitHub-
+Repository unter `docs/qa/europe-consistency-2026-10-28.*`.
+
+Manuell und ausdrücklich starten (jeweils nur eine Phase, optional Länderauswahl):
+
+```bash
+node scripts/audit-europe.mjs stations https://railatlas-europa.dunkelst.chatgpt.site /tmp/europe-stations
+node scripts/audit-europe.mjs network local /tmp/europe-network CY CZ
+node scripts/audit-europe.mjs journeys https://railatlas-europa.dunkelst.chatgpt.site /tmp/europe-journeys DE CH
+```
+
+`local` nutzt den gemeinsamen API-Handler mit echten externen Anbietern. Die
+Antworten und gewählten Eingaben werden im angegebenen Ausgabeverzeichnis
+protokolliert. Der Fahrtenlauf verwendet 31.10.2026, 09:00 UTC; er ist ein
+historischer Akzeptanzlauf und muss für eine spätere Wiederholung ein neues
+Testdatum erhalten. Native Halte, Kalender, Zeiten und Geometrien werden durch
+die Prüfung nicht ersetzt.
+
 ## Allgemeine Linienkarte für Tavira und weitere Gebiete (28.10.2026)
 
 Bei fehlenden regionalen Linien fragt die gemeinsame API nun die dokumentierte

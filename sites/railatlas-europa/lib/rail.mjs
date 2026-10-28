@@ -1,4 +1,7 @@
-export const normalize = (v) => String(v || '').toLowerCase().replace(/ß/g,'ss').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+// Preserve every script: deleting Greek/Cyrillic letters also made unrelated
+// nearby station names compare equal. Fold Latin letters not decomposed by NFD.
+const latinFold={ß:'ss',æ:'ae',œ:'oe',ø:'o',ł:'l',đ:'d',ð:'d',þ:'th',ı:'i',ħ:'h'};
+export const normalize = (v) => String(v || '').toLowerCase().replace(/[ßæœøłđðþıħ]/g,c=>latinFold[c]).normalize('NFD').replace(/\p{M}/gu,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 export const isMapStop = station => typeof station?.id==='string' && /^(osm:|transitous:)/.test(station.id);
 const aliases = {hn:'heilbronn',wue:'wurzburg',wu:'wurzburg',wü:'wurzburg',muenchen:'munchen',zuerich:'zurich',cologne:'koln',vienna:'wien',prague:'praha',warsaw:'warszawa',brussels:'bruxelles',brussel:'bruxelles',venice:'venezia',rome:'roma',lisbon:'lisboa',copenhagen:'kobenhavn'};
 export function unpack(rows) { return rows.map(r=>({id:String(r[0]),name:r[1],country:r[2],lat:r[3],lon:r[4],dbId:r[5],main:r[6],aliases:r[7],search:normalize(r[1]+' '+r[7]),key:normalize(r[1])})); }

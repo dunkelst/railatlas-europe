@@ -10,11 +10,13 @@ export function sameNearbyStation(a,b){
  if(![a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)||distanceKm(a,b)>.25)return false;
  const marker=/(?:^|\s)(?:U|S)\s+|\((?:U|S)\s*\d*\)|\s+(?:U|S)\s*$/i;
  for(const [map,provider] of [[a,b],[b,a]])if(['bus','tram'].includes(map.networkMode)&&marker.test(provider.name)&&!(provider.networkModes||[]).includes(map.networkMode))return false;
- const places=[a.locality,b.locality].filter(Boolean).map(normalize);if(!places.length&&[a,b].every(s=>String(s.name).includes(','))){const first=normalize(a.name.split(',')[0]);if(first===normalize(b.name.split(',')[0]))places.push(first);}
+ const places=[a.locality,b.locality].filter(Boolean).map(normalize);
+ if(!places.length)for(const [s,other] of [[a,b],[b,a]])if(String(s.name).includes(',')){const city=normalize(s.name.split(',')[0]);if(city&&normalize(other.name).startsWith(city+' '))places.push(city);}
  const forms=s=>[...new Set(String(s.name).split(',').map(part=>{
   let n=normalize(part.replace(/\((?:U|S)\s*\d*\)/gi,'')).replace(/\b([a-z0-9]+)str\b/g,'$1strasse').replace(/\bstr\b/g,'strasse');
   for(const place of places){if(n===place)return '';if(n.startsWith(place+' '))n=n.slice(place.length+1);if(n.endsWith(' '+place))n=n.slice(0,-place.length-1);}
-  return n.replace(/^[us]\s+|\s+[us]$/g,'').trim();
+  n=n.replace(/^[us]\s+|\s+[us]$/g,'').trim();
+  return places.length?n.replace(/\s+station$/,''):n;
  }).filter(n=>n.length>=4||n==='hbf'))];
  return forms(a).some(first=>forms(b).some(second=>{const shorter=first.length<=second.length?first:second,longer=first.length>second.length?first:second;return first===second||shorter.length>=5&&longer.endsWith(' '+shorter);}));
 }
@@ -24,10 +26,10 @@ export function sameStation(a,b){
  // Large stations have separate IDs for platforms, levels and S-Bahn stops.
  // Accept these only with matching names and verified physical proximity.
  const base=s=>normalize(s.replace(/\([^)]*\)/g,'').replace(/\bHauptbahnhof\b/gi,'Hbf'));
- if(base(a.name)===base(b.name)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<0.8)return true;
+ if(base(a.name)&&base(a.name)===base(b.name)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<0.8)return true;
  // Some catalogue entries carry a local, six-digit key rather than an EVA ID.
  // Match station-name variants only inside the same small station complex.
- const stationKey=s=>normalize(s.name).replace(/\b(hauptbahnhof|hbf|bahnhof|am)\b/g,'').replace(/[^a-z0-9]/g,'');
+ const stationKey=s=>normalize(s.name).replace(/\b(hauptbahnhof|hbf|bahnhof|am)\b/g,'').replace(/[^\p{L}\p{N}]/gu,'');
  return (!/^\d{7,9}$/.test(a.dbId||'')||!/^\d{7,9}$/.test(b.dbId||''))&&stationKey(a).length>3&&stationKey(a)===stationKey(b)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<.3;
 }
 export function parseJourneys(data,from,to,requested){
@@ -58,7 +60,7 @@ export async function fetchJSON(url,init={},signal,timeout=16000,maxBytes){
   if(!r.ok)throw Object.assign(new Error('Fahrplandienst HTTP '+r.status),{code:'UPSTREAM_UNAVAILABLE',status:r.status,retryAfterMs:(()=>{const value=r.headers.get('Retry-After')||'';return /^\d+$/.test(value)?Number(value)*1000:Math.max(0,Date.parse(value)-Date.now())||0;})()});
   if(!maxBytes)return await r.json();
   const reader=r.body.getReader(),chunks=[];let size=0;
-  while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>maxBytes){await reader.cancel();throw Object.assign(Error('Zu viele Haltestellendaten. Bitte näher heranzoomen.'),{code:'SOURCE_RESPONSE_INVALID'});}chunks.push(value);}
+  while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>maxBytes){await reader.cancel();throw Object.assign(Error('Zu viele Quelldaten. Bitte näher heranzoomen.'),{code:'SOURCE_RESPONSE_INVALID',responseTooLarge:true});}chunks.push(value);}
   const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
   return JSON.parse(new TextDecoder().decode(bytes));
  }catch(e){if(!signal?.aborted&&!e.code)e.code=e.name==='SyntaxError'?'SOURCE_RESPONSE_INVALID':'UPSTREAM_UNAVAILABLE';throw e;}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}

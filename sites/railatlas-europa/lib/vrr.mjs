@@ -6,7 +6,7 @@ export const VRR_SOURCE = 'VRR / EFA OpenService';
 export const EFA_SOURCE = 'Region Hannover / EFA Deutschland';
 const VRR_PROVIDER = {id:'vrr',idField:'vrrId',label:VRR_SOURCE,base:'https://openservice.vrr.de/openservice/',warning:'VRR-Testzugang. Der Anbieter kann diesen Server für Tests verwenden; Ergebnisse und Verfügbarkeit sind nicht garantiert.'};
 export const EFA_PROVIDER = {id:'efa',idField:'efaId',label:EFA_SOURCE,base:'https://www.efa.de/efa/',warning:''};
-export const validVrrId = id => typeof id === 'string' && /^(?:de:\d+:\d+(?::[\w-]+)*|\d{5,12})$/.test(id);
+export const validVrrId = id => typeof id === 'string' && /^(?:[a-z]{2}:\d+:[\w-]+(?::[\w-]+)*|\d{5,12})$/i.test(id);
 async function request(method, params, signal, provider=VRR_PROVIDER) {
  const url = new URL(method, provider.base), query=new URLSearchParams({outputFormat:'rapidJSON',coordOutputFormat:'WGS84[dd.ddddd]',language:'de'});
  for(const [key,value] of Object.entries(params))if(Array.isArray(value)){for(const item of value)query.append(key,String(item));}else query.set(key,String(value));
@@ -24,7 +24,10 @@ export function parseVrrStation(raw, provider=VRR_PROVIDER) {
  const city = stop.parent?.name || '';
  const name = stop.name || '';
  const coordinate=['address','coord'].includes(stop.type);
- return {id:coordinate?'coord:'+coord.join(':'):provider.id+':'+stop.id,...(!coordinate?{[provider.idField]:String(stop.id||'')}:{locationType:'coordinate'}),aliases:[stop.disassembledName,stop.properties?.mainLocality].filter(Boolean).join(' '),locality:stop.properties?.mainLocality||city,networkModes:[...new Set((stop.productClasses||raw.productClasses||[]).map(cls=>vrrProduct({product:{class:cls}}).mode))],dbId:'',name:city && !normalize(name).startsWith(normalize(city)) ? city+', '+name : name,country:'DE',lat:coord[0],lon:coord[1],main:false};
+ // A German EFA service also returns foreign stops. Numeric keys are opaque;
+ // retain a country only when its global stop ID explicitly supplies one.
+ const country=/^([a-z]{2}):/i.exec(stop.id||'')?.[1].toUpperCase()||'';
+ return {id:coordinate?'coord:'+coord.join(':'):provider.id+':'+stop.id,...(!coordinate?{[provider.idField]:String(stop.id||'')}:{locationType:'coordinate'}),aliases:[stop.disassembledName,stop.properties?.mainLocality].filter(Boolean).join(' '),locality:stop.properties?.mainLocality||city,networkModes:[...new Set((stop.productClasses||raw.productClasses||[]).map(cls=>vrrProduct({product:{class:cls}}).mode))],dbId:'',name:city && !normalize(name).startsWith(normalize(city)) ? city+', '+name : name,country,lat:coord[0],lon:coord[1],main:false};
 }
 export function parseVrrStations(data, provider=VRR_PROVIDER) {
  return (data.locations||[]).filter(s=>s.type==='stop').sort((a,b)=>(b.matchQuality||0)-(a.matchQuality||0)).map(s=>parseVrrStation(s,provider))
@@ -44,8 +47,8 @@ export function sameVrrStation(a,b,provider=VRR_PROVIDER) {
  if([a,b].some(s=>s?.locationType==='coordinate'))return [a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<=.03;
  if([a,b].some(isMapStop))return sameStation(a,b);
  if(a[provider.idField] && b[provider.idField]) return a[provider.idField]===b[provider.idField];
- const key=s=>normalize(s.name).replace(/\b(hauptbahnhof|hbf|bahnhof|station)\b/g,'').replace(/[^a-z0-9]/g,'');
- return sameStation(a,b)||key(a)===key(b)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<.8;
+ const key=s=>normalize(s.name).replace(/\b(hauptbahnhof|hbf|bahnhof|station)\b/g,'').replace(/[^\p{L}\p{N}]/gu,'');
+ return sameStation(a,b)||!!key(a)&&key(a)===key(b)&&[a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)&&distanceKm(a,b)<.8;
 }
 async function resolveStation(station, signal, provider=VRR_PROVIDER) {
  if(validVrrId(station[provider.idField]))return station;

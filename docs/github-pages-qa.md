@@ -1,6 +1,16 @@
 # GitHub Pages – aktueller Veröffentlichungsnachweis
 
-## 28.10.2026: gemeinsame App-Version 29 mit allgemeinen Tavira-Buslinien
+## 28.10.2026: Europa-Konsistenzprüfung, Version 30
+
+123 Regressionen, TypeScript und Sites-/Pages-/Standalone-Build erfolgreich.
+Der gemeinsame Stand beseitigt Fehler bei Unicode, fremden EFA-IDs/Ländern,
+Größenfehler-Pausen, Zoomhinweisen/Attribution und Amsterdam-Stationsnamen.
+[Europaweites Messprotokoll](qa/europe-consistency-2026-10-28.md).
+Keine neue visuelle Browserabnahme in dieser Runde: Browseranbindung hing.
+Die erfolgreiche v29-Browserabnahme bleibt als historischer Nachweis erhalten.
+
+
+## Historisch: 28.10.2026, gemeinsame App-Version 29 mit allgemeinen Tavira-Buslinien
 
 Veröffentlicht und tatsächlich im Browser geprüft:
 https://dunkelst.github.io/railatlas-europe/

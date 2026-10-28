@@ -18,7 +18,7 @@ export async function handleApi(request) {
   if (path === '/api/health') return json({service: 'RailAtlas Europa', apiVersion: 1, standalone: true});
   if (path === '/api/network') {
     try {return json(await fetchNetwork((url.searchParams.get('bbox') || '').split(',').map(Number), (url.searchParams.get('modes') || '').split(','), request.signal, url.searchParams.get('detail')||'all',url.searchParams.get('refresh')==='1'));}
-    catch (e) {return json({error: e.message || 'Die Netzebenen konnten nicht geladen werden.'}, {status: 502});}
+    catch (e) {return json({error: e.message || 'Die Netzebenen konnten nicht geladen werden.'}, {status: e.code==='INVALID_INPUT'?400:502});}
   }
   if (path === '/api/stations') {
     const q = url.searchParams.get('q')?.trim() || '', source = url.searchParams.get('source') || 'auto';

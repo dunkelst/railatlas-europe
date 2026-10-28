@@ -271,6 +271,7 @@ export function parseTransitousRoutes(data,bounds,modes){
   const entry=grouped.get(key);for(const segment of segments){const k=JSON.stringify(segment);if(!entry.keys.has(k)){entry.keys.add(k);entry.segments.push(segment);}}
  }
  for(const {mode,keys,...line} of grouped.values())result.layers[mode].lines.push(line);
+ if(data.zoomFiltered){result.warning='Die Linienquelle begrenzt ihre Auswahl bei dieser Zoomstufe; weitere Linien können fehlen.';result.warningScope='lines';}
  return result;
 }
 export function mergeNetworkStops(primary,regional,modes){
@@ -282,11 +283,12 @@ export function mergeNetworkStops(primary,regional,modes){
   if(index<0)layers[mode].stops.push(stop);
   else{const first=layers[mode].stops[index];layers[mode].stops[index]={...first,lines:[...new Set([...first.lines,...stop.lines])],source:[...new Set([first.source,stop.source].filter(Boolean))].join(' + ')};}
  }
- return {...primary,layers,source:[...new Set([primary.source,regional.source].flatMap(s=>s.split(' + ')))].join(' + ')};
+ const warning=[...new Set([primary.warning,regional.warning].filter(Boolean))].join(' ');
+ return {...primary,layers,source:[...new Set([primary.source,regional.source].flatMap(s=>s.split(' + ')))].join(' + '),attributions:[...new Map([...(primary.attributions||[]),...(regional.attributions||[])].map(a=>[a.url,a])).values()],...(warning?{warning,warningScope:primary.warningScope==='all'||regional.warningScope==='all'?'all':'lines'}:{})};
 }
 export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=false){
- signal?.throwIfAborted();networkQuery(bounds,modes);
- if(!['all','stops'].includes(detail))throw Error('Ungültige Auswahl für die Netzdaten.');
+ signal?.throwIfAborted();
+ try{networkQuery(bounds,modes);if(!['all','stops'].includes(detail))throw Error('Ungültige Auswahl für die Netzdaten.');}catch(error){error.code='INVALID_INPUT';throw error;}
  if(!refresh)for(const entry of mapCache.values())if(Date.now()-entry.at<300000&&networkCovers(entry.data,bounds,modes)&&(entry.data.detail==='all'||detail==='stops'))return entry.data;
  let result,efaError,transitousError,routeError,osmError,primary,regional;
  const hasData=data=>data&&modes.some(m=>data.layers[m].lines.length||data.layers[m].stops.length),needLines=detail==='all'&&modes.some(m=>m!=='rail');
@@ -306,9 +308,9 @@ export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=fals
   const missing=modes.filter(mode=>mode!=='rail'&&!result.layers[mode].lines.length);
   if(missing.length)try{result=mergeNetworkStops(result,await fetchOsmNetwork(bounds,missing,signal,refresh,12000),modes);}catch(error){signal?.throwIfAborted();osmError=error;}
  }
- const warnings=[primary?.warning,needLines?regional?.warning:'',transitousError?'Die europäische Haltestellenquelle ist gerade nicht erreichbar; ergänzende Quelldaten werden gezeigt.':'',needLines&&efaError?'Die ergänzende Linienauskunft ist gerade nicht erreichbar; gelieferte Halte bleiben sichtbar.':''];
+ const warnings=[result.warning,transitousError?'Die europäische Haltestellenquelle ist gerade nicht erreichbar; ergänzende Quelldaten werden gezeigt.':'',needLines&&efaError?'Die ergänzende Linienauskunft ist gerade nicht erreichbar; gelieferte Halte bleiben sichtbar.':''];
  const missing=needLines?modes.filter(mode=>mode!=='rail'&&!result.layers[mode].lines.length):[];
- if(missing.length)warnings.push('Für '+missing.map(mode=>NETWORK_MODES.find(m=>m.id===mode).label).join(', ')+' fehlen bestätigte Linienverläufe in diesem Ausschnitt. '+(routeError?'Die ergänzende Transitous-Linienkarte ist nicht erreichbar. ':'')+(osmError?'Auch die ergänzende OSM-Abfrage ist nicht erreichbar. ':'')+'Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.');
+ if(missing.length)warnings.push('Für '+missing.map(mode=>NETWORK_MODES.find(m=>m.id===mode).label).join(', ')+' fehlen bestätigte Linienverläufe in diesem Ausschnitt. '+(routeError?.responseTooLarge?'Die Linienquelle liefert zu viele Daten; bitte näher heranzoomen. ':routeError?'Die ergänzende Transitous-Linienkarte ist nicht erreichbar. ':'')+(osmError?'Auch die ergänzende OSM-Abfrage ist nicht erreichbar. ':'')+'Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.');
  if(modes.some(mode=>result.layers[mode].lines.some(line=>line.calculated)))warnings.push('Berechnete Linienverläufe sind gestrichelt dargestellt; sie sind keine bestätigten Original-Fahrplanverläufe.');
  const warning=[...new Set(warnings.filter(Boolean))].join(' ');
  result={...result,detail,...(warning?{warning,warningScope:primary?.warning||transitousError?'all':'lines'}:{})};

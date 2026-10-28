@@ -91,7 +91,7 @@ test('Rate limits respect Retry-After on the international stop source',async t=
 
 test('Oversized international responses are cancelled before JSON parsing',async t=>{
  clock(t);let cancelled=false;t.mock.method(globalThis,'fetch',async()=>new Response(new ReadableStream({start(c){c.enqueue(new Uint8Array(4*1024*1024+1));},cancel(){cancelled=true;}})));
- await assert.rejects(fetchTransitousStops(bbox,['bus']),/Zu viele Haltestellendaten/);assert.equal(cancelled,true);
+ await assert.rejects(fetchTransitousStops(bbox,['bus']),/Zu viele Quelldaten/);assert.equal(cancelled,true);
 });
 
 test('Transitous map selections resolve through the existing timetable and intermediate-stop validation without forwarding GTFS IDs',async t=>{
