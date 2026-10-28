@@ -1,4 +1,41 @@
-# RailAtlas Europa
+# RailAtlas Europa & Mexiko
+
+## Mexiko mit eigener Colectivo-Ebene (28.10.2026)
+
+`?region=mexico&place=playa` öffnet Mexiko in Playa del Carmen. Ortsauswahl,
+Stationssuche, Kartenhalte, Start/Ziel/Zwischenziele und Fahrplanabfrage nutzen
+weiter die gemeinsamen Komponenten und API-Routen. Mexikanische IANA-Zeitzonen
+werden bis in Reiseverlauf und Neuplanung erhalten; Europa bleibt verfügbar.
+
+Colectivo / Combi besitzt eigene Schalter für Linien und Halte. Nur ausdrücklich
+als share_taxi/minibus oder Colectivo/Combi/Pesero/Microbus gekennzeichnete Quellen
+werden so eingeordnet; die generische Bezeichnung „Transporte colectivo“ macht
+Metro oder normale Busse nicht zu Sammeltaxis. Kartierte Einstiege sind keine
+Bestätigung aktueller Bedienung. Ausdrücklich virtuelle GTFS-Halte werden im
+regionalen Kartenimport ausgeschlossen, fehlende Geometrie bleibt offen.
+
+Der landesweite OSM-Auszug vom 27.10.2026 wird räumlich in 0,25°-Zellen geladen.
+Er enthält unter anderem 140 Colectivo-Routen mit Geometrie und 1.753 diesen
+Routen zugeordnete Kartenhalte. Regionale GTFS-Daten ergänzen CDMX, Jilotepec und
+Salina Cruz. Quellen, Originalprüfsummen, Lizenzen und Datenalter stehen unter
+`public/data/mexico-sources.json` und `mexico-osm-source.json`. Der Import ist eine
+Kartenquelle, kein Ersatzfahrplan. Transitous bestätigt nur tatsächlich gelieferte
+Reisen; erfolgreiche API-Antworten können leere oder unvollständige Netze enthalten.
+
+43 Ortsproben umfassen alle 32 Bundesstaaten sowie elf weitere Orte. Der Bericht
+und maschinenlesbare Ergebnisse stehen im GitHub-Repository unter
+`docs/qa/mexico-consistency-2026-10-28.*`. Manuelle Wiederholung:
+
+```bash
+node scripts/audit-mexico.mjs network local /tmp/mexico-network
+node scripts/audit-mexico.mjs stations https://railatlas-europa.dunkelst.chatgpt.site /tmp/mexico-stations playa uruapan
+```
+
+132 Regressionen einschließlich echter OSM- und Transitous-Antworten prüfen die
+gemeinsame Verarbeitung. Die gespeicherte Reise CDMX Buenavista → Puebla
+Explanada liefert drei Alternativen für 31.10.2026 ab 09:00 America/Mexico_City.
+Sie ist ein historischer Parsernachweis und wird nicht als aktueller Fahrplan
+in die Anwendung eingespeist.
 
 ## Europaweite Schnittstellenprüfung (28.10.2026)
 

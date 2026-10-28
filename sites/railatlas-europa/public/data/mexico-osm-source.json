@@ -1,0 +1,65 @@
+{
+  "url": "https://download.geofabrik.de/north-america/mexico-latest.osm.pbf",
+  "sha256": "895dbaa4d3c815b70a21aa84a06259c76db5288303b7073e2b5280fb4b87c48c",
+  "bytes": 647688773,
+  "retrieved": "2026-10-28",
+  "lastModified": null,
+  "source": "OpenStreetMap / Geofabrik",
+  "licence": "ODbL-1.0",
+  "license": "ODbL-1.0",
+  "sourceDate": "2026-10-27T21:23:59Z",
+  "tiles": 798,
+  "counts": {
+    "rail": {
+      "lineFragments": 79,
+      "stopEntries": 165
+    },
+    "suburban": {
+      "lineFragments": 0,
+      "stopEntries": 0
+    },
+    "subway": {
+      "lineFragments": 48,
+      "stopEntries": 560
+    },
+    "tram": {
+      "lineFragments": 10,
+      "stopEntries": 114
+    },
+    "bus": {
+      "lineFragments": 2981,
+      "stopEntries": 26179
+    },
+    "colectivo": {
+      "lineFragments": 199,
+      "stopEntries": 1753
+    }
+  },
+  "unique": {
+    "rail": {
+      "lines": 16,
+      "stops": 165
+    },
+    "suburban": {
+      "lines": 0,
+      "stops": 0
+    },
+    "subway": {
+      "lines": 32,
+      "stops": 560
+    },
+    "tram": {
+      "lines": 8,
+      "stops": 114
+    },
+    "bus": {
+      "lines": 2062,
+      "stops": 26179
+    },
+    "colectivo": {
+      "lines": 140,
+      "stops": 1753
+    }
+  },
+  "notes": "counts contains tile fragments and mode-specific stop entries; unique counts distinct OSM IDs per mode. Geometry and IDs come from OSM; timetable and current operation are unconfirmed."
+}

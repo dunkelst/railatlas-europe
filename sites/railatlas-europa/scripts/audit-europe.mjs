@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {normalize,unpack,searchStations,distanceKm} from '../lib/rail.mjs';
 import {handleApi} from '../lib/api.mjs';
+import {NETWORK_MODES} from '../lib/network.mjs';
 
 // One small city-centre viewport per jurisdiction, including catalogue gaps.
 // These coordinates define test inputs, never production routes or coverage.
@@ -40,7 +41,7 @@ const point=p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite)&&Math.ab
 export function inspectNetwork(data,bounds){
  const errors=[],counts={};
  if(!data||!data.layers)return {errors:['missing layers'],counts};
- for(const mode of modes){
+ for(const {id:mode} of NETWORK_MODES){
   const layer=data.layers[mode];if(!Array.isArray(layer?.stops)||!Array.isArray(layer?.lines)){errors.push(mode+': malformed layer');continue;}
   counts[mode]={stops:layer.stops.length,paths:layer.lines.length,calculated:layer.lines.filter(l=>l.calculated).length};
   for(const field of ['stops','lines'])if(new Set(layer[field].map(x=>x.id)).size!==layer[field].length)errors.push(mode+': duplicate '+field+' IDs');

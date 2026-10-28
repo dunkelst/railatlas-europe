@@ -1,8 +1,20 @@
-# RailAtlas Europa
+# RailAtlas Europa & Mexiko
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **30**, Quellcommit `ba9fd5e7c5f49a90227d7a9d20b94adfb9336378`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **31**, Quellcommit `ac093da610d50d7e383a32d52386c9de7dfe5308`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 31: Mexiko mit Colectivo-/Combi-Ebene
+
+[**Mexiko in Playa del Carmen öffnen**](https://dunkelst.github.io/railatlas-europe/?region=mexico&place=playa)
+
+Colectivo-Linien und kartierte übliche Einstiege sind separat schaltbar.
+Landesweiter OSM-Auszug plus regionale GTFS-Kartendaten, echte Stationssuche
+und mexikanische Zeitzonen nutzen die gemeinsame Anwendung. 43 Ortsproben
+umfassen alle 32 Bundesstaaten: 42 Ausschnitte mit Halten, 31 mit Linien.
+Fahrplanabdeckung bleibt partiell; Kartenlinien bestätigen keine aktuelle Fahrt.
+132 Regressionen und alle drei Builds erfolgreich.
+[Mexiko-Prüfbericht mit Ortstabelle](docs/qa/mexico-consistency-2026-10-28.md).
 
 ## Version 30: europaweite Schnittstellen- und Datenprüfung
 

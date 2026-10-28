@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RailAtlas Europa · Deine Reise auf Schienen",
-  description: "Europäischer Bahnatlas. Bahnhöfe finden und Reisen mit Bahn und ÖPNV über Zwischenziele planen.",
+  title: "RailAtlas · Europa und Mexiko",
+  description: "Bahnhöfe, Nahverkehr und Colectivos in Europa und Mexiko entdecken und Reisen über Zwischenziele planen.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

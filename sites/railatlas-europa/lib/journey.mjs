@@ -9,7 +9,7 @@ function notes(o){return [...(o.risNotizen||[]),...(o.himMeldungen||[]),...(o.pr
 export function sameNearbyStation(a,b){
  if(![a.lat,a.lon,b.lat,b.lon].every(Number.isFinite)||distanceKm(a,b)>.25)return false;
  const marker=/(?:^|\s)(?:U|S)\s+|\((?:U|S)\s*\d*\)|\s+(?:U|S)\s*$/i;
- for(const [map,provider] of [[a,b],[b,a]])if(['bus','tram'].includes(map.networkMode)&&marker.test(provider.name)&&!(provider.networkModes||[]).includes(map.networkMode))return false;
+ for(const [map,provider] of [[a,b],[b,a]])if(['bus','colectivo','tram'].includes(map.networkMode)&&marker.test(provider.name)&&!(provider.networkModes||[]).includes(map.networkMode==='colectivo'?'bus':map.networkMode))return false;
  const places=[a.locality,b.locality].filter(Boolean).map(normalize);
  if(!places.length)for(const [s,other] of [[a,b],[b,a]])if(String(s.name).includes(',')){const city=normalize(s.name.split(',')[0]);if(city&&normalize(other.name).startsWith(city+' '))places.push(city);}
  const forms=s=>[...new Set(String(s.name).split(',').map(part=>{

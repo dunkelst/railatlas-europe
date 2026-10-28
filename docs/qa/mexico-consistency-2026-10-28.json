@@ -1,0 +1,3070 @@
+{
+  "scope": "43 city-centre viewports, all 32 state capitals plus 11 localities; not complete territorial coverage",
+  "siteVersion": 31,
+  "sourceCommit": "ac093da610d50d7e383a32d52386c9de7dfe5308",
+  "networkRounds": [
+    {
+      "phase": "network",
+      "origin": "local",
+      "startedAt": "2026-10-28T22:04:36.716Z",
+      "finishedAt": "2026-10-28T22:05:40.787Z",
+      "results": [
+        {
+          "id": "agu",
+          "place": "Aguascalientes",
+          "bounds": [
+            21.8698,
+            -102.3096,
+            21.8938,
+            -102.2736
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 16,
+              "paths": 10,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 6906
+        },
+        {
+          "id": "bcn",
+          "place": "Mexicali",
+          "bounds": [
+            32.6125,
+            -115.4703,
+            32.6365,
+            -115.4343
+          ],
+          "timeZone": "America/Tijuana",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 533
+        },
+        {
+          "id": "bcs",
+          "place": "La Paz",
+          "bounds": [
+            24.1306,
+            -110.3308,
+            24.1546,
+            -110.2948
+          ],
+          "timeZone": "America/Mazatlan",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 1,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 387
+        },
+        {
+          "id": "cam",
+          "place": "Campeche",
+          "bounds": [
+            19.8331,
+            -90.541,
+            19.8571,
+            -90.505
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 31,
+              "paths": 1,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 3,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 378
+        },
+        {
+          "id": "chp",
+          "place": "Tuxtla Gutiérrez",
+          "bounds": [
+            16.741,
+            -93.133,
+            16.765,
+            -93.097
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 17,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 1,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 387
+        },
+        {
+          "id": "chh",
+          "place": "Chihuahua",
+          "bounds": [
+            28.621,
+            -106.087,
+            28.645,
+            -106.051
+          ],
+          "timeZone": "America/Chihuahua",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 1,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 25,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 380
+        },
+        {
+          "id": "coa",
+          "place": "Saltillo",
+          "bounds": [
+            25.4112,
+            -101.0233,
+            25.4352,
+            -100.9873
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 13,
+              "paths": 1,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 529
+        },
+        {
+          "id": "col",
+          "place": "Colima",
+          "bounds": [
+            19.2332,
+            -103.7421,
+            19.2572,
+            -103.7061
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 23,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 390
+        },
+        {
+          "id": "dur",
+          "place": "Durango",
+          "bounds": [
+            24.0157,
+            -104.6712,
+            24.0397,
+            -104.6352
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 20,
+              "paths": 5,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 379
+        },
+        {
+          "id": "gua",
+          "place": "Guanajuato",
+          "bounds": [
+            21.007,
+            -101.2754,
+            21.031,
+            -101.2394
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 97,
+              "paths": 4,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 528
+        },
+        {
+          "id": "gro",
+          "place": "Chilpancingo",
+          "bounds": [
+            17.5395,
+            -99.5186,
+            17.5635,
+            -99.4826
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 3,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 411
+        },
+        {
+          "id": "hid",
+          "place": "Pachuca",
+          "bounds": [
+            20.0891,
+            -98.7771,
+            20.1131,
+            -98.7411
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 72,
+              "paths": 16,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 387
+        },
+        {
+          "id": "jal",
+          "place": "Guadalajara",
+          "bounds": [
+            20.6616,
+            -103.362,
+            20.6856,
+            -103.326
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 17,
+              "paths": 2,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 14,
+              "paths": 4,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 310,
+              "paths": 2,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 433
+        },
+        {
+          "id": "mex",
+          "place": "Toluca",
+          "bounds": [
+            19.2706,
+            -99.6737,
+            19.2946,
+            -99.6377
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 4,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 51,
+              "paths": 515,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 709
+        },
+        {
+          "id": "mic",
+          "place": "Morelia",
+          "bounds": [
+            19.694,
+            -101.213,
+            19.718,
+            -101.177
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 7,
+              "paths": 165,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 590
+        },
+        {
+          "id": "mor",
+          "place": "Cuernavaca",
+          "bounds": [
+            18.912,
+            -99.24,
+            18.936,
+            -99.204
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 30,
+              "paths": 6,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 388
+        },
+        {
+          "id": "nay",
+          "place": "Tepic",
+          "bounds": [
+            21.4965,
+            -104.913,
+            21.5205,
+            -104.877
+          ],
+          "timeZone": "America/Mazatlan",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 44,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 2,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 384
+        },
+        {
+          "id": "nle",
+          "place": "Monterrey",
+          "bounds": [
+            25.6746,
+            -100.3341,
+            25.6986,
+            -100.2981
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 20,
+              "paths": 5,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 11,
+              "paths": 3,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Transitous / MOTIS (GTFS) + Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 529
+        },
+        {
+          "id": "oax",
+          "place": "Oaxaca de Juárez",
+          "bounds": [
+            17.051,
+            -96.744,
+            17.075,
+            -96.708
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 127,
+              "paths": 110,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 198,
+              "paths": 54,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 450
+        },
+        {
+          "id": "pue",
+          "place": "Puebla",
+          "bounds": [
+            19.0313,
+            -98.2199,
+            19.0553,
+            -98.1839
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 296,
+              "paths": 11,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 1,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 403
+        },
+        {
+          "id": "que",
+          "place": "Querétaro",
+          "bounds": [
+            20.5768,
+            -100.4079,
+            20.6008,
+            -100.3719
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 234,
+              "paths": 121,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 772
+        },
+        {
+          "id": "roo",
+          "place": "Chetumal",
+          "bounds": [
+            18.4881,
+            -88.3141,
+            18.5121,
+            -88.2781
+          ],
+          "timeZone": "America/Cancun",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 4,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 5,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 381
+        },
+        {
+          "id": "slp",
+          "place": "San Luis Potosí",
+          "bounds": [
+            22.1445,
+            -101.0035,
+            22.1685,
+            -100.9675
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 26,
+              "paths": 1,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 526
+        },
+        {
+          "id": "sin",
+          "place": "Culiacán",
+          "bounds": [
+            24.7971,
+            -107.412,
+            24.8211,
+            -107.376
+          ],
+          "timeZone": "America/Mazatlan",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 5,
+              "paths": 1,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 380
+        },
+        {
+          "id": "son",
+          "place": "Hermosillo",
+          "bounds": [
+            29.0609,
+            -110.9739,
+            29.0849,
+            -110.9379
+          ],
+          "timeZone": "America/Hermosillo",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 7,
+              "paths": 4,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 378
+        },
+        {
+          "id": "tab",
+          "place": "Villahermosa",
+          "bounds": [
+            17.9775,
+            -92.9655,
+            18.0015,
+            -92.9295
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 44,
+              "paths": 1,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 386
+        },
+        {
+          "id": "tam",
+          "place": "Ciudad Victoria",
+          "bounds": [
+            23.7249,
+            -99.1591,
+            23.7489,
+            -99.1231
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 2,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 383
+        },
+        {
+          "id": "tla",
+          "place": "Tlaxcala",
+          "bounds": [
+            19.3062,
+            -98.2555,
+            19.3302,
+            -98.2195
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 45,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 392
+        },
+        {
+          "id": "ver",
+          "place": "Xalapa",
+          "bounds": [
+            19.5318,
+            -96.9282,
+            19.5558,
+            -96.8922
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 50,
+              "paths": 2,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 393
+        },
+        {
+          "id": "yuc",
+          "place": "Mérida",
+          "bounds": [
+            20.9554,
+            -89.6106,
+            20.9794,
+            -89.5746
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 41,
+              "paths": 12,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 387
+        },
+        {
+          "id": "zac",
+          "place": "Zacatecas",
+          "bounds": [
+            22.7589,
+            -102.6012,
+            22.7829,
+            -102.5652
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 5,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 2,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 563
+        },
+        {
+          "id": "cdmx",
+          "place": "Ciudad de México",
+          "bounds": [
+            19.4206,
+            -99.1512,
+            19.4446,
+            -99.1152
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 34,
+              "paths": 24,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 312,
+              "paths": 163,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 23,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 432
+        },
+        {
+          "id": "playa",
+          "place": "Playa del Carmen",
+          "bounds": [
+            20.615,
+            -87.0913,
+            20.639,
+            -87.0553
+          ],
+          "timeZone": "America/Cancun",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 41,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 38,
+              "paths": 38,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 404
+        },
+        {
+          "id": "cancun",
+          "place": "Cancún",
+          "bounds": [
+            21.1499,
+            -86.8695,
+            21.1739,
+            -86.8335
+          ],
+          "timeZone": "America/Cancun",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 10,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 380
+        },
+        {
+          "id": "tulum",
+          "place": "Tulum",
+          "bounds": [
+            20.1994,
+            -87.4834,
+            20.2234,
+            -87.4474
+          ],
+          "timeZone": "America/Cancun",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 28,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 4,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 380
+        },
+        {
+          "id": "tijuana",
+          "place": "Tijuana",
+          "bounds": [
+            32.5029,
+            -117.0562,
+            32.5269,
+            -117.0202
+          ],
+          "timeZone": "America/Tijuana",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 2,
+              "paths": 2,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 683
+        },
+        {
+          "id": "puerto",
+          "place": "Puerto Escondido",
+          "bounds": [
+            15.852,
+            -97.089,
+            15.876,
+            -97.053
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 8,
+              "paths": 32,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 387
+        },
+        {
+          "id": "salina",
+          "place": "Salina Cruz",
+          "bounds": [
+            16.173,
+            -95.225,
+            16.197,
+            -95.189
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 1,
+              "paths": 1,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 98,
+              "paths": 87,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Transitous / MOTIS (GTFS) + Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 539
+        },
+        {
+          "id": "jilotepec",
+          "place": "Jilotepec",
+          "bounds": [
+            19.9406,
+            -99.5507,
+            19.9646,
+            -99.5147
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 81,
+              "paths": 152,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 685
+        },
+        {
+          "id": "zamora",
+          "place": "Zamora",
+          "bounds": [
+            19.973,
+            -102.3014,
+            19.997,
+            -102.2654
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 55,
+              "paths": 86,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Transitous / MOTIS (GTFS) + Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 686
+        }
+      ]
+    },
+    {
+      "phase": "network",
+      "origin": "local",
+      "startedAt": "2026-10-28T22:08:39.786Z",
+      "finishedAt": "2026-10-28T22:08:49.537Z",
+      "results": [
+        {
+          "id": "uruapan",
+          "place": "Uruapan",
+          "bounds": [
+            19.4086,
+            -102.0806,
+            19.4326,
+            -102.0446
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 3,
+              "paths": 48,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 35,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 6651
+        },
+        {
+          "id": "zitacuaro",
+          "place": "Zitácuaro",
+          "bounds": [
+            19.4241,
+            -100.3753,
+            19.4481,
+            -100.3393
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 1,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 9,
+              "paths": 144,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 1,
+              "paths": 4,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 432
+        },
+        {
+          "id": "ixmiquilpan",
+          "place": "Ixmiquilpan",
+          "bounds": [
+            20.4738,
+            -99.2367,
+            20.4978,
+            -99.2007
+          ],
+          "timeZone": "America/Mexico_City",
+          "status": 200,
+          "cors": "https://dunkelst.github.io",
+          "error": null,
+          "errors": [],
+          "counts": {
+            "rail": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "suburban": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "subway": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "tram": {
+              "stops": 0,
+              "paths": 0,
+              "calculated": 0
+            },
+            "bus": {
+              "stops": 5,
+              "paths": 0,
+              "calculated": 0
+            },
+            "colectivo": {
+              "stops": 0,
+              "paths": 1,
+              "calculated": 0
+            }
+          },
+          "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+          "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap / Overpass + OpenStreetMap / Geofabrik (Mexiko)",
+          "elapsedMs": 661
+        }
+      ]
+    }
+  ],
+  "stationsRound": {
+    "phase": "stations",
+    "origin": "local",
+    "startedAt": "2026-10-28T22:08:39.795Z",
+    "finishedAt": "2026-10-28T22:09:37.348Z",
+    "results": [
+      {
+        "id": "agu",
+        "place": "Aguascalientes",
+        "bounds": [
+          21.8698,
+          -102.3096,
+          21.8938,
+          -102.2736
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 7,
+        "errors": [],
+        "elapsedMs": 4379
+      },
+      {
+        "id": "bcn",
+        "place": "Mexicali",
+        "bounds": [
+          32.6125,
+          -115.4703,
+          32.6365,
+          -115.4343
+        ],
+        "timeZone": "America/Tijuana",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 1,
+        "errors": [],
+        "elapsedMs": 234
+      },
+      {
+        "id": "bcs",
+        "place": "La Paz",
+        "bounds": [
+          24.1306,
+          -110.3308,
+          24.1546,
+          -110.2948
+        ],
+        "timeZone": "America/Mazatlan",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 10,
+        "errors": [],
+        "elapsedMs": 307
+      },
+      {
+        "id": "cam",
+        "place": "Campeche",
+        "bounds": [
+          19.8331,
+          -90.541,
+          19.8571,
+          -90.505
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 17,
+        "errors": [],
+        "elapsedMs": 271
+      },
+      {
+        "id": "chp",
+        "place": "Tuxtla Gutiérrez",
+        "bounds": [
+          16.741,
+          -93.133,
+          16.765,
+          -93.097
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 5,
+        "errors": [],
+        "elapsedMs": 259
+      },
+      {
+        "id": "chh",
+        "place": "Chihuahua",
+        "bounds": [
+          28.621,
+          -106.087,
+          28.645,
+          -106.051
+        ],
+        "timeZone": "America/Chihuahua",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 16,
+        "errors": [],
+        "elapsedMs": 217
+      },
+      {
+        "id": "coa",
+        "place": "Saltillo",
+        "bounds": [
+          25.4112,
+          -101.0233,
+          25.4352,
+          -100.9873
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 13,
+        "errors": [],
+        "elapsedMs": 234
+      },
+      {
+        "id": "col",
+        "place": "Colima",
+        "bounds": [
+          19.2332,
+          -103.7421,
+          19.2572,
+          -103.7061
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 231
+      },
+      {
+        "id": "dur",
+        "place": "Durango",
+        "bounds": [
+          24.0157,
+          -104.6712,
+          24.0397,
+          -104.6352
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 11,
+        "errors": [],
+        "elapsedMs": 243
+      },
+      {
+        "id": "gua",
+        "place": "Guanajuato",
+        "bounds": [
+          21.007,
+          -101.2754,
+          21.031,
+          -101.2394
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 11,
+        "errors": [],
+        "elapsedMs": 236
+      },
+      {
+        "id": "gro",
+        "place": "Chilpancingo",
+        "bounds": [
+          17.5395,
+          -99.5186,
+          17.5635,
+          -99.4826
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 261
+      },
+      {
+        "id": "hid",
+        "place": "Pachuca",
+        "bounds": [
+          20.0891,
+          -98.7771,
+          20.1131,
+          -98.7411
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 236
+      },
+      {
+        "id": "jal",
+        "place": "Guadalajara",
+        "bounds": [
+          20.6616,
+          -103.362,
+          20.6856,
+          -103.326
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 11,
+        "errors": [],
+        "elapsedMs": 283
+      },
+      {
+        "id": "mex",
+        "place": "Toluca",
+        "bounds": [
+          19.2706,
+          -99.6737,
+          19.2946,
+          -99.6377
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 508
+      },
+      {
+        "id": "mic",
+        "place": "Morelia",
+        "bounds": [
+          19.694,
+          -101.213,
+          19.718,
+          -101.177
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 284
+      },
+      {
+        "id": "mor",
+        "place": "Cuernavaca",
+        "bounds": [
+          18.912,
+          -99.24,
+          18.936,
+          -99.204
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 16,
+        "errors": [],
+        "elapsedMs": 248
+      },
+      {
+        "id": "nay",
+        "place": "Tepic",
+        "bounds": [
+          21.4965,
+          -104.913,
+          21.5205,
+          -104.877
+        ],
+        "timeZone": "America/Mazatlan",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 14,
+        "errors": [],
+        "elapsedMs": 222
+      },
+      {
+        "id": "nle",
+        "place": "Monterrey",
+        "bounds": [
+          25.6746,
+          -100.3341,
+          25.6986,
+          -100.2981
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 16,
+        "errors": [],
+        "elapsedMs": 249
+      },
+      {
+        "id": "oax",
+        "place": "Oaxaca de Juárez",
+        "bounds": [
+          17.051,
+          -96.744,
+          17.075,
+          -96.708
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 10,
+        "errors": [],
+        "elapsedMs": 292
+      },
+      {
+        "id": "pue",
+        "place": "Puebla",
+        "bounds": [
+          19.0313,
+          -98.2199,
+          19.0553,
+          -98.1839
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 251
+      },
+      {
+        "id": "que",
+        "place": "Querétaro",
+        "bounds": [
+          20.5768,
+          -100.4079,
+          20.6008,
+          -100.3719
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 358
+      },
+      {
+        "id": "roo",
+        "place": "Chetumal",
+        "bounds": [
+          18.4881,
+          -88.3141,
+          18.5121,
+          -88.2781
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 8,
+        "errors": [],
+        "elapsedMs": 250
+      },
+      {
+        "id": "slp",
+        "place": "San Luis Potosí",
+        "bounds": [
+          22.1445,
+          -101.0035,
+          22.1685,
+          -100.9675
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 17,
+        "errors": [],
+        "elapsedMs": 268
+      },
+      {
+        "id": "sin",
+        "place": "Culiacán",
+        "bounds": [
+          24.7971,
+          -107.412,
+          24.8211,
+          -107.376
+        ],
+        "timeZone": "America/Mazatlan",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 2,
+        "errors": [],
+        "elapsedMs": 235
+      },
+      {
+        "id": "son",
+        "place": "Hermosillo",
+        "bounds": [
+          29.0609,
+          -110.9739,
+          29.0849,
+          -110.9379
+        ],
+        "timeZone": "America/Hermosillo",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 6,
+        "errors": [],
+        "elapsedMs": 271
+      },
+      {
+        "id": "tab",
+        "place": "Villahermosa",
+        "bounds": [
+          17.9775,
+          -92.9655,
+          18.0015,
+          -92.9295
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 1,
+        "errors": [],
+        "elapsedMs": 233
+      },
+      {
+        "id": "tam",
+        "place": "Ciudad Victoria",
+        "bounds": [
+          23.7249,
+          -99.1591,
+          23.7489,
+          -99.1231
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 5,
+        "errors": [],
+        "elapsedMs": 301
+      },
+      {
+        "id": "tla",
+        "place": "Tlaxcala",
+        "bounds": [
+          19.3062,
+          -98.2555,
+          19.3302,
+          -98.2195
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 12,
+        "errors": [],
+        "elapsedMs": 300
+      },
+      {
+        "id": "ver",
+        "place": "Xalapa",
+        "bounds": [
+          19.5318,
+          -96.9282,
+          19.5558,
+          -96.8922
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 6,
+        "errors": [],
+        "elapsedMs": 245
+      },
+      {
+        "id": "yuc",
+        "place": "Mérida",
+        "bounds": [
+          20.9554,
+          -89.6106,
+          20.9794,
+          -89.5746
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 11,
+        "errors": [],
+        "elapsedMs": 247
+      },
+      {
+        "id": "zac",
+        "place": "Zacatecas",
+        "bounds": [
+          22.7589,
+          -102.6012,
+          22.7829,
+          -102.5652
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 238
+      },
+      {
+        "id": "cdmx",
+        "place": "Ciudad de México",
+        "bounds": [
+          19.4206,
+          -99.1512,
+          19.4446,
+          -99.1152
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 1,
+        "errors": [],
+        "elapsedMs": 295
+      },
+      {
+        "id": "playa",
+        "place": "Playa del Carmen",
+        "bounds": [
+          20.615,
+          -87.0913,
+          20.639,
+          -87.0553
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 279
+      },
+      {
+        "id": "cancun",
+        "place": "Cancún",
+        "bounds": [
+          21.1499,
+          -86.8695,
+          21.1739,
+          -86.8335
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 10,
+        "errors": [],
+        "elapsedMs": 272
+      },
+      {
+        "id": "tulum",
+        "place": "Tulum",
+        "bounds": [
+          20.1994,
+          -87.4834,
+          20.2234,
+          -87.4474
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 12,
+        "errors": [],
+        "elapsedMs": 222
+      },
+      {
+        "id": "tijuana",
+        "place": "Tijuana",
+        "bounds": [
+          32.5029,
+          -117.0562,
+          32.5269,
+          -117.0202
+        ],
+        "timeZone": "America/Tijuana",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 15,
+        "errors": [],
+        "elapsedMs": 232
+      },
+      {
+        "id": "puerto",
+        "place": "Puerto Escondido",
+        "bounds": [
+          15.852,
+          -97.089,
+          15.876,
+          -97.053
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 4,
+        "errors": [],
+        "elapsedMs": 256
+      },
+      {
+        "id": "salina",
+        "place": "Salina Cruz",
+        "bounds": [
+          16.173,
+          -95.225,
+          16.197,
+          -95.189
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 12,
+        "errors": [],
+        "elapsedMs": 239
+      },
+      {
+        "id": "jilotepec",
+        "place": "Jilotepec",
+        "bounds": [
+          19.9406,
+          -99.5507,
+          19.9646,
+          -99.5147
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 1,
+        "errors": [],
+        "elapsedMs": 242
+      },
+      {
+        "id": "zamora",
+        "place": "Zamora",
+        "bounds": [
+          19.973,
+          -102.3014,
+          19.997,
+          -102.2654
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 7,
+        "errors": [],
+        "elapsedMs": 244
+      },
+      {
+        "id": "uruapan",
+        "place": "Uruapan",
+        "bounds": [
+          19.4086,
+          -102.0806,
+          19.4326,
+          -102.0446
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 3,
+        "errors": [],
+        "elapsedMs": 250
+      },
+      {
+        "id": "zitacuaro",
+        "place": "Zitácuaro",
+        "bounds": [
+          19.4241,
+          -100.3753,
+          19.4481,
+          -100.3393
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 3,
+        "errors": [],
+        "elapsedMs": 251
+      },
+      {
+        "id": "ixmiquilpan",
+        "place": "Ixmiquilpan",
+        "bounds": [
+          20.4738,
+          -99.2367,
+          20.4978,
+          -99.2007
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 4,
+        "errors": [],
+        "elapsedMs": 231
+      }
+    ]
+  },
+  "publishedNetwork": {
+    "phase": "network",
+    "origin": "https://railatlas-europa.dunkelst.chatgpt.site",
+    "startedAt": "2026-10-28T22:25:31.609Z",
+    "finishedAt": "2026-10-28T22:25:42.816Z",
+    "results": [
+      {
+        "id": "bcn",
+        "place": "Mexicali",
+        "bounds": [
+          32.6125,
+          -115.4703,
+          32.6365,
+          -115.4343
+        ],
+        "timeZone": "America/Tijuana",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "errors": [],
+        "counts": {
+          "rail": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "suburban": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "subway": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "tram": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "bus": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "colectivo": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          }
+        },
+        "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+        "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap + OpenStreetMap / Geofabrik (Mexiko)",
+        "elapsedMs": 8298
+      },
+      {
+        "id": "playa",
+        "place": "Playa del Carmen",
+        "bounds": [
+          20.615,
+          -87.0913,
+          20.639,
+          -87.0553
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "errors": [],
+        "counts": {
+          "rail": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "suburban": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "subway": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "tram": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "bus": {
+            "stops": 41,
+            "paths": 0,
+            "calculated": 0
+          },
+          "colectivo": {
+            "stops": 38,
+            "paths": 38,
+            "calculated": 0
+          }
+        },
+        "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn, Bus fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+        "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap + OpenStreetMap / Geofabrik (Mexiko)",
+        "elapsedMs": 446
+      },
+      {
+        "id": "uruapan",
+        "place": "Uruapan",
+        "bounds": [
+          19.4086,
+          -102.0806,
+          19.4326,
+          -102.0446
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "errors": [],
+        "counts": {
+          "rail": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "suburban": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "subway": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "tram": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "bus": {
+            "stops": 3,
+            "paths": 48,
+            "calculated": 0
+          },
+          "colectivo": {
+            "stops": 0,
+            "paths": 35,
+            "calculated": 0
+          }
+        },
+        "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, U-Bahn, Tram / Stadtbahn fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+        "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap + OpenStreetMap / Geofabrik (Mexiko)",
+        "elapsedMs": 457
+      }
+    ]
+  }
+}

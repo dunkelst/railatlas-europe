@@ -3,7 +3,8 @@ import {findEfaStations, findVrrStations, getEfaJourney, getEfaJourneys, getEfaW
 import {normalize, searchStations, rankJourneys} from './rail.mjs';
 import {findBusStops} from './stop-search.mjs';
 import {getDbJourneys} from './db.mjs';
-import {getTransitousJourneys} from './transitous.mjs';
+import {getTransitousJourneys,findTransitousStations} from './transitous.mjs';
+import {findMexicanMapStations} from './network.mjs';
 
 export const timetableSources = ['auto', 'oebb', 'efa', 'vrr'];
 const providers = {oebb: {find: findOnlineStations, journey: getJourney}, efa: {find: findEfaStations, journey: getEfaJourney}, vrr: {find: findVrrStations, journey: getVrrJourney}};
@@ -13,10 +14,15 @@ const providers = {oebb: {find: findOnlineStations, journey: getJourney}, efa: {
 export function relevantStations(stations, query) {
   return searchStations(stations.map(s => ({...s, search: normalize(s.name+' '+(s.aliases||'')), key: normalize(s.name)})), query, 18);
 }
-export async function findTimetableStations(query, source='auto', signal) {
+export async function findTimetableStations(query, source='auto', signal,region='europe',near) {
   signal?.throwIfAborted();
   if (source !== 'auto') return providers[source].find(query, signal);
-  const results = await Promise.allSettled([providers.oebb.find(query, signal), providers.efa.find(query, signal), findBusStops(query,signal)]);
+  if(region==='mexico'){
+   const results=await Promise.allSettled([findTransitousStations(query,signal,region,near),findBusStops(query,signal,region,near),findMexicanMapStations(query,near)]);signal?.throwIfAborted();
+   const matches=relevantStations(results.flatMap(r=>r.status==='fulfilled'?r.value:[]),query);
+   if(!matches.length&&results.some(r=>r.status==='rejected'))throw Error('Die mexikanische Haltestellensuche ist gerade nur teilweise erreichbar. Bitte erneut suchen.');return matches;
+  }
+  const results = await Promise.allSettled([providers.oebb.find(query, signal), providers.efa.find(query, signal), findBusStops(query,signal,region,near)]);
   signal?.throwIfAborted();
   const matches = relevantStations(results.slice(0,2).flatMap(r => r.status === 'fulfilled' ? r.value : []), query);
   const busStops=results[2].status==='fulfilled'?results[2].value:[];
@@ -26,9 +32,10 @@ export async function findTimetableStations(query, source='auto', signal) {
 }
 export {rankJourneys} from './rail.mjs';
 export const journeyPreferences=['arrival','transfers','walking'];
-export async function getTimetableJourneys(from,to,departure,source='auto',signal,preference='arrival',walkingBudget=0) {
+export async function getTimetableJourneys(from,to,departure,source='auto',signal,preference='arrival',walkingBudget=0,region='europe') {
   signal?.throwIfAborted();
   if(source!=='auto')return [await providers[source].journey(from,to,departure,signal)];
+  if(region==='mexico'||from.country==='MX'&&to.country==='MX')return rankJourneys(await getTransitousJourneys(from,to,departure,signal),preference);
   const results=await Promise.allSettled([getJourneys(from,to,departure,signal),getEfaJourneys(from,to,departure,signal),...(walkingBudget?[getEfaWalkingJourneys(from,to,departure,signal,walkingBudget)]:[])]);
   signal?.throwIfAborted();
   if(!results.some(r=>r.status==='fulfilled'&&r.value.length))try{results.push({status:'fulfilled',value:await getTransitousJourneys(from,to,departure,signal)});}catch(reason){signal?.throwIfAborted();results.push({status:'rejected',reason});}

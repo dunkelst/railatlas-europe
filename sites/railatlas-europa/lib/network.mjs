@@ -1,15 +1,17 @@
 // Independent EFA/OSM network overlays. These are infrastructure, not a timetable.
 import {requestEfaMap,parseVrrStation,vrrProduct,EFA_PROVIDER,EFA_SOURCE} from './vrr.mjs';
-import {berlinInput,distanceKm} from './rail.mjs';
+import {berlinInput,distanceKm,normalize,searchStations} from './rail.mjs';
 import {sameNearbyStation} from './journey.mjs';
 import {fetchTransitousStops,fetchTransitousRoutes,parseTransitousStation,transitousModes,TRANSITOUS_SOURCE,TRANSITOUS_ATTRIBUTIONS} from './transitous.mjs';
 import {decodePolyline} from './transit.mjs';
+import {mexicanBounds} from './regions.mjs';
 export const NETWORK_MODES = [
   {id: 'rail', label: 'Bahn', color: '#405d74'},
   {id: 'suburban', label: 'S-Bahn', color: '#21834a'},
   {id: 'subway', label: 'U-Bahn', color: '#2669bf'},
   {id: 'tram', label: 'Tram / Stadtbahn', color: '#be3e53'},
   {id: 'bus', label: 'Bus', color: '#b5781e'},
+  {id: 'colectivo', label: 'Colectivo / Combi', color: '#9255b5'},
 ];
 export const defaultNetworkLayers = () => Object.fromEntries(NETWORK_MODES.map(m => [m.id, {lines: m.id === 'rail', stops: m.id === 'rail'}]));
 export const NETWORK_MIN_ZOOM = 12;
@@ -38,6 +40,7 @@ export function networkRequestBounds(bounds) {
 export const networkCovers = (data, bounds, modes) => containsBounds(data?.bounds,bounds) && modes.every(mode=>data.modes?.includes(mode)) && [0,1].every(axis=>data.bounds[axis+2]-data.bounds[axis]<=2*(bounds[axis+2]-bounds[axis]));
 export function networkMode(tags = {}) {
   const route = tags.route;
+  if(['share_taxi','minibus'].includes(route)||route==='bus'&&colectivoTags(tags))return 'colectivo';
   if (route === 'bus' || route === 'trolleybus') return 'bus';
   if (route === 'subway') return 'subway';
   if (route === 'train' || route === 'light_rail') {
@@ -46,6 +49,9 @@ export function networkMode(tags = {}) {
     return 'rail';
   }
   return route === 'tram' ? 'tram' : null;
+}
+export function colectivoTags(tags={}){
+ return ['share_taxi','minibus'].includes(tags.route)||tags.bus==='minibus'||tags.minibus==='yes'||tags.share_taxi==='yes'||/\b(colectivos?|combis?|peseros?|microbus(?:es)?)\b/i.test([tags.name,tags.operator].filter(Boolean).join(' '));
 }
 export function networkQuery(bounds, modes) {
   validateBounds(bounds);
@@ -57,11 +63,13 @@ export function networkQuery(bounds, modes) {
   if (selected.includes('subway')) routes.push('rel[type=route][route~"^(subway|light_rail)$"]');
   if (selected.includes('tram')) routes.push('rel[type=route][route~"^(tram|light_rail)$"]');
   if (selected.includes('bus')) routes.push('rel[type=route][route~"^(bus|trolleybus)$"]');
+  if (selected.includes('colectivo')) routes.push('rel[type=route][route~"^(share_taxi|minibus)$"]','rel[type=route][route=bus][bus=minibus]','rel[type=route][route=bus][minibus=yes]','rel[type=route][route=bus][name~"[Cc]olectivo|[Cc]ombi|[Pp]esero|[Mm]icrobus"]','rel[type=route][route=bus][operator~"[Cc]olectivo|[Cc]ombi|[Pp]esero|[Mm]icrobus"]');
   const stops = [];
   if (selected.includes('rail')) stops.push('nwr[railway~"^(station|halt)$"][station!~"^(subway|light_rail)$"][train!=no]');
   if (selected.includes('subway')) stops.push('nwr[railway~"^(station|halt)$"][station=subway]', 'nwr[public_transport~"^(station|stop_position|platform)$"][subway=yes]');
   if (selected.includes('tram')) stops.push('nwr[railway=tram_stop]', 'nwr[public_transport~"^(station|stop_position|platform)$"][tram=yes]');
-  if (selected.includes('bus')) stops.push('nwr[highway=bus_stop]', 'nwr[public_transport~"^(station|stop_position|platform)$"][bus=yes]');
+  if (selected.includes('bus')) stops.push('nwr[highway=bus_stop]', 'nwr[amenity=bus_station]', 'nwr[public_transport~"^(station|stop_position|platform)$"][bus=yes]');
+  if(selected.includes('colectivo'))stops.push('nwr[highway=bus_stop][minibus=yes]','nwr[public_transport~"^(station|stop_position|platform)$"][share_taxi=yes]','nwr[amenity=taxi][share_taxi=yes]','nwr[highway=bus_stop][name~"[Cc]olectivo|[Cc]ombi|[Pp]esero|[Mm]icrobus"]','nwr[amenity=bus_station][name~"[Cc]olectivo|[Cc]ombi|[Pp]esero|[Mm]icrobus"]');
   return `[out:json][timeout:20][maxsize:16777216];\n(${routes.length ? routes.map(r => r + '(' + box + ');').join('\n') : 'rel(0);'}) -> .routes;\n.routes out geom(${box});\n(${stops.map(r => r + '(' + box + ');').join('\n')}node(r.routes)(${box});way(r.routes:"platform")(${box}););\nout center;`;
 }
 export function geometrySegments(points = []) {
@@ -77,7 +85,8 @@ function stopModes(tags) {
   const modes = [];
   if (tags.subway === 'yes' || tags.station === 'subway') modes.push('subway');
   if (tags.tram === 'yes' || tags.railway === 'tram_stop') modes.push('tram');
-  if (tags.bus === 'yes' || tags.highway === 'bus_stop') modes.push('bus');
+  if (tags.bus === 'yes' || tags.highway === 'bus_stop'||tags.amenity==='bus_station') modes.push(colectivoTags(tags)?'colectivo':'bus');
+  else if(colectivoTags(tags)&&['station','stop_position','platform'].includes(tags.public_transport)||tags.amenity==='taxi'&&tags.share_taxi==='yes')modes.push('colectivo');
   if (['station', 'halt'].includes(tags.railway) && !['subway', 'light_rail'].includes(tags.station) && tags.train !== 'no') modes.push('rail');
   return modes;
 }
@@ -100,7 +109,11 @@ export function parseNetwork(data, bounds, modes) {
         membership.get(key).add(mode);
         if (!stopInfo.has(key)) stopInfo.set(key, {lines: new Set(), member});
         if (tags.ref) stopInfo.get(key).lines.add(tags.ref);
-      } else if (member.type === 'way') segments.push(...geometrySegments(member.geometry));
+      } else if (member.type === 'way') {
+       const way=elements.get('way/'+member.ref);
+       const geometry=member.geometry||way?.geometry||way?.nodes?.map(id=>elements.get('node/'+id)||null);
+       segments.push(...geometrySegments(geometry));
+      }
     }
     if (segments.length) layers[mode].lines.push({id: 'relation/' + relation.id, name: tags.name || tags.ref || 'Linie ohne Namen', ref: tags.ref || '', segments});
   }
@@ -114,7 +127,7 @@ export function parseNetwork(data, bounds, modes) {
     const lat = e.lat ?? e.center?.lat, lon = e.lon ?? e.center?.lon;
     if (!Number.isFinite(lat) || !Number.isFinite(lon) || !inside(lat, lon)) continue;
     const assigned = new Set([...stopModes(tags), ...(membership.get(key) || [])]);
-    for (const mode of assigned) if (modes.includes(mode)) layers[mode].stops.push({id: key, name: tags.name || tags['name:de'] || 'Halt ohne OSM-Namen', lat, lon, lines: [...(info?.lines || [])]});
+    for (const mode of assigned) if (modes.includes(mode)) layers[mode].stops.push({id: key, name: tags.name || tags['name:de'] || 'Halt ohne OSM-Namen', lat, lon, lines: [...(info?.lines || [])],source:'OpenStreetMap',sourceUrl:'https://www.openstreetmap.org/'+key,...(mode==='colectivo'?{boardingKind:tags.informal==='yes'?'informal':'mapped'}:{})});
   }
   return {layers, bounds, modes:[...modes], fetchedAt: new Date().toISOString(), source: 'OpenStreetMap / Overpass', coverage: 'partial'};
 }
@@ -152,6 +165,38 @@ export async function fetchOsmNetwork(bounds, modes, signal, refresh=false, time
 }
 
 const efaServingCache=new Map(),mapCache=new Map();
+let mexicoData;
+const mexicoTileCache=new Map();
+async function decodeMexicoData(encoded){
+ const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).json();
+}
+async function loadMexicoData(){
+ if(!mexicoData)mexicoData=import('./mexico-network-data.mjs').then(({default:encoded})=>decodeMexicoData(encoded)).catch(error=>{mexicoData=undefined;throw error;});
+ return mexicoData;
+}
+async function loadMexicoTiles(bounds,modes){
+ const {default:index}=await import('./mexico-osm-index.mjs');let result=null;
+ const selected=index.filter(({bounds:b})=>b[0]<=bounds[2]&&b[2]>=bounds[0]&&b[1]<=bounds[3]&&b[3]>=bounds[1]);
+ for(const tile of selected){
+  const key=tile.bounds.join(',');let pending=mexicoTileCache.get(key);
+  if(!pending){pending=tile.load().then(({default:encoded})=>decodeMexicoData(encoded)).catch(e=>{mexicoTileCache.delete(key);throw e;});if(mexicoTileCache.size>=8)mexicoTileCache.delete(mexicoTileCache.keys().next().value);mexicoTileCache.set(key,pending);}
+  result=mergeNetworkStops(result,networkInView(await pending,bounds),modes);
+ }
+ return result;
+}
+export async function findMexicanMapStations(query,near){
+ let data=await loadMexicoData();if(near){const [lat,lon]=near,bounds=[lat-.03,lon-.03,lat+.03,lon+.03];data=mergeNetworkStops(networkInView(data,bounds),await loadMexicoTiles(bounds,NETWORK_MODES.map(m=>m.id)),NETWORK_MODES.map(m=>m.id));}const unique=new Map();
+ for(const [mode,layer] of Object.entries(data.layers))for(const stop of layer.stops){
+  const station=stop.station||{id:'osm:'+stop.id,name:stop.name,lat:stop.lat,lon:stop.lon,country:'MX',dbId:'',main:false,networkMode:mode,locality:'Playa del Carmen',lookupSource:stop.source,timetableStatus:'unverified'};
+  if(!unique.has(station.id))unique.set(station.id,{...station,search:normalize(station.name+' '+(station.locality||'')),key:normalize(station.name)});
+ }
+ return searchStations([...unique.values()],query,10);
+}
+async function mexicanNetwork(bounds,modes,detail){
+ const data=await loadMexicoData(),base=networkInView(data,bounds),country=await loadMexicoTiles(bounds,modes),visible=mergeNetworkStops(base,country,modes);
+ const layers=Object.fromEntries(NETWORK_MODES.map(m=>[m.id,modes.includes(m.id)?{lines:detail==='stops'?[]:visible.layers[m.id].lines,stops:visible.layers[m.id].stops}:{lines:[],stops:[]}]));
+ return {...visible,layers,modes:[...modes],detail,fetchedAt:new Date().toISOString(),warning:'Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt.',warningScope:'all'};
+}
 const mapMode=transport=>({train:'rail','replacement-bus':'bus'})[vrrProduct(transport).mode]||vrrProduct(transport).mode;
 const insideBounds=(bounds,point)=>point[0]>=bounds[0]&&point[0]<=bounds[2]&&point[1]>=bounds[1]&&point[1]<=bounds[3];
 function edgeInBounds(a,b,[s,w,n,e]){
@@ -276,10 +321,19 @@ export function parseTransitousRoutes(data,bounds,modes){
 }
 export function mergeNetworkStops(primary,regional,modes){
  if(!primary)return regional;if(!regional)return primary;
- const layers=Object.fromEntries(NETWORK_MODES.map(m=>[m.id,{lines:[...new Map([...primary.layers[m.id].lines,...regional.layers[m.id].lines].map(line=>[line.id,line])).values()],stops:[...primary.layers[m.id].stops]}]));
+ const layers=Object.fromEntries(NETWORK_MODES.map(m=>{
+  const lines=new Map();for(const line of [...primary.layers[m.id].lines,...regional.layers[m.id].lines]){
+   const previous=lines.get(line.id);if(!previous){lines.set(line.id,line);continue;}
+   const firstDate=Date.parse(previous.sourceDate),lastDate=Date.parse(line.sourceDate);
+   if(Number.isFinite(firstDate)&&Number.isFinite(lastDate)&&firstDate!==lastDate){if(lastDate>firstDate)lines.set(line.id,line);continue;}
+   lines.set(line.id,{...previous,segments:[...new Map([...previous.segments,...line.segments].map(s=>[JSON.stringify(s),s])).values()]});
+  }
+  return [m.id,{lines:[...lines.values()],stops:[...primary.layers[m.id].stops]}];
+ }));
  const cos=Math.max(.05,Math.cos((primary.bounds[0]+primary.bounds[2])/2*Math.PI/180));
+ const primaryStopIds=Object.fromEntries(modes.map(mode=>[mode,new Set(primary.layers[mode].stops.map(s=>s.id))]));
  for(const mode of modes)for(const stop of regional.layers[mode].stops){
-  const index=layers[mode].stops.findIndex(p=>sameNetworkStop(p,stop,mode,cos));
+  const index=layers[mode].stops.findIndex(p=>p.id===stop.id||primaryStopIds[mode].has(p.id)&&(!p.source||!stop.source||p.source!==stop.source)&&sameNetworkStop(p,stop,mode,cos));
   if(index<0)layers[mode].stops.push(stop);
   else{const first=layers[mode].stops[index];layers[mode].stops[index]={...first,lines:[...new Set([...first.lines,...stop.lines])],source:[...new Set([first.source,stop.source].filter(Boolean))].join(' + ')};}
  }
@@ -292,17 +346,21 @@ export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=fals
  if(!refresh)for(const entry of mapCache.values())if(Date.now()-entry.at<300000&&networkCovers(entry.data,bounds,modes)&&(entry.data.detail==='all'||detail==='stops'))return entry.data;
  let result,efaError,transitousError,routeError,osmError,primary,regional;
  const hasData=data=>data&&modes.some(m=>data.layers[m].lines.length||data.layers[m].stops.length),needLines=detail==='all'&&modes.some(m=>m!=='rail');
- const replies=await Promise.allSettled([fetchTransitousStops(bounds,modes,signal),...(needLines?[fetchEfaNetwork(bounds,modes,signal,detail)]:[])]);signal?.throwIfAborted();
+ const mexico=mexicanBounds(bounds),nativeModes=modes.filter(m=>m!=='colectivo');
+ const replies=await Promise.allSettled([nativeModes.length?fetchTransitousStops(bounds,nativeModes,signal):Promise.resolve([]),...(needLines&&!mexico?[fetchEfaNetwork(bounds,modes,signal,detail)]:[])]);signal?.throwIfAborted();
  if(replies[0].status==='fulfilled')primary=parseTransitousNetwork(replies[0].value,bounds,modes);else transitousError=replies[0].reason;
- if(needLines){if(replies[1].status==='fulfilled')regional=replies[1].value;else efaError=replies[1].reason;}
+ if(mexico)regional=await mexicanNetwork(bounds,modes,detail);
+ else if(needLines){if(replies[1].status==='fulfilled')regional=replies[1].value;else efaError=replies[1].reason;}
  else if(!hasData(primary))try{regional=await fetchEfaNetwork(bounds,modes,signal,detail);}catch(error){signal?.throwIfAborted();efaError=error;}
+ signal?.throwIfAborted();
  result=mergeNetworkStops(hasData(primary)?primary:null,hasData(regional)?regional:null,modes);
+ if(mexico&&!result&&!refresh)result=regional;
  if(needLines){
-  const missing=modes.filter(mode=>mode!=='rail'&&!result?.layers[mode].lines.length);
+  const missing=modes.filter(mode=>mode!=='rail'&&mode!=='colectivo'&&!result?.layers[mode].lines.length);
   if(missing.length)try{const lines=parseTransitousRoutes(await fetchTransitousRoutes(bounds,signal),bounds,missing);if(hasData(lines))result=mergeNetworkStops(result,lines,modes);}catch(error){signal?.throwIfAborted();routeError=error;}
  }
  if(!result)try{result=await fetchOsmNetwork(bounds,modes,signal,refresh);result.detail='all';}catch(error){signal?.throwIfAborted();throw Error('Die allgemeinen Netzdaten sind gerade nicht erreichbar. '+(efaError?'Auch die ergänzende Haltestellen-/Linienauskunft ist ausgefallen. ':'')+error.message);}
- else if(needLines){
+ else if(needLines&&(!mexico||refresh)){
   // A stop response does not satisfy a request for line paths. Supplement only
   // missing modes, preserving existing source stops, IDs and regional lines.
   const missing=modes.filter(mode=>mode!=='rail'&&!result.layers[mode].lines.length);

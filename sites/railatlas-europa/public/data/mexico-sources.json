@@ -1,0 +1,54 @@
+[
+  {
+    "id": "mex-cdmx-cdmx",
+    "publisher": "SEMOVI Ciudad de México",
+    "license": "CC-BY-4.0",
+    "sourceDate": "2024-12-19",
+    "retrieved": "2026-10-28",
+    "url": "https://hdtp.codeandomexico.org/datos/mex-cdmx-cdmx",
+    "downloadUrl": "https://hdtp.codeandomexico.org/gtfs/mex-cdmx-cdmx.zip",
+    "sha256": "a2ecd0fbdf56e787b8eee3a6a3719043667b022a849f7f510812054677225384",
+    "excludedVirtualStops": 0,
+    "excludedInvalidShapes": 0
+  },
+  {
+    "id": "mex-mex-jilotepec",
+    "publisher": "Ayuntamiento de Jilotepec",
+    "license": "CC-BY-4.0",
+    "sourceDate": "2025-08-16",
+    "retrieved": "2026-10-28",
+    "url": "https://hdtp.codeandomexico.org/datos/mex-mex-jilotepec",
+    "downloadUrl": "https://hdtp.codeandomexico.org/gtfs/mex-mex-jilotepec.zip",
+    "sha256": "d415b8389f7565537f827604783cf46e8d4e8c73de6e39c33dfa8dfcd8aab5df",
+    "excludedVirtualStops": 0,
+    "excludedInvalidShapes": 0
+  },
+  {
+    "id": "mex-oax-salinacruz",
+    "publisher": "SEMOVI Oaxaca / Salina Cruz",
+    "license": "ODC-By-1.0",
+    "sourceDate": "2026-07-07",
+    "retrieved": "2026-10-28",
+    "url": "https://hdtp.codeandomexico.org/datos/mex-oax-salinacruz",
+    "downloadUrl": "https://hdtp.codeandomexico.org/gtfs/mex-oax-salinacruz.zip",
+    "sha256": "3d0346781efda7cbcebee3641d0d42f392e4a1fa0bd4a19662efe4bd84795964",
+    "excludedVirtualStops": 497,
+    "excludedInvalidShapes": 0
+  },
+  {
+    "id": "osm-playa",
+    "publisher": "OpenStreetMap-Mitwirkende",
+    "license": "ODbL-1.0",
+    "sourceDate": "2026-10-28",
+    "retrieved": "2026-10-28",
+    "url": "https://www.openstreetmap.org/copyright",
+    "downloadUrl": "https://api.openstreetmap.org/api/0.6/map?bbox=-87.08,20.62,-87.065,20.635",
+    "sha256": "35e7dd7651c27ad04cd767fc495775a35834369a30e7e87b2a3a8e556447b745",
+    "bounds": [
+      20.62,
+      -87.08,
+      20.635,
+      -87.065
+    ]
+  }
+]

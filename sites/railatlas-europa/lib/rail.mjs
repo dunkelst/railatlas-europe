@@ -2,7 +2,7 @@
 // nearby station names compare equal. Fold Latin letters not decomposed by NFD.
 const latinFold={ß:'ss',æ:'ae',œ:'oe',ø:'o',ł:'l',đ:'d',ð:'d',þ:'th',ı:'i',ħ:'h'};
 export const normalize = (v) => String(v || '').toLowerCase().replace(/[ßæœøłđðþıħ]/g,c=>latinFold[c]).normalize('NFD').replace(/\p{M}/gu,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
-export const isMapStop = station => typeof station?.id==='string' && /^(osm:|transitous:)/.test(station.id);
+export const isMapStop = station => typeof station?.id==='string' && /^(osm:|transitous:|mx-gtfs:)/.test(station.id);
 const aliases = {hn:'heilbronn',wue:'wurzburg',wu:'wurzburg',wü:'wurzburg',muenchen:'munchen',zuerich:'zurich',cologne:'koln',vienna:'wien',prague:'praha',warsaw:'warszawa',brussels:'bruxelles',brussel:'bruxelles',venice:'venezia',rome:'roma',lisbon:'lisboa',copenhagen:'kobenhavn'};
 export function unpack(rows) { return rows.map(r=>({id:String(r[0]),name:r[1],country:r[2],lat:r[3],lon:r[4],dbId:r[5],main:r[6],aliases:r[7],search:normalize(r[1]+' '+r[7]),key:normalize(r[1])})); }
 export function searchStations(stations,query,limit=10) {
@@ -27,8 +27,12 @@ export function validateChain(parts,stops,dwell){
  }
  return true;
 }
-const berlinFormatter=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-export function berlinInput(date){return berlinFormatter.format(new Date(date)).replace(' ','T');}
+const zoneFormatters=new Map();
+export function zonedInput(date,timeZone='Europe/Berlin'){
+ if(!zoneFormatters.has(timeZone))zoneFormatters.set(timeZone,new Intl.DateTimeFormat('sv-SE',{timeZone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}));
+ return zoneFormatters.get(timeZone).format(new Date(date)).replace(' ','T');
+}
+export const berlinInput=date=>zonedInput(date);
 // Calendar midnights also work on DST weekends, unlike 24-hour jumps.
 export function berlinSearchDays(departure){const initial=berlinInput(departure),[y,m,d]=initial.slice(0,10).split('-').map(Number);return [initial,...[1,2].map(day=>new Date(Date.UTC(y,m-1,d+day)).toISOString().slice(0,10)+'T00:00:00')];}
 export function remainingJourneyPoints(points,partIndex,station,same){
@@ -38,13 +42,14 @@ export function remainingJourneyPoints(points,partIndex,station,same){
  if(!remaining.length)throw Error('Dieser Halt ist bereits dein Reiseziel.');
  return [{key:'start',text:station.name,station,dwell:0},...remaining.map((p,i)=>({...p,key:i===remaining.length-1?'end':'via-replan-'+i}))];
 }
-export function localBerlinISO(s){
+export function localZonedISO(s,timeZone='Europe/Berlin'){
  if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(s))throw new Error('Bitte Datum und Uhrzeit prüfen.');
  const p=s.slice(0,16),utc=Date.parse((s.length===16?s+':00':s)+'Z');let guess=utc;
- for(let i=0;i<3;i++){const actual=Date.parse(berlinInput(guess)+'Z');guess+=utc-actual;}
- if(berlinInput(guess).slice(0,16)!==p)throw new Error('Diese Uhrzeit gibt es bei der Zeitumstellung nicht.');
+ for(let i=0;i<3;i++){const actual=Date.parse(zonedInput(guess,timeZone)+'Z');guess+=utc-actual;}
+ if(zonedInput(guess,timeZone).slice(0,16)!==p)throw new Error('Diese Uhrzeit gibt es bei der Zeitumstellung nicht.');
  return new Date(guess).toISOString();
 }
+export const localBerlinISO=s=>localZonedISO(s);
 export function dbLink(from,to,departure){const p=new URLSearchParams({so:from.name,zo:to.name,hd:berlinInput(departure).slice(0,16),hza:'D',kl:'2',r:'13:16:KLASSENLOS:1'});if(/^\d{7,9}$/.test(from.dbId||''))p.set('soei',from.dbId);if(/^\d{7,9}$/.test(to.dbId||''))p.set('zoei',to.dbId);return 'https://www.bahn.de/buchung/fahrplan/suche#'+p;}
 
 export function rankJourneys(journeys,preference='arrival') {

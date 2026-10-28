@@ -5,8 +5,8 @@ const bbox=[49.1,9.1,49.2,9.3];
 const point=(id,name,tags={})=>({type:'node',id,lat:49.15,lon:9.2,tags:{name,...tags}});
 const route=(id,route,ref,stop,extra={})=>({type:'relation',id,tags:{type:'route',route,ref,...extra},members:[{type:'node',ref:stop,role:'stop',lat:49.15,lon:9.2},{type:'way',ref:id+100,role:'',geometry:[{lat:49.14,lon:9.19},{lat:49.15,lon:9.2},null,{lat:49.16,lon:9.21},{lat:49.17,lon:9.22}]}]});
 
-test('rail is enabled by default and all five overlays have independent lines/stops',()=>{
- const layers=defaultNetworkLayers();assert.equal(NETWORK_MODES.length,5);assert.deepEqual(layers.rail,{lines:true,stops:true});assert.deepEqual(layers.bus,{lines:false,stops:false});layers.bus.lines=true;assert.equal(layers.bus.stops,false);assert.equal(defaultNetworkLayers().bus.lines,false);
+test('rail is enabled by default and all existing overlays and the separate Colectivo layer have independent lines/stops',()=>{
+ const layers=defaultNetworkLayers();assert.equal(NETWORK_MODES.length,6);assert.deepEqual(layers.rail,{lines:true,stops:true});assert.deepEqual(layers.bus,{lines:false,stops:false});layers.bus.lines=true;assert.equal(layers.bus.stops,false);assert.equal(defaultNetworkLayers().bus.lines,false);
 });
 test('commuter railway and U-labelled light rail remain distinct from other trains/trams',()=>{
  assert.equal(networkMode({route:'train',ref:'S 5'}),'suburban');assert.equal(networkMode({route:'train',ref:'RE8'}),'rail');assert.equal(networkMode({route:'train',service:'commuter'}),'suburban');assert.equal(networkMode({route:'light_rail',ref:'U12'}),'subway');assert.equal(networkMode({route:'light_rail',ref:'12'}),'tram');assert.equal(networkMode({route:'trolleybus'}),'bus');assert.equal(networkMode({route:'ferry'}),null);

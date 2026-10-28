@@ -1,6 +1,7 @@
 import {fetchJSON,sameStation} from './journey.mjs';
 import {distanceKm,normalize} from './rail.mjs';
 import {decodePolyline,transportProduct,plainText,mergeNotices} from './transit.mjs';
+import {REGIONS,withinRegion} from './regions.mjs';
 
 export const TRANSITOUS_SOURCE='Transitous / MOTIS (GTFS)';
 export const TRANSITOUS_ATTRIBUTIONS=[{label:'Transitous-Datenquellen',url:'https://transitous.org/sources/'},{label:'OpenStreetMap',url:'https://www.openstreetmap.org/copyright'}];
@@ -10,6 +11,16 @@ export function transitousModes(raw){return [...new Set((Array.isArray(raw?.mode
 export function parseTransitousStation(raw){
  if(typeof raw?.stopId!=='string'||!raw.stopId.length||raw.stopId.length>500||typeof raw.name!=='string'||!raw.name.trim()||raw.name.length>=200||![raw.lat,raw.lon].every(Number.isFinite)||Math.abs(raw.lat)>90||Math.abs(raw.lon)>180)return null;
  return {id:'transitous:'+raw.stopId,transitousId:raw.stopId,name:raw.name,lat:raw.lat,lon:raw.lon,dbId:'',country:'',main:false,networkModes:transitousModes(raw).map(m=>m==='rail'?'train':m),lookupSource:TRANSITOUS_SOURCE,timetableStatus:'unverified'};
+}
+const searchCache=new Map();let nextSearchRequestAt=0;
+export async function findTransitousStations(query,signal,region='mexico',near){
+ signal?.throwIfAborted();const key=region+':'+normalize(query)+':'+(near?.join(',')||''),saved=searchCache.get(key);if(saved&&saved.until>Date.now())return saved.stations;
+ if(Date.now()<nextSearchRequestAt)throw Object.assign(Error('Die zusätzliche Haltestellensuche pausiert nach einem Anbieterfehler.'),{code:'UPSTREAM_UNAVAILABLE'});
+ const url=new URL('https://api.transitous.org/api/v1/geocode');url.search=new URLSearchParams({text:query,type:'STOP',place:(near||REGIONS[region].centre).join(','),numResults:'10',language:'de'});
+ let raw;try{raw=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/31 (+https://github.com/dunkelst/railatlas-europe)'}},signal,16000,1024*1024);}catch(error){signal?.throwIfAborted();if(!error.responseTooLarge)nextSearchRequestAt=Date.now()+Math.max(30000,error.retryAfterMs||0);throw error;}
+ if(!Array.isArray(raw))throw Object.assign(Error('Keine lesbare Haltestellensuche.'),{code:'SOURCE_RESPONSE_INVALID'});
+ const stations=raw.filter(s=>s.type==='STOP'&&withinRegion(s.lat,s.lon,region)).map(s=>parseTransitousStation({...s,stopId:s.id})).filter(Boolean);
+ if(searchCache.size>=200)searchCache.delete(searchCache.keys().next().value);searchCache.set(key,{stations,until:Date.now()+900000});return stations;
 }
 const catalogEndpoint=s=>/^\d+$/.test(s?.id||'')&&!s.dbId&&!s.locationType;
 export function matchTransitousCatalogStation(station,locations){
