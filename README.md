@@ -1,6 +1,6 @@
 # RailAtlas Europa
 
-[**RailAtlas öffnen**](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
+[**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
 Der gemeinsame Quellstand entspricht Sites-Version **27**, Quellcommit `2ac3e41f0a72fdc25e28b8d1ea56f672a47e7952`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
@@ -226,9 +226,22 @@ Danach **http://127.0.0.1:3000** öffnen. Oberfläche und alle APIs laufen aus d
 
 ## GitHub Pages
 
-`npm run build:pages` erzeugt dieselbe Oberfläche als statische Ausgabe. Es ist **keine ChatGPT-Serveradresse voreingestellt**. Für Live-Auskunft den eigenen HTTPS-Server in „Live-Auskunft einrichten“ verbinden oder beim Bau `RAILATLAS_API_ORIGIN` setzen. Karte und lokaler Bahnhofskatalog funktionieren ohne Auskunftsserver; direkte Netzabfragen setzen die Browserfreigabe der jeweiligen Quelle voraus. Pages kann die serverseitigen Anbieterabfragen selbst nicht ausführen.
+`npm run build:pages` erzeugt dieselbe Oberfläche als statische Ausgabe. Die
+[öffentliche GitHub-Website](https://dunkelst.github.io/railatlas-europe/) verwendet
+weiterhin die bestehende öffentliche RailAtlas-Auskunft unter
+`https://railatlas-europa.cocoaamber33.chatgpt.site`. Die Oberfläche bleibt auf der
+GitHub-Adresse; eine Anmeldung ist nicht erforderlich. GitHub Pages selbst führt
+keine serverseitigen Fahrplanabfragen aus.
 
-Die bestehende [Pages-Veröffentlichung](https://dunkelst.github.io/railatlas-europe/) wurde bei diesem Source-Abgleich bewusst nicht ersetzt und entspricht noch Version 12 mit der damaligen gemeinsamen API. Der Pages-Workflow ist jetzt manuell und verlangt die eigene Serveradresse, damit beim Abgleich keine bestehende Live-Auskunft durch eine unkonfigurierte Veröffentlichung ersetzt wird. Aktueller Abnahmeort ist der oben verlinkte RailAtlas. Ein eigenständiger öffentlicher Auskunftsserver wurde hier nicht angelegt.
+Der Pages-Workflow veröffentlicht Änderungen an der gemeinsamen App automatisch
+und prüft davor Herkunftsmanifest, API-Erreichbarkeit und die Browserfreigabe für
+Verbindungsanfragen. So bleibt die Website beim Quellabgleich aktuell. Ein eigener
+HTTPS-Auskunftsserver lässt sich über die Repository-Variable
+`RAILATLAS_API_ORIGIN`, den manuellen Workflow oder „Live-Auskunft einrichten“
+verwenden. Beim eigenen lokalen Pages-Build ist keine Serveradresse voreingestellt;
+dafür `RAILATLAS_API_ORIGIN` setzen. Der eigenständige Node-Server und die
+vollständigen Anbieterparser bleiben im Repository. Es wurde keine neue
+Hosting-Infrastruktur eingerichtet. [Pages-Prüfprotokoll](docs/github-pages-qa.md).
 
 ## Prüfung und aktuelle Grenzen
 

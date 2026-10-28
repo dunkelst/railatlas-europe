@@ -1,12 +1,21 @@
 name: Deploy RailAtlas Europe to GitHub Pages
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'sites/railatlas-europa/**'
+      - 'docs/sites-source-manifest.json'
+      - 'tools/verify-sites-source.mjs'
+      - 'package.json'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
     inputs:
       api_origin:
-        description: "Eigener HTTPS-RailAtlas-Auskunftsserver (kein voreingestellter Sites-Server)"
+        description: "Öffentliche RailAtlas-Auskunft; optional durch einen eigenen Server ersetzen"
         required: true
         type: string
+        default: "https://railatlas-europa.cocoaamber33.chatgpt.site"
 
 permissions:
   contents: read
@@ -19,6 +28,8 @@ concurrency:
 
 jobs:
   deploy:
+    env:
+      RAILATLAS_API_ORIGIN: ${{ inputs.api_origin || vars.RAILATLAS_API_ORIGIN || 'https://railatlas-europa.cocoaamber33.chatgpt.site' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -41,12 +52,25 @@ jobs:
       - name: Verify shared Sites source
         run: node tools/verify-sites-source.mjs
 
+      - name: Verify public timetable API for GitHub Pages
+        run: |
+          node --input-type=module <<'JS'
+          const api = new URL(process.env.RAILATLAS_API_ORIGIN);
+          if (api.protocol !== 'https:' || api.username || api.password || api.pathname !== '/' || api.search || api.hash) throw Error('A public HTTPS API origin is required.');
+          const origin = 'https://dunkelst.github.io';
+          const health = await fetch(new URL('/api/health', api), {headers: {Origin: origin}, signal: AbortSignal.timeout(15000)});
+          if (!health.ok || health.headers.get('access-control-allow-origin') !== origin) throw Error('The timetable API is not accessible from GitHub Pages.');
+          const data = await health.json();
+          if (data.service !== 'RailAtlas Europa' || data.apiVersion !== 1) throw Error('Unexpected timetable API.');
+          const preflight = await fetch(new URL('/api/journeys', api), {method: 'OPTIONS', headers: {Origin: origin, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type'}, signal: AbortSignal.timeout(15000)});
+          if (preflight.status !== 204 || preflight.headers.get('access-control-allow-origin') !== origin || !preflight.headers.get('access-control-allow-methods')?.split(',').map(s => s.trim()).includes('POST') || !preflight.headers.get('access-control-allow-headers')?.toLowerCase().split(',').map(s => s.trim()).includes('content-type')) throw Error('Cross-origin journey requests are not enabled.');
+          console.log('Public RailAtlas API and journey preflight are available to GitHub Pages.');
+          JS
+
       - name: Install the shared application
         run: npm run install:app
 
       - name: Build the actual application for Pages
-        env:
-          RAILATLAS_API_ORIGIN: ${{ inputs.api_origin }}
         run: npm run build:pages
 
       - name: Configure Pages

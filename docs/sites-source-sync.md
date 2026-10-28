@@ -95,8 +95,14 @@ Historische Fahrplanprüfungen sind im App-QA-Protokoll datiert beschrieben.
 
 ## Veröffentlichungsgrenzen
 
-Die bestehende Pages-Veröffentlichung bleibt Version 12, bis ein eigener
-öffentlicher HTTPS-Auskunftsserver eingerichtet ist. Der Pages-Workflow bleibt
-manuell. Keine voreingestellte ChatGPT-API und keine Weiterleitung als Ersatz.
+Auf ausdrücklichen Aktualisierungsauftrag vom 28.10.2026 veröffentlicht der
+Pages-Workflow wieder den aktuellen gemeinsamen App-Stand. Die öffentliche
+GitHub-Ausgabe behält die bereits verwendete öffentliche RailAtlas-API bei;
+Oberfläche, Karte und Assets werden direkt von GitHub geladen. Der Workflow
+prüft API und Browserfreigabe vor dem Rollout. Ein eigener HTTPS-Server kann
+weiterhin konfiguriert werden; der lokale Pages-Build setzt keine API voraus.
+Die öffentliche Testausgabe ist damit weiterhin von der gemeinsamen API abhängig.
+Die eigenständig betreibbare Node-Ausgabe ist vollständig im Repository enthalten.
+Keine Weiterleitung als Ersatz und keine neu beauftragte Infrastruktur.
 DB-403 im Worker wird nicht umgangen. Europaweite Fahrplan-/Störungsabdeckung
 und Liniengeometrien bleiben partiell. [Ausweichplanung](routing-resilience.md).

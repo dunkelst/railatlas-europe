@@ -1,6 +1,6 @@
 # RailAtlas Europa – aktueller Fortführungsstand
 
-Aktualisiert am 27.10.2026. Projekt `appgprj_6ad7024dce688191b17cca024104c456`.
+Aktualisiert am 28.10.2026. Projekt `appgprj_6ad7024dce688191b17cca024104c456`.
 Site: https://railatlas-europa.cocoaamber33.chatgpt.site
 Repository: https://github.com/dunkelst/railatlas-europe
 
@@ -79,8 +79,12 @@ in vier Ländern; Start, Zwischenziel und Ziel aus echten Busmarkern übernommen
    auf Basis vollständiger echter Fahrplanantworten ausbauen.
 3. Europäische Fahrplanabdeckung verbessern; ein Kartenhalt bestätigt keine
    verfügbare Verbindung. DB-403 nicht wiederholt testen oder umgehen.
-4. Neuer Pages-Rollout erst mit freigegebenem eigenem öffentlichen HTTPS-Server.
-   Bis dahin bleibt Pages Version 12. Keine bezahlte Infrastruktur beauftragen.
+4. GitHub Pages bei App-Änderungen automatisch mitziehen. Der Auftrag vom
+   28.10.2026 verlangt die aktuelle nutzbare GitHub-Website. Die öffentliche
+   Testausgabe behält ihre bestehende gemeinsame RailAtlas-API bei; diese
+   Abhängigkeit bleibt dokumentiert. Eigener Server weiter konfigurierbar,
+   eigenständige Node-Ausgabe vollständig enthalten. Keine bezahlte
+   Infrastruktur beauftragen. [Pages-Prüfprotokoll](github-pages-qa.md).
 
 Geometrien und Gehzeiten werden nicht erfunden. Fahrzeugzeiten bleiben
 unverändert; Koordinaten-Endpunkte auf 30 m begrenzt. Kein GPS-Livenachweis.
