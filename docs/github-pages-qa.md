@@ -1,6 +1,33 @@
 # GitHub Pages – aktueller Veröffentlichungsnachweis
 
-## 28.10.2026: Gemeinsame App-Version 27 auf GitHub Pages
+## 28.10.2026: Gemeinsame App-Version 28 auf GitHub Pages
+
+Veröffentlicht und im Browser geprüft:
+https://dunkelst.github.io/railatlas-europe/
+
+- Implementierungscommit: `8384a3a477f125f536ffb0ef7ac5ef232a041e01`.
+- Sites-Version 28, Quelle `4cf457308db624fc5e141151d7a09a5da41a2caf`.
+  Alle 200 App-Dateien sind bytegleich; acht Änderungen gegenüber Version 27.
+- 111 Node-Regressionen erfolgreich. CI und gemeinsame App-Prüfung erfolgreich.
+- Pages-Workflow mit API-/CORS-Prüfung, Build und Deployment erfolgreich:
+  https://github.com/dunkelst/railatlas-europe/actions/runs/40740909681
+
+Die automatische Faro–Madrid-Suche für 31.10.2026 ab 09:00 Europe/Berlin wurde
+auf der tatsächlich veröffentlichten GitHub-Seite ausgeführt. Drei Alternativen
+mit den gleichen Zeiten wie auf Sites, erste 10:30–17:13. Die gelieferten
+Fahrzeugverläufe sind sichtbar und als Anbieterverlauf ohne bestätigte Original-
+GTFS-Herkunft benannt. Flughafenhalt-Zuordnung und Stationszugang bleiben sichtbar.
+Kein Navigieren auf eine Sites-Seite, keine Anmeldung nötig. Die öffentliche
+Auskunfts-API bleibt die bestehende Abhängigkeit der GitHub-Testausgabe.
+
+[Browsernachweis auf beiden Veröffentlichungen](qa/railatlas-v28.md).
+Allgemeine Tavira-Linienabdeckung und kurzfristige Betriebslage sind weiterhin
+nur teilweise bestätigt. Dieser Dokumentationsnachtrag verändert den App-Code
+nicht und löst keinen weiteren Pages-Rollout aus.
+
+![Version 28 direkt auf GitHub Pages](qa/railatlas-v28-github-results.jpg)
+
+## Historisch: 28.10.2026, gemeinsame App-Version 27 auf GitHub Pages
 
 Veröffentlichte und im Browser geprüfte Adresse:
 https://dunkelst.github.io/railatlas-europe/
