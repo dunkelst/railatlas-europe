@@ -119,14 +119,14 @@ export function parseNetwork(data, bounds, modes) {
 }
 const cache = new Map();
 let nextRequestAt = 0;
-export async function fetchOsmNetwork(bounds, modes, signal, refresh=false) {
+export async function fetchOsmNetwork(bounds, modes, signal, refresh=false, timeout=NETWORK_TIMEOUT_MS) {
   if(signal?.aborted)throw new DOMException('Abgebrochen', 'AbortError');
   const query = networkQuery(bounds, modes), key = query, found = cache.get(key);
   if (!refresh && found && Date.now() - found.at < 300000) return found.data;
   if(!refresh)for(const item of cache.values())if(Date.now()-item.at<300000 && networkCovers(item.data,bounds,modes))return item.data;
   if (Date.now() < nextRequestAt) throw Error('Die Kartendatenquelle ist ausgelastet. Bitte in etwa einer Minute erneut laden.');
   let timedOut = false;
-  const controller = new AbortController(), abort = () => controller.abort(), timer = setTimeout(() => {timedOut = true; controller.abort();}, NETWORK_TIMEOUT_MS);
+  const controller = new AbortController(), abort = () => controller.abort(), timer = setTimeout(() => {timedOut = true; controller.abort();}, timeout);
   signal?.addEventListener('abort', abort, {once: true});
   try {
     if (signal?.aborted) controller.abort();
@@ -254,7 +254,7 @@ export function parseTransitousNetwork(raw,bounds,modes){
 }
 export function mergeNetworkStops(primary,regional,modes){
  if(!primary)return regional;if(!regional)return primary;
- const layers=Object.fromEntries(NETWORK_MODES.map(m=>[m.id,{lines:regional.layers[m.id].lines,stops:[...primary.layers[m.id].stops]}]));
+ const layers=Object.fromEntries(NETWORK_MODES.map(m=>[m.id,{lines:[...new Map([...primary.layers[m.id].lines,...regional.layers[m.id].lines].map(line=>[line.id,line])).values()],stops:[...primary.layers[m.id].stops]}]));
  const cos=Math.max(.05,Math.cos((primary.bounds[0]+primary.bounds[2])/2*Math.PI/180));
  for(const mode of modes)for(const stop of regional.layers[mode].stops){
   const index=layers[mode].stops.findIndex(p=>sameNetworkStop(p,stop,mode,cos));
@@ -267,7 +267,7 @@ export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=fals
  signal?.throwIfAborted();networkQuery(bounds,modes);
  if(!['all','stops'].includes(detail))throw Error('Ungültige Auswahl für die Netzdaten.');
  if(!refresh)for(const entry of mapCache.values())if(Date.now()-entry.at<300000&&networkCovers(entry.data,bounds,modes)&&(entry.data.detail==='all'||detail==='stops'))return entry.data;
- let result,efaError,transitousError,primary,regional;
+ let result,efaError,transitousError,osmError,primary,regional;
  const hasData=data=>data&&modes.some(m=>data.layers[m].lines.length||data.layers[m].stops.length),needLines=detail==='all'&&modes.some(m=>m!=='rail');
  const replies=await Promise.allSettled([fetchTransitousStops(bounds,modes,signal),...(needLines?[fetchEfaNetwork(bounds,modes,signal,detail)]:[])]);signal?.throwIfAborted();
  if(replies[0].status==='fulfilled')primary=parseTransitousNetwork(replies[0].value,bounds,modes);else transitousError=replies[0].reason;
@@ -275,9 +275,17 @@ export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=fals
  else if(!hasData(primary))try{regional=await fetchEfaNetwork(bounds,modes,signal,detail);}catch(error){signal?.throwIfAborted();efaError=error;}
  result=mergeNetworkStops(hasData(primary)?primary:null,hasData(regional)?regional:null,modes);
  if(!result)try{result=await fetchOsmNetwork(bounds,modes,signal,refresh);result.detail='all';}catch(error){signal?.throwIfAborted();throw Error('Die allgemeinen Netzdaten sind gerade nicht erreichbar. '+(efaError?'Auch die ergänzende Haltestellen-/Linienauskunft ist ausgefallen. ':'')+error.message);}
+ else if(needLines){
+  // A stop response does not satisfy a request for line paths. Supplement only
+  // missing modes, preserving existing source stops, IDs and regional lines.
+  const missing=modes.filter(mode=>mode!=='rail'&&!result.layers[mode].lines.length);
+  if(missing.length)try{result=mergeNetworkStops(result,await fetchOsmNetwork(bounds,missing,signal,refresh,12000),modes);}catch(error){signal?.throwIfAborted();osmError=error;}
+ }
  const warnings=[primary?.warning,needLines?regional?.warning:'',transitousError?'Die europäische Haltestellenquelle ist gerade nicht erreichbar; ergänzende Quelldaten werden gezeigt.':'',needLines&&efaError?'Die ergänzende Linienauskunft ist gerade nicht erreichbar; gelieferte Halte bleiben sichtbar.':''];
- if(needLines&&!efaError&&!modes.some(m=>result.layers[m].lines.length)&&!regional?.warning)warnings.push('Für diesen Ausschnitt liefert die Linienquelle keine Verläufe; die Halte bleiben nutzbar.');
- result.detail=detail;if(warnings.some(Boolean)){result.warning=[...new Set(warnings.filter(Boolean))].join(' ');result.warningScope=primary?.warning||transitousError?'all':'lines';}
+ const missing=needLines?modes.filter(mode=>mode!=='rail'&&!result.layers[mode].lines.length):[];
+ if(missing.length)warnings.push('Für '+missing.map(mode=>NETWORK_MODES.find(m=>m.id===mode).label).join(', ')+' fehlen bestätigte Linienverläufe in diesem Ausschnitt. '+(osmError?'Auch die ergänzende OSM-Abfrage ist nicht erreichbar. ':'')+'Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.');
+ const warning=[...new Set(warnings.filter(Boolean))].join(' ');
+ result={...result,detail,...(warning?{warning,warningScope:primary?.warning||transitousError?'all':'lines'}:{})};
  if(mapCache.size>=8)mapCache.delete(mapCache.keys().next().value);
  mapCache.set(detail+':'+modes.join(',')+':'+bounds.join(','),{data:result,at:Date.now()});return result;
 }

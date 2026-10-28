@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {parseTransitousStation,fetchTransitousStops} from '../lib/transitous.mjs';
-import {parseTransitousNetwork,parseEfaNetwork,mergeNetworkStops} from '../lib/network.mjs';
+import {parseTransitousNetwork,parseEfaNetwork,mergeNetworkStops,OVERPASS_URL} from '../lib/network.mjs';
+import {decodePolyline} from '../lib/transit.mjs';
 import {sameStation} from '../lib/journey.mjs';
 import {getVrrJourney,parseVrrStation,sameVrrStation,EFA_PROVIDER} from '../lib/vrr.mjs';
 import {handleApi} from '../lib/api.mjs';
@@ -34,16 +35,25 @@ test('Overlapping feeds share one physical marker without collapsing platforms f
  const d=parseTransitousNetwork([first,other,platform],bbox,['bus']);assert.equal(d.layers.bus.stops.length,2);assert.equal(d.layers.bus.stops[0].lat,first.lat);assert.deepEqual(d.layers.bus.stops[0].station.transitousIds,[first.stopId,other.stopId]);assert.equal(d.layers.bus.stops[1].station.transitousId,platform.stopId);
 });
 
-test('Regional line failure preserves international stops and never starts a slow OSM fallback',async t=>{
+test('Missing regional lines load OSM paths even when international stops already exist',async t=>{
  clock(t);const module=await import('../lib/network.mjs?motis-partial');let calls=0;
- t.mock.method(globalThis,'fetch',async url=>{calls++;const u=new URL(url);if(u.hostname==='api.transitous.org')return Response.json(sample.stops);assert.equal(u.hostname,'www.efa.de');return new Response('busy',{status:503});});
- const d=await module.fetchNetwork(bbox,['bus']);assert.equal(d.layers.bus.stops.length,7);assert.equal(d.layers.bus.lines.length,0);assert.match(d.warning,/Linienauskunft/);assert.equal(calls,2);
+ const points=[{lat:49.14,lon:9.23},{lat:49.141,lon:9.231},{lat:49.142,lon:9.232}];
+ t.mock.method(globalThis,'fetch',async(url,init)=>{calls++;const u=new URL(url);if(u.hostname==='api.transitous.org')return Response.json(sample.stops);if(u.hostname==='www.efa.de')return new Response('busy',{status:503});assert.equal(u.origin,new URL(OVERPASS_URL).origin);assert.match(init.body.get('data'),/route~.*bus/);return Response.json({elements:[{type:'relation',id:123,tags:{type:'route',route:'bus',ref:'Test'},members:[{type:'way',ref:1,role:'',geometry:points}]}]});});
+ const d=await module.fetchNetwork(bbox,['bus']);assert.equal(d.layers.bus.stops.length,7);assert.equal(d.layers.bus.lines.length,1);assert.deepEqual(d.layers.bus.lines[0].segments,[points.map(p=>[p.lat,p.lon])]);assert.match(d.source,/OpenStreetMap/);assert.equal(calls,3);assert.equal(d.layers.bus.stops[0].station.transitousId,sample.stops.find(s=>s.name===d.layers.bus.stops[0].name).stopId);
+});
+
+test('An unavailable line supplement preserves international stops and reports partial coverage',async t=>{
+ clock(t);const module=await import('../lib/network.mjs?motis-osm-outage');let calls=0;
+ t.mock.method(globalThis,'fetch',async url=>{calls++;return new URL(url).hostname==='api.transitous.org'?Response.json(sample.stops):new Response('busy',{status:503});});
+ const d=await module.fetchNetwork(bbox,['bus']);assert.equal(d.layers.bus.stops.length,7);assert.equal(d.layers.bus.lines.length,0);assert.match(d.warning,/OSM-Abfrage/);assert.equal(d.warningScope,'lines');assert.equal(calls,3);
 });
 
 test('Merging regional labels preserves primary coordinates and identities and retains genuinely different stops',()=>{
  const primary=parseTransitousNetwork(sample.stops,bbox,['bus']),raw=sample.stops.find(s=>s.name==='Heilbronn Karmeliterstraße'),stop={id:'de:08121:99',type:'stop',name:raw.name,coord:[raw.lat+.00001,raw.lon],productClasses:[5]},regional=parseEfaNetwork([stop,{...stop,id:'de:08121:999',name:'Anderer Halt'}],[],{},bbox,['bus']);
  regional.layers.bus.stops[0].lines=['Testlinie'];const before=JSON.stringify(primary),merged=mergeNetworkStops(primary,regional,['bus']);assert.equal(merged.layers.bus.stops.length,8);
  const combined=merged.layers.bus.stops.find(s=>s.station.transitousId===raw.stopId);assert.equal(combined.lat,raw.lat);assert.equal(combined.station.efaId,undefined);assert.deepEqual(combined.lines,['Testlinie']);assert.equal(JSON.stringify(primary),before);
+ const existing={id:'efa-line:existing',ref:'Existing',segments:[[[49.14,9.23],[49.141,9.231]]]},supplement={id:'relation/123',ref:'Supplement',segments:[[[49.14,9.23],[49.142,9.232]]]};
+ merged.layers.bus.lines=[existing];regional.layers.bus.lines=[supplement];const extra=mergeNetworkStops(merged,regional,['bus']);assert.deepEqual(extra.layers.bus.lines,[existing,supplement]);assert.deepEqual(merged.layers.bus.lines,[existing]);
 });
 
 test('An international source outage retains confirmed regional stops with a visible source warning',async t=>{
@@ -75,8 +85,21 @@ test('Transitous map selections resolve through the existing timetable and inter
 test('Actual Friedhof to Römerstraße plans retain three full journeys, Bus 11/32, source walking paths and realtime',()=>{
  const [a,b]=endpoints(),parsed=parseTransitousJourneys(plan(),a,b,requested);
  assert.equal(parsed.journeys.length,3);const j=parsed.journeys[1];assert.deepEqual(j.legs.map(l=>l.line),['11','Fußweg','32']);assert.equal(j.departure,'2026-10-26T20:09:00.000Z');assert.equal(j.arrival,'2026-10-26T20:33:00.000Z');assert.equal(j.transfers,1);assert.ok(j.legs.some(l=>l.realtime));
- assert.ok(j.legs.filter(l=>!l.walking).every(l=>l.geometry.status==='missing'&&l.geometry.reason==='unverified'&&!l.geometry.segments.length));assert.equal(j.legs[1].geometry.status,'complete');assert.ok(j.legs.at(-1).stopovers.length>5);assert.equal(validateChain([j],[a,b],[]),true);assert.ok(j.attributions.some(a=>a.url==='https://transitous.org/sources/'));
+ assert.ok(j.legs.filter(l=>!l.walking).every(l=>l.geometry.status==='complete'&&l.geometry.reason==='unverified'&&l.geometry.segments.length));assert.equal(j.legs[1].geometry.status,'complete');assert.ok(j.legs.at(-1).stopovers.length>5);assert.equal(validateChain([j],[a,b],[]),true);assert.ok(j.attributions.some(a=>a.url==='https://transitous.org/sources/'));
  assert.equal(parseTransitousJourneys(plan(),{...a,name:'Fremder Halt'},b,requested).journeys.length,0);assert.equal(parseTransitousJourneys(plan(),a,{...b,lat:b.lat+.01},requested).journeys.length,0);
+});
+
+test('Vehicle paths preserve exact supplied coordinates, while missing, malformed, remote or chord-only geometry cannot fabricate routes',()=>{
+ const f=faro(),origin=matchTransitousCatalogStation(f.fromCatalog,f.geocode),raw=f.nativePlan.itineraries[0],parsed=parseTransitousJourneys(f.nativePlan,origin,f.toCatalog,faroRequested);
+ for(let i=0;i<raw.legs.length;i++)if(raw.legs[i].mode!=='WALK'){
+  const leg=parsed.journeys[0].legs[i],points=decodePolyline(raw.legs[i].legGeometry.points,raw.legs[i].legGeometry.precision);
+  assert.deepEqual(leg.geometry.segments,[points]);assert.equal(leg.geometry.reason,'unverified');assert.match(leg.notes[0],/Original-GTFS-Herkunft nicht bestätigt/);
+ }
+ const [a,b]=endpoints();
+ for(const mutate of [l=>delete l.legGeometry,l=>l.legGeometry.points='invalid',l=>l.legGeometry={points:'_p~iF~ps|U_ulLnnqC',precision:5}]){
+  const d=plan();d.itineraries=d.itineraries.slice(0,1);const i=d.itineraries[0].legs.findIndex(l=>l.mode!=='WALK');mutate(d.itineraries[0].legs[i]);
+  const p=parseTransitousJourneys(d,a,b,requested);assert.equal(p.journeys.length,1);assert.equal(p.journeys[0].legs[i].geometry.status,'missing');assert.deepEqual(p.journeys[0].legs[i].geometry.segments,[]);
+ }
 });
 
 test('Unusable MOTIS alternatives preserve exclusions and cannot bypass cancellations, times, geometry or dataset validity',()=>{

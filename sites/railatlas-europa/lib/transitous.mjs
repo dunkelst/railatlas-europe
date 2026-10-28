@@ -71,24 +71,24 @@ export function parseTransitousJourneys(data,from,to,requested){
    const a=place(raw.from),b=place(raw.to),departure=iso(raw.startTime),arrival=iso(raw.endTime),walking=raw.mode==='WALK',product=transportProduct({cls:classes[raw.mode]||0},walking);
    if(!departure||!arrival||product.mode==='unknown'||raw.loopedCalendarSince)throw Error('Unbestätigte Fahrplandaten');
    const notes=alerts([...(raw.alerts||[]),...(raw.from.alerts||[]),...(raw.to.alerts||[])],departure,arrival,a.name+' → '+b.name);
-   const points=walking?decodePolyline(raw.legGeometry?.points,raw.legGeometry?.precision):[];
+   const points=decodePolyline(raw.legGeometry?.points,raw.legGeometry?.precision);
    const gap=(p,s)=>p?distanceKm({lat:p[0],lon:p[1]},s)*1000:Infinity;
    const fromGap=gap(points[0],a),toGap=gap(points.at(-1),b);
    // Native rail platforms can be located inside a station building, while
    // OSM routing ends at an entrance. Only these station endpoints allow a
    // partial source path; selected coordinates and ordinary bus stops stay strict.
    const stationAccess=(stop,metres)=>stop.vertexType==='TRANSIT'&&typeof stop.stopId==='string'&&(stop.modes||[]).some(m=>['HIGHSPEED_RAIL','LONG_DISTANCE','NIGHT_RAIL','REGIONAL_RAIL','SUBURBAN','SUBWAY'].includes(m))&&metres<=Math.min(250,raw.distance);
-   // /plan does not identify whether a transit path is a GTFS shape or inferred.
-   // Retain actual ride times; only routed pedestrian geometry is drawn.
-   const routed=points.length>1&&!(points.length===2&&distanceKm(a,b)>.15),complete=routed&&fromGap<=30&&toGap<=30;
-   const partial=routed&&!complete&&(fromGap<=30||stationAccess(raw.from,fromGap))&&(toGap<=30||stationAccess(raw.to,toGap));
+   // Preserve supplied paths without claiming original GTFS provenance. Vehicle
+   // paths are marked unverified and drawn dashed; never invent station chords.
+   const routed=points.length>1&&!(points.length===2&&distanceKm(a,b)>.15),limit=walking?30:250,complete=routed&&fromGap<=limit&&toGap<=limit;
+   const partial=walking&&routed&&!complete&&(fromGap<=30||stationAccess(raw.from,fromGap))&&(toGap<=30||stationAccess(raw.to,toGap));
    const geometry={status:complete?'complete':partial?'partial':'missing',segments:complete||partial?[points]:[],source:TRANSITOUS_SOURCE,...(!walking?{reason:'unverified'}:partial?{reason:'station-access',gapMeters:Math.round(Math.max(fromGap,toGap))}:{})};
    if(walking&&(!routed||!Number.isFinite(raw.distance)||raw.distance<0||arrival===departure&&raw.distance>10||!complete&&!partial)){
     const metres=Math.max(fromGap,toGap),name=fromGap>=toGap?(raw.from.vertexType==='NORMAL'?from.name:a.name):(raw.to.vertexType==='NORMAL'?to.name:b.name);
     throw Object.assign(Error(Number.isFinite(metres)&&metres>30?'Der gelieferte Fußweg bei „'+name+'“ erreicht den gewählten Punkt nicht ('+Math.round(metres)+' m Abweichung). Bitte einen bestätigten Halt oder einen passenden Kartenzugang wählen.':'Für den Fußweg bei „'+name+'“ fehlt ein nutzbarer Quellverlauf. Bitte einen bestätigten Halt oder einen anderen Zugang wählen.'),{code:'WALKING_PATH_UNCONFIRMED'});
    }
    const stopovers=(raw.intermediateStops||[]).map(s=>({station:place(s),arrival:iso(s.arrival),departure:iso(s.departure),plannedArrival:iso(s.scheduledArrival),plannedDeparture:iso(s.scheduledDeparture),platform:s.track,cancelled:!!s.cancelled,notices:alerts(s.alerts,departure,arrival,s.name)}));
-   return {from:a,to:b,departure,arrival,plannedDeparture:iso(raw.scheduledStartTime),plannedArrival:iso(raw.scheduledEndTime),...product,line:walking?'Fußweg':raw.routeShortName||raw.displayName||raw.tripShortName||raw.mode,operator:raw.agencyName||'',direction:raw.headsign||'',tripId:raw.tripId||null,platform:walking?undefined:raw.from.track,arrivalPlatform:walking?undefined:raw.to.track,plannedPlatform:raw.from.scheduledTrack,plannedArrivalPlatform:raw.to.scheduledTrack,walking,distanceMeters:walking?raw.distance:null,throughService:!!raw.interlineWithPreviousLeg,realtime:raw.realTime===true,cancelled:!!(raw.cancelled||raw.from.cancelled||raw.to.cancelled||raw.from.pickupType==='NOT_ALLOWED'||raw.to.dropoffType==='NOT_ALLOWED'),stops:stopovers.map(s=>s.station),stopovers,notices:notes,notes:walking?[]:['Linienverlauf nicht als Original-GTFS-Pfad bestätigt; auf der Karte bleibt dieser Fahrabschnitt offen.'],geometry};
+   return {from:a,to:b,departure,arrival,plannedDeparture:iso(raw.scheduledStartTime),plannedArrival:iso(raw.scheduledEndTime),...product,line:walking?'Fußweg':raw.routeShortName||raw.displayName||raw.tripShortName||raw.mode,operator:raw.agencyName||'',direction:raw.headsign||'',tripId:raw.tripId||null,platform:walking?undefined:raw.from.track,arrivalPlatform:walking?undefined:raw.to.track,plannedPlatform:raw.from.scheduledTrack,plannedArrivalPlatform:raw.to.scheduledTrack,walking,distanceMeters:walking?raw.distance:null,throughService:!!raw.interlineWithPreviousLeg,realtime:raw.realTime===true,cancelled:!!(raw.cancelled||raw.from.cancelled||raw.to.cancelled||raw.from.pickupType==='NOT_ALLOWED'||raw.to.dropoffType==='NOT_ALLOWED'),stops:stopovers.map(s=>s.station),stopovers,notices:notes,notes:walking?[]:[geometry.segments.length?'Gelieferter Anbieterverlauf: farbig gestrichelt dargestellt, Original-GTFS-Herkunft nicht bestätigt.':'Für diesen Fahrabschnitt fehlt ein nutzbarer gelieferter Verlauf; die Kartenlücke bleibt offen.'],geometry};
   });
   const notices=mergeNotices([alerts(trip.alerts,trip.startTime,trip.endTime,from.name+' → '+to.name),...legs.flatMap(l=>[l.notices,...l.stopovers.map(s=>s.notices)])]);
   if(legs.some(l=>l.cancelled)||notices.some(n=>n.code==='NO_SERVICE'||n.routingUncertain)){excluded.push(...notices.map(n=>({...n,scope:'Verworfener Verbindungsvorschlag: '+n.scope})));continue;}
@@ -96,7 +96,7 @@ export function parseTransitousJourneys(data,from,to,requested){
   if(Date.parse(legs[0].departure)<Date.parse(requested)||!samePlace(from,legs[0].from)||!samePlace(to,legs.at(-1).to))continue;
   if(legs[0].from.locationType==='coordinate')legs[0].from={...legs[0].from,name:from.name};
   if(legs.at(-1).to.locationType==='coordinate')legs.at(-1).to={...legs.at(-1).to,name:to.name};
-  journeys.push({departure:legs[0].departure,arrival:legs.at(-1).arrival,legs,notices,transfers:Math.max(0,legs.filter(l=>!l.walking&&!l.throughService).length-1),source:TRANSITOUS_SOURCE,sourceWarning:'Zusätzliche europäische Fahrplanauskunft; Datenabdeckung und Echtzeitdaten sind partiell. Nicht als Originalpfad bestätigte Fahrzeuggeometrien bleiben auf der Karte offen.',disruptionCoverage:'partial',disruptionCheck:'trip-only',routingStatus:'provider-checked',attributions:TRANSITOUS_ATTRIBUTIONS,fetchedAt:new Date().toISOString()});
+  journeys.push({departure:legs[0].departure,arrival:legs.at(-1).arrival,legs,notices,transfers:Math.max(0,legs.filter(l=>!l.walking&&!l.throughService).length-1),source:TRANSITOUS_SOURCE,sourceWarning:'Zusätzliche europäische Fahrplanauskunft; Datenabdeckung und Echtzeitdaten sind partiell. Gelieferte Fahrzeugverläufe werden farbig gestrichelt gezeigt; ihre Original-GTFS-Herkunft ist nicht bestätigt. Fehlende Geometrie bleibt offen.',disruptionCoverage:'partial',disruptionCheck:'trip-only',routingStatus:'provider-checked',attributions:TRANSITOUS_ATTRIBUTIONS,fetchedAt:new Date().toISOString()});
  }catch(error){if(error.code==='WALKING_PATH_UNCONFIRMED')walkingErrors.push(error.message);/* A malformed alternative cannot conceal valid connections. */}
  journeys.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));
  for(const journey of journeys)journey.notices=mergeNotices([journey.notices,excluded]);

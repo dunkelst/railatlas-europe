@@ -1,5 +1,27 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
+## Fortsetzung 28.10.2026: fehlende Linien trotz vorhandener Haltestellen
+
+- Nutzerbeleg: Tavira, alle Netzebenen aktiviert, 107 Bushalte und null Buslinien.
+  Die bisherige Logik beendete die Quellensuche schon nach vorhandenen Halten.
+- Fehlende Linienebenen lösen jetzt einen begrenzten ergänzenden OSM-Abruf aus.
+  Positive Regression: sieben echte gespeicherte Transitous-Halte bleiben mit
+  Originalkennungen erhalten; zusätzlich gelieferte OSM-Linien werden übernommen.
+  Eine zweite Regression bestätigt den Erhalt der Halte bei Quellenausfall.
+  Bestehende regionale Linien werden beim Ergänzen nicht überschrieben.
+- Reale Fahrzeuggeometrien aus Faro–Madrid sowie Heilbronn Friedhof–Römerstraße
+  bleiben punktgenau erhalten. Bus 11/32, Fernbus und AVE werden als gelieferte
+  Anbieterverläufe ausgegeben; die Oberfläche kennzeichnet diese farbig
+  gestrichelt und behauptet keine Original-GTFS-Herkunft. Fehlerhafte, entfernte
+  und fehlende Geometrie erzeugt keine erfundenen Kartenlinien.
+- Alle 111 Node-Regressionen erfolgreich, TypeScript ohne Fehler.
+- Aktuelle begrenzte OSM-Probe für Tavira: vorhandene Overpass-Quelle ohne
+  rechtzeitige Antwort; eine offizielle alternative Instanz lieferte eine
+  Gateway-Fehlerantwort. Dies belegt keine fehlenden Buslinien im Gebiet.
+  Deshalb wird weiterhin keine vollständige Linienabdeckung versprochen.
+- Veröffentlichung und echte Browserprüfung des neuen Stands folgen auf diese
+  lokalen Prüfungen; deren Nachweis wird im GitHub-Abschlussprotokoll ergänzt.
+
 ## Fortsetzung 27.10.2026: Faro Airport → Madrid Atocha
 
 - Reproduktion mit den echten Katalogeinträgen und Abfahrt 31.10.2026 09:00

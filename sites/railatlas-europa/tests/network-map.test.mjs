@@ -90,8 +90,8 @@ test('Explicit refresh also bypasses the independent OSM cache',async t=>{
 });
 
 test('A line-geometry outage preserves real stops with an explicit partial-data warning',async t=>{
- clock(t);const module=await import('../lib/network.mjs?geometry-failure');const calls=mockMap(t,u=>u.pathname.endsWith('XML_GEOOBJECT_REQUEST')?new Response('down',{status:503}):null);
- const data=await module.fetchNetwork(bbox,['bus']);assert.equal(data.layers.bus.stops.length,2);assert.equal(data.layers.bus.lines.length,0);assert.match(data.warning,/Halte bleiben sichtbar/);assert.ok(calls.every(u=>['www.efa.de','api.transitous.org'].includes(u.hostname)));
+ clock(t);const module=await import('../lib/network.mjs?geometry-failure');const calls=mockMap(t,u=>u.pathname.endsWith('XML_GEOOBJECT_REQUEST')||u.hostname===new URL(module.OVERPASS_URL).hostname?new Response('down',{status:503}):null);
+ const data=await module.fetchNetwork(bbox,['bus']);assert.equal(data.layers.bus.stops.length,2);assert.equal(data.layers.bus.lines.length,0);assert.match(data.warning,/Halte bleiben sichtbar/);assert.match(data.warning,/OSM-Abfrage/);assert.ok(calls.some(u=>u.hostname===new URL(module.OVERPASS_URL).hostname));
 });
 
 test('User abort cancels map retrieval without falling through to another source',async t=>{

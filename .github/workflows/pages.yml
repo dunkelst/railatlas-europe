@@ -15,7 +15,7 @@ on:
         description: "Öffentliche RailAtlas-Auskunft; optional durch einen eigenen Server ersetzen"
         required: true
         type: string
-        default: "https://railatlas-europa.cocoaamber33.chatgpt.site"
+        default: "https://railatlas-europa.dunkelst.chatgpt.site"
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ concurrency:
 jobs:
   deploy:
     env:
-      RAILATLAS_API_ORIGIN: ${{ inputs.api_origin || vars.RAILATLAS_API_ORIGIN || 'https://railatlas-europa.cocoaamber33.chatgpt.site' }}
+      RAILATLAS_API_ORIGIN: ${{ inputs.api_origin || vars.RAILATLAS_API_ORIGIN || 'https://railatlas-europa.dunkelst.chatgpt.site' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

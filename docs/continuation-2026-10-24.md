@@ -1,7 +1,7 @@
 # RailAtlas Europa – aktueller Fortführungsstand
 
 Aktualisiert am 28.10.2026. Projekt `appgprj_6ad7024dce688191b17cca024104c456`.
-Site: https://railatlas-europa.cocoaamber33.chatgpt.site
+Site: https://railatlas-europa.dunkelst.chatgpt.site
 Repository: https://github.com/dunkelst/railatlas-europe
 
 ## Auftrag und aktueller Quellstand
@@ -13,11 +13,20 @@ AGPL für den eigenen Programmcode und die Nutzung der breiteren Haltequelle
 freigegeben. AGPL-3.0-only ist umgesetzt; Fremddaten behalten ihre Bedingungen.
 Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
-Version **27**, Quelle `2ac3e41f0a72fdc25e28b8d1ea56f672a47e7952`,
-200 App-Dateien im Herkunftsmanifest. 109 Tests, TypeScript und alle drei Builds
-bestanden. Veröffentlicht; öffentliche API und Browserprüfung erfolgreich.
-Beide GitHub-Prüfungen sind erfolgreich, 200 App-Dateien bytegleich. Publikum
-unverändert. Vorige Version-24–26-Nachweise sind historisch.
+Version **28**, Quelle `4cf457308db624fc5e141151d7a09a5da41a2caf`,
+200 App-Dateien im Herkunftsmanifest. 111 Tests, TypeScript und alle drei Builds
+bestanden. Veröffentlicht; öffentliche API bestätigt drei Faro–Madrid-Reisen
+mit neun gelieferten Fahrzeugverläufen. Publikum unverändert.
+Vorige Version-24–27-Nachweise sind historisch.
+
+Der gemeldete Tavira-Fall (107 Bushalte, null Buslinien) deckte einen Fehler im
+Fallback auf: vorhandene Halte verhinderten den Abruf fehlender Linien. Dieser
+Abruf erfolgt jetzt begrenzt für die fehlenden Verkehrsmittel; vorhandene Daten
+bleiben erhalten. Die externe OSM-Quelle war in den aktuellen lokalen Proben
+nicht erreichbar. Keine vollständige Linienabdeckung behaupten. Gelieferte
+Transitous-Fahrzeuggeometrien werden jetzt unverändert dargestellt, farbig
+gestrichelt mit Hinweis auf nicht bestätigte Original-GTFS-Herkunft.
+[Aktueller Prüfstand](qa/railatlas-v28.md).
 
 Der stabile Transitous-/MOTIS-Kartenhaltepfad ist im gemeinsamen Netzwerkmodell
 angebunden. Eigene GTFS-IDs und Originalkoordinaten, keine aus Feednamen erfundenen

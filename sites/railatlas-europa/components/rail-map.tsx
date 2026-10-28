@@ -34,7 +34,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
  }).catch(e=>{if(active)setError(e.message);});return()=>{active=false;if(map.current){map.current._railResize?.disconnect();map.current.remove();map.current=null;journeyLayer.current=null;networkGroups.current={};}};},[]);
  useEffect(()=>{if(!ready||!map.current||!journeyLayer.current)return;const L=window.L,group=journeyLayer.current;group.clearLayers();
   const coords:number[][]=[];
-  parts.forEach((p,pi)=>p.legs.forEach(l=>{for(const points of l.geometry?.segments||[])if(points.length>1){L.polyline(points,{color:l.walking?(l.walkingFallback?'#c33e38':'#65706b'):l.mode==='bus'||l.mode==='replacement-bus'?'#a25624':pi%2?'#245ddb':'#206449',weight:l.walking?3:5,opacity:.95,...(l.walking?{dashArray:'3 6'}:{})}).addTo(group);coords.push(...points);}}));
+  parts.forEach((p,pi)=>p.legs.forEach(l=>{for(const points of l.geometry?.segments||[])if(points.length>1){L.polyline(points,{color:l.walking?(l.walkingFallback?'#c33e38':'#65706b'):l.mode==='bus'||l.mode==='replacement-bus'?'#a25624':pi%2?'#245ddb':'#206449',weight:l.walking?3:5,opacity:.95,...(l.walking?{dashArray:'3 6'}:l.geometry.reason==='unverified'?{dashArray:'8 5'}:{})}).addTo(group);coords.push(...points);}}));
   stations.forEach((s,i)=>{if(!Number.isFinite(s.lat)||!Number.isFinite(s.lon))return;const pos=[s.lat,s.lon];coords.push(pos);const node=document.createElement('div');node.className='map-popup';node.textContent=s.name+(s.country?' · '+s.country:'');
    L.marker(pos,{icon:L.divIcon({className:'station-pin '+(i===0?'pin-start':i===stations.length-1?'pin-end':'pin-via'),html:'<span>'+String(i+1)+'</span>',iconSize:[30,30],iconAnchor:[15,15]})}).bindPopup(node).addTo(group);
   });
@@ -54,7 +54,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
    const config=runtime();
    if(config.requiresApiOrigin&&!config.apiOrigin)data=await fetchNetwork(bounds,modes.split(','),controller.signal,requestDetail,forced);
    else{const response=await fetch(apiUrl('/api/network?'+new URLSearchParams({bbox:bounds.join(','),modes,detail:requestDetail,...(forced?{refresh:'1'}:{})})),{signal:controller.signal});const body=await response.json() as NetworkData&{error?:string};if(!response.ok)throw Error(body.error||'Netzebenen nicht erreichbar.');data=body;}
-   if(!active)return;setNetwork(data);const count=modes.split(',').reduce((n,m)=>n+data.layers[m].lines.length+data.layers[m].stops.length,0);setNetworkError(false);setStatus(count?'Netzdaten geladen.':'Für diesen Ausschnitt wurden keine passenden Netzdaten geliefert.');
+   if(!active)return;setNetwork(data);const count=modes.split(',').reduce((n,m)=>n+data.layers[m].lines.length+data.layers[m].stops.length,0);setNetworkError(false);setStatus(count?(data.warning?'Netzdaten teilweise geladen.':'Netzdaten geladen.'):'Für diesen Ausschnitt wurden keine passenden Netzdaten geliefert.');
   }catch(e){if(active&&!controller.signal.aborted){setNetworkError(true);setStatus(((e as Error).message||'Die Netzebenen sind gerade nicht erreichbar.')+(networkRef.current?' Bereits geladene Netzdaten bleiben sichtbar.':''));}}finally{if(active)setLoading(false);}},1000);
   return()=>{active=false;clearTimeout(timer);controller.abort();};
  },[ready,requestKey,detailVisible,modes,requestDetail,retry]);
@@ -101,6 +101,6 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
    <small>Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Daten können fehlen; keine Zusage zum aktuellen Betrieb.</small>
   </details></aside>
   {picking&&<div className="pick-banner">Kartenpunkt oder Halt wählen · als {picking}</div>}
-  <div className="map-caption">{parts.length?<>Reiseverlauf: {[...new Set(parts.map(p=>p.source))].join(' · ')} · Grün/Blau: Bahn · Braun: Bus · Grau: Fußweg{parts.some(p=>p.alternativeKind==='walking')?' · Rot gestrichelt: Fußweg-Notlösung':''}{parts.some(p=>p.legs.some(l=>l.geometry?.status!=='complete'))?' · Fehlende Geometrie bleibt offen.':''}</>:'Europa entdecken · Netzebenen unabhängig von deiner Reise einblenden'}</div>
+  <div className="map-caption">{parts.length?<>Reiseverlauf: {[...new Set(parts.map(p=>p.source))].join(' · ')} · Grün/Blau: Bahn · Braun: Bus · Grau: Fußweg{parts.some(p=>p.legs.some(l=>!l.walking&&l.geometry?.reason==='unverified'&&l.geometry.segments.length))?' · Farbig gestrichelt: Anbieterverlauf, Originalpfad nicht bestätigt':''}{parts.some(p=>p.alternativeKind==='walking')?' · Rot gestrichelt: Fußweg-Notlösung':''}{parts.some(p=>p.legs.some(l=>l.geometry?.status!=='complete'))?' · Fehlende Geometrie bleibt offen.':''}</>:'Europa entdecken · Netzebenen unabhängig von deiner Reise einblenden'}</div>
  </section>;
 }

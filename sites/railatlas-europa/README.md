@@ -1,5 +1,28 @@
 # RailAtlas Europa
 
+## Linien nachladen und gelieferte Reiseverläufe anzeigen (28.10.2026)
+
+Vorhandene Haltestellen erfüllen keine Anfrage nach Linienverläufen. Fehlende
+Linien werden pro Verkehrsmittel über die vorhandene OSM-Anbindung ergänzt,
+auch wenn Transitous bereits Halte liefert. Vorhandene Linien, Halte und IDs
+bleiben erhalten. Der ergänzende Abruf ist auf zwölf Sekunden begrenzt; Ausfälle
+lassen die vorhandenen Daten bestehen und werden als teilweise geladene
+Netzdaten samt fehlenden Linienebenen angezeigt. Reine Halteabfragen lösen
+keinen zusätzlichen Linienabruf aus.
+
+Die Transitous-Auskunft liefert auch Fahrzeuggeometrien. Diese werden jetzt
+ausgewertet und mit ihren unveränderten Quellpunkten auf der Karte dargestellt.
+Ihre Original-GTFS-Herkunft ist nicht bestätigt: Die App zeigt sie deshalb farbig
+gestrichelt und kennzeichnet sie in Reiseverlauf und Legende als Anbieterverlauf.
+Fehlende, ungültige, unpassende oder reine lange Endpunktverbindungen bleiben
+offen. Fußwegprüfung, Stationszugänge, Fahrzeiten, Störungsprüfung und Halte-
+Zuordnung behalten ihre bisherigen Regeln.
+
+111 Regressionen und TypeScript erfolgreich. Die gespeicherte echte Faro–Madrid-
+Antwort enthält neun Fahrzeugabschnitte; ihre gelieferten Verläufe werden jetzt
+unverändert übernommen. Verfügbarkeit und Vollständigkeit der externen Netz-
+quellen sind weiterhin nicht garantiert.
+
 ## Kataloghalte und Stationszugänge (27.10.2026)
 
 Kataloghalte ohne Fahrplankennung werden vor der zusätzlichen Transitous-Suche

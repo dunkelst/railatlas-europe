@@ -1,8 +1,25 @@
 # RailAtlas Europa
 
-[**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.cocoaamber33.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
+[**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **27**, Quellcommit `2ac3e41f0a72fdc25e28b8d1ea56f672a47e7952`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **28**, Quellcommit `4cf457308db624fc5e141151d7a09a5da41a2caf`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 28: fehlende Linien ergänzen und Reiseverläufe übernehmen
+
+Vorhandene Haltestellen beenden die Suche nach fehlenden Linien nicht mehr.
+Die gemeinsame API ergänzt fehlende Verkehrsmittel über die vorhandene
+OSM-Anbindung, mit zwölf Sekunden Zeitlimit und Erhalt aller vorhandenen
+Linien, Halte und Kennungen. Ein Ausfall wird als teilweise geladene Netzdaten
+gemeldet. Die aktuellen begrenzten Tavira-Proben konnten die OSM-Quelle nicht
+erreichen; vollständige Linienabdeckung ist damit weiterhin offen.
+
+Gelieferte Transitous-Fahrzeuggeometrien werden jetzt punktgenau übernommen.
+Bus-, Bahn- und U-Bahn-Verläufe aus dieser Auskunft erscheinen farbig gestrichelt
+und mit sichtbarem Hinweis auf die nicht bestätigte Original-GTFS-Herkunft.
+Fehlende, ungültige und bloß schematische lange Endpunktverbindungen bleiben offen.
+Fußweg-, Halte-, Fahrzeit- und Störungsprüfungen bleiben erhalten.
+111 Regressionen, TypeScript und alle drei Builds erfolgreich.
+[Prüfstand und verbleibende Grenze](docs/qa/railatlas-v28.md).
 
 ## Version 27: Katalogzuordnung und Stationszugänge
 
@@ -229,7 +246,7 @@ Danach **http://127.0.0.1:3000** öffnen. Oberfläche und alle APIs laufen aus d
 `npm run build:pages` erzeugt dieselbe Oberfläche als statische Ausgabe. Die
 [öffentliche GitHub-Website](https://dunkelst.github.io/railatlas-europe/) verwendet
 weiterhin die bestehende öffentliche RailAtlas-Auskunft unter
-`https://railatlas-europa.cocoaamber33.chatgpt.site`. Die Oberfläche bleibt auf der
+`https://railatlas-europa.dunkelst.chatgpt.site`. Die Oberfläche bleibt auf der
 GitHub-Adresse; eine Anmeldung ist nicht erforderlich. GitHub Pages selbst führt
 keine serverseitigen Fahrplanabfragen aus.
 

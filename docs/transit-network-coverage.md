@@ -1,5 +1,21 @@
 # Buslinien und Halte: Datenbasis und AGPL-Freigabe
 
+## Aktualisierung 28.10.2026, Version 28
+
+Fehlende Linienebenen werden auch bei bereits vorhandenen Halten durch einen
+begrenzten OSM-Abruf ergänzt. Bestehende Linien und Originalkennungen bleiben
+erhalten. Ausfälle führen zu einer sichtbaren Meldung über teilweise geladene
+Daten. Die aktuellen Tavira-Proben erreichten die OSM-Quelle nicht; dies belegt
+keine fehlende Bedienung und löst die vollständige Linienabdeckung noch nicht.
+
+Gelieferte Transitous-Reisegeometrien werden seit diesem Stand übernommen.
+Sie sind als Anbieterverlauf farbig gestrichelt dargestellt, ihre Original-GTFS-
+Herkunft bleibt ausdrücklich unbestätigt. Es werden keine eigenen Geraden oder
+Geometrien zwischen Halten erfunden. Fehlerhafte und fehlende Verläufe bleiben
+offen. 111 Regressionen, Typprüfung und drei Builds erfolgreich.
+[Prüfstand](qa/railatlas-v28.md). Die folgenden Abschnitte beschreiben die
+historische Datenbasis bis Version 27.
+
 Stand 27.10.2026, Quellversion 27. Die zusätzliche Haltequelle verbessert die
 belegte Abdeckung. Vollständige europäische Netz- oder Fahrplanabdeckung ist
 weiterhin nicht nachgewiesen.
