@@ -1,17 +1,17 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **28**, Quellcommit `4cf457308db624fc5e141151d7a09a5da41a2caf`.
-**200** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
+Sites-Version **29**, Quellcommit `ef812d4fa5830f9717cc25547bdf9222141266ca`.
+**201** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
 Der eigene Programmcode ist AGPL-3.0-only. Lizenztext, Umfang, Build- und
 Startanleitung sowie die vollständigen entsprechenden Quellen sind öffentlich.
-Version 28 ist veröffentlicht. Die öffentliche API bestätigt drei Faro–Madrid-
+Version 29 ist veröffentlicht. Die öffentliche API bestätigt drei Faro–Madrid-
 Reisen mit neun Fahrzeugverläufen (19.811 unveränderte Quellpunkte). Der
-Quellabgleich umfasst alle 200 App-Dateien. Neue Prüfungen sichern Linien-
+Quellabgleich umfasst alle 201 App-Dateien. Tavira liefert im gemeinsamen Abruf 55 Halte und 18 Linienverläufe. Neue Prüfungen sichern Linien-
 Ergänzung trotz vorhandener Halte sowie die Übernahme gelieferter Fahrzeug-
-verläufe ab. [Aktueller Prüfstand](qa/railatlas-v28.md).
+verläufe ab. [Aktueller Prüfstand](qa/railatlas-v29.md).
 Version 24–27 bleibt als geprüfter historischer Stand unten dokumentiert.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |

@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {parseTransitousStation,fetchTransitousStops} from '../lib/transitous.mjs';
-import {parseTransitousNetwork,parseEfaNetwork,mergeNetworkStops,OVERPASS_URL} from '../lib/network.mjs';
+import {parseTransitousNetwork,parseTransitousRoutes,parseEfaNetwork,mergeNetworkStops,OVERPASS_URL} from '../lib/network.mjs';
 import {decodePolyline} from '../lib/transit.mjs';
 import {sameStation} from '../lib/journey.mjs';
 import {getVrrJourney,parseVrrStation,sameVrrStation,EFA_PROVIDER} from '../lib/vrr.mjs';
@@ -39,13 +39,35 @@ test('Missing regional lines load OSM paths even when international stops alread
  clock(t);const module=await import('../lib/network.mjs?motis-partial');let calls=0;
  const points=[{lat:49.14,lon:9.23},{lat:49.141,lon:9.231},{lat:49.142,lon:9.232}];
  t.mock.method(globalThis,'fetch',async(url,init)=>{calls++;const u=new URL(url);if(u.hostname==='api.transitous.org')return Response.json(sample.stops);if(u.hostname==='www.efa.de')return new Response('busy',{status:503});assert.equal(u.origin,new URL(OVERPASS_URL).origin);assert.match(init.body.get('data'),/route~.*bus/);return Response.json({elements:[{type:'relation',id:123,tags:{type:'route',route:'bus',ref:'Test'},members:[{type:'way',ref:1,role:'',geometry:points}]}]});});
- const d=await module.fetchNetwork(bbox,['bus']);assert.equal(d.layers.bus.stops.length,7);assert.equal(d.layers.bus.lines.length,1);assert.deepEqual(d.layers.bus.lines[0].segments,[points.map(p=>[p.lat,p.lon])]);assert.match(d.source,/OpenStreetMap/);assert.equal(calls,3);assert.equal(d.layers.bus.stops[0].station.transitousId,sample.stops.find(s=>s.name===d.layers.bus.stops[0].name).stopId);
+ const d=await module.fetchNetwork(bbox,['bus']);assert.equal(d.layers.bus.stops.length,7);assert.equal(d.layers.bus.lines.length,1);assert.deepEqual(d.layers.bus.lines[0].segments,[points.map(p=>[p.lat,p.lon])]);assert.match(d.source,/OpenStreetMap/);assert.equal(calls,4);assert.equal(d.layers.bus.stops[0].station.transitousId,sample.stops.find(s=>s.name===d.layers.bus.stops[0].name).stopId);
 });
 
 test('An unavailable line supplement preserves international stops and reports partial coverage',async t=>{
  clock(t);const module=await import('../lib/network.mjs?motis-osm-outage');let calls=0;
  t.mock.method(globalThis,'fetch',async url=>{calls++;return new URL(url).hostname==='api.transitous.org'?Response.json(sample.stops):new Response('busy',{status:503});});
- const d=await module.fetchNetwork(bbox,['bus']);assert.equal(d.layers.bus.stops.length,7);assert.equal(d.layers.bus.lines.length,0);assert.match(d.warning,/OSM-Abfrage/);assert.equal(d.warningScope,'lines');assert.equal(calls,3);
+ const d=await module.fetchNetwork(bbox,['bus']);assert.equal(d.layers.bus.stops.length,7);assert.equal(d.layers.bus.lines.length,0);assert.match(d.warning,/OSM-Abfrage/);assert.equal(d.warningScope,'lines');assert.equal(calls,4);
+});
+
+test('Real Tavira line response retains bus 42/67 and distinguishes timetable paths from calculated coach paths',()=>{
+ const raw=JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-tavira-routes.json.gz',import.meta.url)))),bounds=[37.108,-7.69,37.145,-7.62],before=JSON.stringify(raw),d=parseTransitousRoutes(raw,bounds,['bus','subway','tram']);
+ assert.ok(d.layers.bus.lines.some(l=>l.ref==='42'&&l.pathSource==='TIMETABLE'&&!l.calculated));assert.ok(d.layers.bus.lines.some(l=>l.ref==='67'));assert.ok(d.layers.bus.lines.some(l=>l.calculated&&l.pathSource==='ROUTED'));assert.equal(d.layers.subway.lines.length,0);
+ const sourcePoints=new Set(raw.polylines.flatMap(p=>decodePolyline(p.polyline?.points,p.polyline?.precision)).map(p=>JSON.stringify(p)));
+ assert.ok(d.layers.bus.lines.every(l=>l.segments.flat().every(p=>sourcePoints.has(JSON.stringify(p)))));assert.equal(JSON.stringify(raw),before);
+ const absent=structuredClone(raw);absent.polylines=[];assert.equal(parseTransitousRoutes(absent,bounds,['bus']).layers.bus.lines.length,0);
+});
+
+test('The common Tavira network adds available provider lines to existing stops without requiring OSM',async t=>{
+ clock(t);const module=await import('../lib/network.mjs?tavira-lines'),bounds=[37.108,-7.69,37.145,-7.62],raw=JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-tavira-routes.json.gz',import.meta.url)))),calls=[];
+ const stop={stopId:'test-tavira_stop',name:'Tavira',lat:37.127,lon:-7.65,modes:['BUS']};
+ t.mock.method(globalThis,'fetch',async url=>{const u=new URL(url);calls.push(u);if(u.pathname==='/api/v6/map/stops')return Response.json([stop]);if(u.hostname==='www.efa.de')return new Response('unavailable',{status:503});assert.equal(u.pathname,'/api/experimental/map/routes');return Response.json(raw);});
+ const d=await module.fetchNetwork(bounds,['bus']);assert.equal(d.layers.bus.stops.length,1);assert.equal(d.layers.bus.stops[0].station.transitousId,stop.stopId);assert.ok(d.layers.bus.lines.some(l=>l.ref==='42'));assert.match(d.warning,/Berechnete Linienverläufe/);assert.equal(calls.length,3);assert.ok(calls.every(u=>u.hostname!==new URL(OVERPASS_URL).hostname));
+});
+
+test('The supplementary route source respects Retry-After and abort without repeated requests',async t=>{
+ const advance=clock(t),module=await import('../lib/transitous.mjs?routes-limited');let calls=0;
+ t.mock.method(globalThis,'fetch',async()=>{calls++;return calls===1?new Response('limited',{status:429,headers:{'Retry-After':'120'}}):Response.json({routes:[],polylines:[]});});
+ await assert.rejects(module.fetchTransitousRoutes(bbox),/HTTP 429/);advance(119000);await assert.rejects(module.fetchTransitousRoutes(bbox),/pausiert/);assert.equal(calls,1);advance(1000);await module.fetchTransitousRoutes(bbox);assert.equal(calls,2);
+ const c=new AbortController();c.abort();await assert.rejects(module.fetchTransitousRoutes(bbox,c.signal),{name:'AbortError'});assert.equal(calls,2);
 });
 
 test('Merging regional labels preserves primary coordinates and identities and retains genuinely different stops',()=>{

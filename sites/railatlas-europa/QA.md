@@ -1,5 +1,28 @@
 # RailAtlas Europa – geprüfter Stand vom 20.10.2026
 
+## Fortsetzung 28.10.2026: tatsächliche Tavira-Linienquelle angebunden
+
+- Der OSM-Abruf allein reichte wegen der aktuellen Quellenausfälle nicht.
+  Die vorhandene öffentliche MOTIS-Linienkarte liefert für den begrenzten
+  Tavira-Ausschnitt 88 Varianten, davon 55 mit TIMETABLE-, 26 mit ROUTED-
+  und sieben ohne Geometrieherkunft. Der vollständige echte Antwortbeleg
+  liegt komprimiert als Testfixture vor.
+- Der zuvor isolierte Diagnoseparser wurde in die gemeinsame Netzlogik
+  übernommen. Fahrplanverläufe werden erhalten, berechnete Verläufe sichtbar
+  gekennzeichnet, fehlende Verläufe übersprungen. Keine Neuberechnung oder
+  erfundenen Verbindungen zwischen Halten. Gleiche Metadaten teilen getrennte
+  Quellfragmente; Linienvarianten bleiben als solche benannt.
+- Neue Regressionen prüfen tatsächliche Buslinien 42/67 in Tavira, punktgenaue
+  Geometrie, getrennte Herkunft, vorhandene Halte und Verzicht auf unnötigen
+  OSM-Abruf, wenn die zusätzliche Linienquelle passende Daten liefert.
+- Der öffentliche Endpunkt ist offiziell dokumentiert, aber experimentell.
+  Fehler bleiben sichtbar; Timeout, Antwortgrenze, Caches, Retry-After und
+  Nutzerabbruch gelten. Keine Vollständigkeitszusage oder Betreiberprüfung.
+- Echter gemeinsamer Abruf für 37.108,-7.69,37.145,-7.62: 55 Bushalte und 18
+  Linienverläufe, davon zehn TIMETABLE und acht ROUTED, in rund acht Sekunden.
+  Die OSM-Quelle musste dafür nicht erreicht werden. Alle 114 Regressionen
+  und die Typprüfung sind erfolgreich. Öffentliche Abnahme folgt nach Rollout.
+
 ## Fortsetzung 28.10.2026: fehlende Linien trotz vorhandener Haltestellen
 
 - Nutzerbeleg: Tavira, alle Netzebenen aktiviert, 107 Bushalte und null Buslinien.

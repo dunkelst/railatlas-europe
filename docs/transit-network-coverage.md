@@ -1,5 +1,16 @@
 # Buslinien und Halte: Datenbasis und AGPL-Freigabe
 
+## Aktueller Stand 28.10.2026, Version 29
+
+Die dokumentierte öffentliche MOTIS-Linienkarte liefert eine weitere reale
+Linienquelle, wenn EFA die fehlenden Ebenen nicht liefern kann. Für Tavira:
+55 Halte und 18 Linienverläufe im gemeinsamen Abruf; zehn TIMETABLE, acht ROUTED.
+Berechnete Verläufe werden gestrichelt gekennzeichnet. NONE und fehlende
+Geometrie erzeugen keine Linien. Die experimentelle API erhält Laufzeit- und
+Antwortgrenzen; bestehende Caches, Abbruch und Retry-After bleiben aktiv.
+114 Regressionen, Typprüfung und drei Builds erfolgreich.
+[Aktueller Prüfstand](qa/railatlas-v29.md). Version 28 unten ist historisch.
+
 ## Aktualisierung 28.10.2026, Version 28
 
 Fehlende Linienebenen werden auch bei bereits vorhandenen Halten durch einen

@@ -1,5 +1,28 @@
 # RailAtlas Europa
 
+## Allgemeine Linienkarte für Tavira und weitere Gebiete (28.10.2026)
+
+Bei fehlenden regionalen Linien fragt die gemeinsame API nun die dokumentierte
+öffentliche MOTIS-Linienkarte auf api.transitous.org ergänzend ab. Der bisherige
+Diagnoseparser wird dafür gemeinsam von App und Probeskript genutzt. Liefert
+auch diese Quelle keine passenden Verläufe, bleibt der begrenzte OSM-Abruf als
+weitere Ergänzung erhalten. Halte und bestehende Linien bleiben bestehen.
+
+Die Quelle kennzeichnet Fahrplanverläufe mit TIMETABLE und berechnete Verläufe
+mit ROUTED. Berechnete Verläufe sind gestrichelt und in Hinweis und Popup
+gekennzeichnet; NONE sowie fehlende Geometrie erzeugen keine Kartenlinien.
+Originalpunkte und getrennte Fragmente bleiben erhalten. Die Anzeige zählt
+Linienverläufe, da eine Linie mehrere Varianten haben kann.
+
+Die echte gespeicherte Tavira-Antwort enthält unter anderem Bus 42, 67, 66, 105,
+121, 41, 40 und 49 sowie Fernbusse. Eine neue echte gemeinsame API-Probe liefert
+55 Haltestellen und 18 Linienverläufe (zehn laut Fahrplandaten, acht berechnet).
+114 Regressionen und TypeScript sind erfolgreich. Das Verhalten ist mit dieser
+Antwort, dem Erhalt vorhandener Halte, Quellenausfällen, Abbruch und Retry-After
+geprüft. Die API ist als experimentell dokumentiert; ihre Verfügbarkeit und
+Struktur sind nicht garantiert. Die App begrenzt Antwortgröße und Laufzeit,
+nutzt den bestehenden Ausschnittscache und erhält sichere Teilergebnisse.
+
 ## Linien nachladen und gelieferte Reiseverläufe anzeigen (28.10.2026)
 
 Vorhandene Haltestellen erfüllen keine Anfrage nach Linienverläufen. Fehlende

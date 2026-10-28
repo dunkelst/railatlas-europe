@@ -35,7 +35,9 @@ The source licences above apply. Tests mutate copies for negative cases.
 No fixture is runtime data. The application's journey fallback now uses this
 stable endpoint once after the original sources fail, with cache, cancellation,
 size and timeout limits. `/plan` does not identify whether a transit geometry
-is a GTFS shape or inferred; those vehicle paths are deliberately not drawn.
+is a GTFS shape or inferred; since version 28, supplied vehicle paths are
+retained with their original points and explicitly marked as unverified
+provider paths, rather than being claimed as original GTFS shapes.
 
 `transitous-faro-madrid.json.gz` wraps the unmodified coordinate-plan response,
 the unmodified native-stop plan response and the first two unmodified geocoder
@@ -49,3 +51,20 @@ Tests retain source coordinates and explicitly partial geometry. Underlying
 GTFS providers include Faro, FlixBus, Seville, RENFE and Ouigo; their licences are
 listed at https://transitous.org/sources/. Street geometry uses OpenStreetMap,
 https://www.openstreetmap.org/copyright. These data are not relicensed by AGPL.
+
+## Tavira-Linienkarte, 28.10.2026
+
+`transitous-tavira-routes.json.gz` ist eine vollständige, unveränderte JSON-
+Antwort (nur gzip-komprimiert) von `https://api.transitous.org/api/experimental/map/routes`
+mit `min=37.108,-7.69`, `max=37.145,-7.62`, `zoom=14`. 88 Varianten und 567
+Polylinien; 55 TIMETABLE-, 26 ROUTED- und sieben NONE-Einträge. Verwendet für
+Regressionen zu Linien 42/67, Herkunft, Originalpunkten und fehlender Geometrie.
+Keine Testfixture wird als Laufzeitersatz verwendet.
+
+Der Endpunkt steht im offiziellen MOTIS-OpenAPI-Dokument:
+https://github.com/motis-project/motis/blob/master/openapi.yaml
+
+Datenquellen und deren Lizenzen: https://transitous.org/sources/ .
+Nutzungsrichtlinie: https://transitous.org/api/ . Die öffentliche App ist AGPLv3,
+nichtkommerzieller Testbetrieb; begrenzte Ausschnittsabfragen, Cache und
+Quellenattribution bleiben aktiv. Die experimentelle API kann sich ändern.

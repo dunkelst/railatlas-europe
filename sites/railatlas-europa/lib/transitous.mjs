@@ -32,6 +32,18 @@ async function resolveCatalogEndpoint(station,signal){
  if(endpointCache.size>=128)endpointCache.delete(endpointCache.keys().next().value);endpointCache.set(key,{station:resolved,until:Date.now()+15*60000});return resolved||station;
 }
 let nextRequestAt=0;
+let nextRouteRequestAt=0;
+export async function fetchTransitousRoutes(bounds,signal){
+ signal?.throwIfAborted();
+ if(Date.now()<nextRouteRequestAt)throw Error('Die ergänzende Linienkarte pausiert nach einem Anbieterfehler.');
+ const [s,w,n,e]=bounds,url=new URL('https://api.transitous.org/api/experimental/map/routes');
+ url.search=new URLSearchParams({min:s+','+w,max:n+','+e,zoom:'14',language:'de'});
+ try{
+  const data=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/29 (+https://github.com/dunkelst/railatlas-europe)'}},signal,16000,8*1024*1024);
+  if(!Array.isArray(data.routes)||!Array.isArray(data.polylines))throw Object.assign(Error('Die ergänzende Linienkarte liefert keine lesbaren Verläufe.'),{code:'SOURCE_RESPONSE_INVALID'});
+  return data;
+ }catch(error){signal?.throwIfAborted();nextRouteRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
+}
 // Bounds and map modes are validated by the shared network handler.
 export async function fetchTransitousStops(bounds,selected,signal){
  signal?.throwIfAborted();

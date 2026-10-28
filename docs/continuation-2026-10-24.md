@@ -13,11 +13,16 @@ AGPL für den eigenen Programmcode und die Nutzung der breiteren Haltequelle
 freigegeben. AGPL-3.0-only ist umgesetzt; Fremddaten behalten ihre Bedingungen.
 Keine zweite Anwendung und keine Weiterleitung als GitHub-Ersatz.
 
-Version **28**, Quelle `4cf457308db624fc5e141151d7a09a5da41a2caf`,
-200 App-Dateien im Herkunftsmanifest. 111 Tests, TypeScript und alle drei Builds
+Version **29**, Quelle `ef812d4fa5830f9717cc25547bdf9222141266ca`,
+201 App-Dateien im Herkunftsmanifest. 114 Tests, TypeScript und alle drei Builds
 bestanden. Veröffentlicht; öffentliche API bestätigt drei Faro–Madrid-Reisen
 mit neun gelieferten Fahrzeugverläufen. Publikum unverändert.
 Vorige Version-24–27-Nachweise sind historisch.
+
+Die öffentliche MOTIS-Linienkarte ist jetzt zusätzlich angebunden. Echter
+Tavira-Abruf: 55 Halte, 18 Linienverläufe (zehn TIMETABLE, acht ROUTED).
+Berechnete Verläufe sind als solche gekennzeichnet; die experimentelle API
+kann ausfallen. Die OSM-Quelle bleibt ergänzend.
 
 Der gemeldete Tavira-Fall (107 Bushalte, null Buslinien) deckte einen Fehler im
 Fallback auf: vorhandene Halte verhinderten den Abruf fehlender Linien. Dieser
@@ -26,7 +31,7 @@ bleiben erhalten. Die externe OSM-Quelle war in den aktuellen lokalen Proben
 nicht erreichbar. Keine vollständige Linienabdeckung behaupten. Gelieferte
 Transitous-Fahrzeuggeometrien werden jetzt unverändert dargestellt, farbig
 gestrichelt mit Hinweis auf nicht bestätigte Original-GTFS-Herkunft.
-[Aktueller Prüfstand](qa/railatlas-v28.md).
+[Aktueller Prüfstand](qa/railatlas-v29.md).
 
 Der stabile Transitous-/MOTIS-Kartenhaltepfad ist im gemeinsamen Netzwerkmodell
 angebunden. Eigene GTFS-IDs und Originalkoordinaten, keine aus Feednamen erfundenen

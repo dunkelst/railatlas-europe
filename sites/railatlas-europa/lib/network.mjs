@@ -2,7 +2,8 @@
 import {requestEfaMap,parseVrrStation,vrrProduct,EFA_PROVIDER,EFA_SOURCE} from './vrr.mjs';
 import {berlinInput,distanceKm} from './rail.mjs';
 import {sameNearbyStation} from './journey.mjs';
-import {fetchTransitousStops,parseTransitousStation,transitousModes,TRANSITOUS_SOURCE,TRANSITOUS_ATTRIBUTIONS} from './transitous.mjs';
+import {fetchTransitousStops,fetchTransitousRoutes,parseTransitousStation,transitousModes,TRANSITOUS_SOURCE,TRANSITOUS_ATTRIBUTIONS} from './transitous.mjs';
+import {decodePolyline} from './transit.mjs';
 export const NETWORK_MODES = [
   {id: 'rail', label: 'Bahn', color: '#405d74'},
   {id: 'suburban', label: 'S-Bahn', color: '#21834a'},
@@ -252,6 +253,26 @@ export function parseTransitousNetwork(raw,bounds,modes){
  }
  return {layers,bounds,modes:[...modes],detail:'stops',source:TRANSITOUS_SOURCE,attributions:TRANSITOUS_ATTRIBUTIONS,fetchedAt:new Date().toISOString(),coverage:'partial',...(raw.length>=8192?{warning:'Sehr viele Halte geliefert; für weitere Details bitte näher heranzoomen.',warningScope:'stops'}:{})};
 }
+export function parseTransitousRoutes(data,bounds,modes){
+ validateBounds(bounds);
+ if(!Array.isArray(data?.routes)||!Array.isArray(data?.polylines))throw Error('Keine lesbaren MOTIS-Linienverläufe.');
+ const result=parseTransitousNetwork([],bounds,modes),decoded=new Map(),grouped=new Map();result.detail='all';
+ for(const route of data.routes){
+  const mode=transitousModes({modes:[route.mode]})[0];
+  if(!modes.includes(mode)||!['TIMETABLE','ROUTED'].includes(route.pathSource)||!Array.isArray(route.transitRoutes)||!Array.isArray(route.segments))continue;
+  const metadata=route.transitRoutes.filter(r=>typeof r.id==='string'&&typeof r.shortName==='string');if(!metadata.length)continue;
+  const key=JSON.stringify([mode,route.pathSource,metadata.map(r=>[r.id,r.shortName,r.longName||''])]),segments=[];
+  for(const index of new Set(route.segments.map(s=>s.polyline).filter(i=>Number.isInteger(i)&&i>=0))){
+   if(!decoded.has(index)){const p=data.polylines[index]?.polyline;decoded.set(index,p?visibleNetworkSegments([decodePolyline(p.points,p.precision)],bounds):[]);}
+   segments.push(...decoded.get(index));
+  }
+  if(!segments.length)continue;
+  if(!grouped.has(key))grouped.set(key,{mode,id:'transitous-route:'+key,sourceIndex:route.routeIdx,sourceIds:metadata.map(r=>r.id),names:[...new Set(metadata.map(r=>r.shortName).filter(Boolean))],name:metadata.map(r=>r.longName||r.shortName).filter(Boolean).join(' / ')||'Linie laut Auskunft',ref:metadata.map(r=>r.shortName).filter(Boolean).join(' / '),pathSource:route.pathSource,calculated:route.pathSource==='ROUTED',segments:[],keys:new Set()});
+  const entry=grouped.get(key);for(const segment of segments){const k=JSON.stringify(segment);if(!entry.keys.has(k)){entry.keys.add(k);entry.segments.push(segment);}}
+ }
+ for(const {mode,keys,...line} of grouped.values())result.layers[mode].lines.push(line);
+ return result;
+}
 export function mergeNetworkStops(primary,regional,modes){
  if(!primary)return regional;if(!regional)return primary;
  const layers=Object.fromEntries(NETWORK_MODES.map(m=>[m.id,{lines:[...new Map([...primary.layers[m.id].lines,...regional.layers[m.id].lines].map(line=>[line.id,line])).values()],stops:[...primary.layers[m.id].stops]}]));
@@ -261,19 +282,23 @@ export function mergeNetworkStops(primary,regional,modes){
   if(index<0)layers[mode].stops.push(stop);
   else{const first=layers[mode].stops[index];layers[mode].stops[index]={...first,lines:[...new Set([...first.lines,...stop.lines])],source:[...new Set([first.source,stop.source].filter(Boolean))].join(' + ')};}
  }
- return {...primary,layers,source:primary.source+' + '+regional.source};
+ return {...primary,layers,source:[...new Set([primary.source,regional.source].flatMap(s=>s.split(' + ')))].join(' + ')};
 }
 export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=false){
  signal?.throwIfAborted();networkQuery(bounds,modes);
  if(!['all','stops'].includes(detail))throw Error('Ungültige Auswahl für die Netzdaten.');
  if(!refresh)for(const entry of mapCache.values())if(Date.now()-entry.at<300000&&networkCovers(entry.data,bounds,modes)&&(entry.data.detail==='all'||detail==='stops'))return entry.data;
- let result,efaError,transitousError,osmError,primary,regional;
+ let result,efaError,transitousError,routeError,osmError,primary,regional;
  const hasData=data=>data&&modes.some(m=>data.layers[m].lines.length||data.layers[m].stops.length),needLines=detail==='all'&&modes.some(m=>m!=='rail');
  const replies=await Promise.allSettled([fetchTransitousStops(bounds,modes,signal),...(needLines?[fetchEfaNetwork(bounds,modes,signal,detail)]:[])]);signal?.throwIfAborted();
  if(replies[0].status==='fulfilled')primary=parseTransitousNetwork(replies[0].value,bounds,modes);else transitousError=replies[0].reason;
  if(needLines){if(replies[1].status==='fulfilled')regional=replies[1].value;else efaError=replies[1].reason;}
  else if(!hasData(primary))try{regional=await fetchEfaNetwork(bounds,modes,signal,detail);}catch(error){signal?.throwIfAborted();efaError=error;}
  result=mergeNetworkStops(hasData(primary)?primary:null,hasData(regional)?regional:null,modes);
+ if(needLines){
+  const missing=modes.filter(mode=>mode!=='rail'&&!result?.layers[mode].lines.length);
+  if(missing.length)try{const lines=parseTransitousRoutes(await fetchTransitousRoutes(bounds,signal),bounds,missing);if(hasData(lines))result=mergeNetworkStops(result,lines,modes);}catch(error){signal?.throwIfAborted();routeError=error;}
+ }
  if(!result)try{result=await fetchOsmNetwork(bounds,modes,signal,refresh);result.detail='all';}catch(error){signal?.throwIfAborted();throw Error('Die allgemeinen Netzdaten sind gerade nicht erreichbar. '+(efaError?'Auch die ergänzende Haltestellen-/Linienauskunft ist ausgefallen. ':'')+error.message);}
  else if(needLines){
   // A stop response does not satisfy a request for line paths. Supplement only
@@ -283,7 +308,8 @@ export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=fals
  }
  const warnings=[primary?.warning,needLines?regional?.warning:'',transitousError?'Die europäische Haltestellenquelle ist gerade nicht erreichbar; ergänzende Quelldaten werden gezeigt.':'',needLines&&efaError?'Die ergänzende Linienauskunft ist gerade nicht erreichbar; gelieferte Halte bleiben sichtbar.':''];
  const missing=needLines?modes.filter(mode=>mode!=='rail'&&!result.layers[mode].lines.length):[];
- if(missing.length)warnings.push('Für '+missing.map(mode=>NETWORK_MODES.find(m=>m.id===mode).label).join(', ')+' fehlen bestätigte Linienverläufe in diesem Ausschnitt. '+(osmError?'Auch die ergänzende OSM-Abfrage ist nicht erreichbar. ':'')+'Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.');
+ if(missing.length)warnings.push('Für '+missing.map(mode=>NETWORK_MODES.find(m=>m.id===mode).label).join(', ')+' fehlen bestätigte Linienverläufe in diesem Ausschnitt. '+(routeError?'Die ergänzende Transitous-Linienkarte ist nicht erreichbar. ':'')+(osmError?'Auch die ergänzende OSM-Abfrage ist nicht erreichbar. ':'')+'Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.');
+ if(modes.some(mode=>result.layers[mode].lines.some(line=>line.calculated)))warnings.push('Berechnete Linienverläufe sind gestrichelt dargestellt; sie sind keine bestätigten Original-Fahrplanverläufe.');
  const warning=[...new Set(warnings.filter(Boolean))].join(' ');
  result={...result,detail,...(warning?{warning,warningScope:primary?.warning||transitousError?'all':'lines'}:{})};
  if(mapCache.size>=8)mapCache.delete(mapCache.keys().next().value);

@@ -2,7 +2,20 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **28**, Quellcommit `4cf457308db624fc5e141151d7a09a5da41a2caf`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **29**, Quellcommit `ef812d4fa5830f9717cc25547bdf9222141266ca`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 29: sichtbare allgemeine Buslinien in Tavira
+
+Die öffentliche MOTIS-Linienkarte ergänzt jetzt fehlende regionale Linien.
+Echter gemeinsamer Tavira-Abruf: **55 Haltestellen und 18 Linienverläufe**,
+darunter 42, 67, 66, 105, 121, 41, 40 und 49 sowie Fernbusse. Zehn Verläufe
+stammen laut Quelle aus Fahrplandaten, acht sind berechnet und werden
+entsprechend gestrichelt und mit Hinweis dargestellt. Das Nachladen funktioniert
+trotz schon vorhandener Haltestellen. Der OSM-Abruf bleibt eine weitere Ergänzung.
+
+114 Regressionen, TypeScript und drei Builds erfolgreich. Die zusätzliche
+Linien-API ist experimentell; Ausfälle und nicht vorhandene Verläufe bleiben
+sichtbar. Keine Vollständigkeitszusage. [Aktueller Prüfstand](docs/qa/railatlas-v29.md).
 
 ## Version 28: fehlende Linien ergänzen und Reiseverläufe übernehmen
 

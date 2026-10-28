@@ -6,7 +6,7 @@ import {NETWORK_MODES,NETWORK_MIN_ZOOM,defaultNetworkLayers,validateBounds,netwo
 declare global {interface Window {L:any}}
 type LayerState=Record<string,{lines:boolean;stops:boolean}>;
 type NetworkStop={id:string;name:string;lat:number;lon:number;lines:string[];station?:Station;source?:string};
-type NetworkData={layers:Record<string,{lines:{id:string;name:string;ref:string;segments:[number,number][][]}[];stops:NetworkStop[]}>;bounds:number[];modes:string[];detail?:string;source:string;warning?:string;warningScope?:string;attributions?:{label:string;url:string}[];fetchedAt:string};
+type NetworkData={layers:Record<string,{lines:{id:string;name:string;ref:string;calculated?:boolean;segments:[number,number][][]}[];stops:NetworkStop[]}>;bounds:number[];modes:string[];detail?:string;source:string;warning?:string;warningScope?:string;attributions?:{label:string;url:string}[];fetchedAt:string};
 let leaflet:Promise<any>|undefined;
 function loadLeaflet(){if(window.L)return Promise.resolve(window.L);if(!leaflet)leaflet=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=assetUrl('vendor/leaflet.js');script.onload=()=>resolve(window.L);script.onerror=()=>{leaflet=undefined;reject(new Error('Die Karte konnte nicht geladen werden.'));};document.head.appendChild(script);});return leaflet;}
 export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stations:Station[];parts:Journey[];picking:string|null;onPick:(lat:number,lon:number)=>void;onStopPick:(station:Station,target?:'start'|'end'|'via')=>void}){
@@ -61,7 +61,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
  useEffect(()=>{
   if(!ready||!map.current)return;const L=window.L;
   for(const mode of NETWORK_MODES){const group=networkGroups.current[mode.id];group?.clearLayers();const data=visibleNetwork?.layers[mode.id],enabled=layerState[mode.id];if(!data||!group)continue;
-   if(enabled.lines&&mode.id!=='rail')for(const line of data.lines){const node=document.createElement('div');node.className='map-popup';node.textContent=mode.label+' · '+line.name;for(const segment of line.segments)L.polyline(segment,{color:mode.color,weight:mode.id==='bus'?3:4,opacity:.8,bubblingMouseEvents:false}).bindPopup(node).addTo(group);}
+   if(enabled.lines&&mode.id!=='rail')for(const line of data.lines){const node=document.createElement('div');node.className='map-popup';node.textContent=mode.label+' · '+line.name+(line.calculated?' · berechneter Verlauf laut Auskunft':'');for(const segment of line.segments)L.polyline(segment,{color:mode.color,weight:mode.id==='bus'?3:4,opacity:.8,bubblingMouseEvents:false,...(line.calculated?{dashArray:'8 5'}:{})}).bindPopup(node).addTo(group);}
    if(enabled.stops)for(const stop of data.stops){const node=document.createElement('div');node.className='map-popup network-popup';const heading=document.createElement('b');heading.textContent=stop.name;node.appendChild(heading);const text=document.createElement('small');text.textContent=mode.label+(stop.lines.length?' · '+stop.lines.join(', '):'')+' · '+(stop.source||network?.source||'Kartendaten');node.appendChild(text);
     const station:Station=stop.station?{...stop.station,networkMode:mode.id}:{id:'osm:'+stop.id,dbId:'',name:stop.name,lat:stop.lat,lon:stop.lon,country:'',main:false,networkMode:mode.id};
     for(const [target,label] of [['start','Als Start'],['end','Als Ziel'],['via','Als Zwischenziel']] as const){const button=document.createElement('button');button.type='button';button.textContent=label;button.onclick=()=>{map.current?.closePopup();stopRef.current(station,target);};node.appendChild(button);}
@@ -90,7 +90,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick}:{stat
    {visibleNetwork&&<>
     <div className="network-counts"><b>Im sichtbaren Ausschnitt</b>
      {NETWORK_MODES.filter(m=>(layerState[m.id].lines||layerState[m.id].stops)&&visibleNetwork.modes?.includes(m.id)).map(m=><span key={m.id}>
-      {m.label}: {layerState[m.id].lines&&m.id!=='rail'?visibleNetwork.layers[m.id].lines.length+' Linien'+(layerState[m.id].stops?' · ':''):''}{layerState[m.id].stops?visibleNetwork.layers[m.id].stops.length+' Halte':''}
+      {m.label}: {layerState[m.id].lines&&m.id!=='rail'?visibleNetwork.layers[m.id].lines.length+' Linienverläufe'+(layerState[m.id].stops?' · ':''):''}{layerState[m.id].stops?visibleNetwork.layers[m.id].stops.length+' Halte':''}
      </span>)}
     </div>
     <p className="network-source">Quelle: {visibleNetwork.source}{visibleNetwork.attributions?.map(a=><a key={a.url} href={a.url} target="_blank" rel="noreferrer">{a.label}</a>)}</p>

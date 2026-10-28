@@ -1,10 +1,9 @@
-// Manual, bounded prototype only. Not imported by the public application.
-// Production use needs an open-source project licence: https://transitous.org/api/
+// Manual bounded diagnostic; the public app shares its line parser.
+// Public source and attribution requirements: https://transitous.org/api/
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {writeFile} from 'node:fs/promises';
-import {decodePolyline} from '../lib/transit.mjs';
-import {validateBounds,visibleNetworkSegments} from '../lib/network.mjs';
+import {validateBounds,parseTransitousRoutes} from '../lib/network.mjs';
 
 const origin='https://api.transitous.org';
 export const attribution=['https://transitous.org/sources/','https://www.openstreetmap.org/copyright'];
@@ -13,18 +12,7 @@ export function prototypeStops(data,bounds){
  return data.filter(s=>typeof s.stopId==='string'&&s.name&&s.modes?.includes('BUS')&&[s.lat,s.lon].every(Number.isFinite)&&s.lat>=bounds[0]&&s.lon>=bounds[1]&&s.lat<=bounds[2]&&s.lon<=bounds[3]).map(s=>({id:s.stopId,name:s.name,lat:s.lat,lon:s.lon,modes:s.modes}));
 }
 export function prototypeRoutes(data,bounds){
- if(!Array.isArray(data.routes)||!Array.isArray(data.polylines))throw Error('Invalid experimental MOTIS routes response');
- const decoded=new Map(),lines=[];
- for(const route of data.routes){
-  if(route.mode!=='BUS'||!['TIMETABLE','ROUTED'].includes(route.pathSource))continue;
-  const segments=[];
-  for(const index of new Set((route.segments||[]).map(s=>s.polyline))){
-   if(!decoded.has(index)){const p=data.polylines[index]?.polyline;decoded.set(index,p?visibleNetworkSegments([decodePolyline(p.points,p.precision)],bounds):[]);}
-   segments.push(...decoded.get(index));
-  }
-  if(segments.length)lines.push({sourceIndex:route.routeIdx,sourceIds:route.transitRoutes.map(r=>r.id),names:[...new Set(route.transitRoutes.map(r=>r.shortName).filter(Boolean))],pathSource:route.pathSource,calculated:route.pathSource==='ROUTED',segments});
- }
- return lines;
+ return parseTransitousRoutes(data,bounds,['bus']).layers.bus.lines;
 }
 async function request(endpoint,params,signal){
  const url=new URL(endpoint,origin);url.search=new URLSearchParams(params);
