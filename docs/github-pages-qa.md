@@ -1,4 +1,50 @@
-# GitHub Pages – Prüfung vom 23.10.2026
+# GitHub Pages – aktueller Veröffentlichungsnachweis
+
+## 28.10.2026: Gemeinsame App-Version 27 auf GitHub Pages
+
+Veröffentlichte und im Browser geprüfte Adresse:
+https://dunkelst.github.io/railatlas-europe/
+
+- GitHub-Veröffentlichungscommit: `8b7cf887f414bc68841dd51e78c2d55f5efd227e`.
+- Unveränderter gemeinsamer App-Stand: Sites-Version 27, Quelle
+  `2ac3e41f0a72fdc25e28b8d1ea56f672a47e7952`; alle 200 Dateien des
+  Herkunftsmanifests stimmen weiterhin überein.
+- [Pages-Veröffentlichung erfolgreich](https://github.com/dunkelst/railatlas-europe/actions/runs/40677990238).
+  API-Health, Browserfreigabe für JSON-Verbindungsanfragen, Installation,
+  Produktionsbuild und Deployment sind erfolgreich.
+- [Gemeinsame App-Prüfung erfolgreich](https://github.com/dunkelst/railatlas-europe/actions/runs/40677990113).
+  [CI mit Typprüfung, Pages-Build und Regressionen](https://github.com/dunkelst/railatlas-europe/actions/runs/40677990103).
+- Zusätzlich lokal: Pages-Produktionsbuild, alle vier Pages-/CORS-Regressionen,
+  API-Health und Journey-Preflight sowie Herkunftsmanifest erfolgreich.
+
+Im echten veröffentlichten GitHub-Formular wurden Faro Airport und Madrid Atocha
+aus den Vorschlägen gewählt, 31.10.2026 ab 09:00 Europe/Berlin eingestellt und
+die automatische Verbindungssuche ausgeführt. Sichtbar sind drei Alternativen:
+
+| Abfahrt–Ankunft in Europe/Berlin | Verkehrsmittel |
+| --- | --- |
+| 31.10. 10:30–17:13 | FlixBus 1794 / Bus EA / AVE über Sevilla |
+| 31.10. 12:00–19:47 | FlixBus 785 / Bus EA / TGV über Sevilla |
+| 31.10. 12:40–01.11. 00:00 | FlixBus 1011 / FlixBus N1149 / C5 über Lissabon |
+
+Der 523-m-Hinweis zur Flughafenhalt-Zuordnung und der 62-m-Stationszugang in
+Sevilla sind sichtbar. Die Seite bleibt auf der GitHub-Adresse, ohne Anmeldung.
+Katalog mit 54.114 Halten aus 38 Ländern, Karte, Quellenlinks und die neuen
+Netz-/Reiseoptionen werden direkt vom GitHub-Pfad geladen. Die angezeigten
+Fahrplan-/Geometriegrenzen bleiben bestehen; kein neuer GPS-Nachweis.
+
+Die öffentliche Testausgabe behält ihre bisherige öffentliche RailAtlas-API
+unter `https://railatlas-europa.cocoaamber33.chatgpt.site` bei. GitHub Pages führt
+selbst keine serverseitigen Anbieterabfragen aus. Dies ist keine vollständig
+von dieser API unabhängige Veröffentlichung. Eigene HTTPS-Server bleiben über
+Workflow, Repository-Variable oder die bestehende Verbindungsmaske konfigurierbar;
+der vollständige eigenständige Node-Server bleibt im Repository.
+
+Künftige Änderungen an der gemeinsamen App lösen den Pages-Rollout automatisch
+aus. API und CORS werden vor der Veröffentlichung geprüft. Es wurden weder
+bezahlte Infrastruktur noch neue Hostingkonten eingerichtet.
+
+## Historisch: Prüfung vom 23.10.2026
 
 ## Gemeinsamer Stand und Veröffentlichung
 
