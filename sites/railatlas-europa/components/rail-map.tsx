@@ -21,7 +21,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
  const visibleNetwork=useMemo<NetworkData|null>(()=>network&&view&&detailVisible?networkInView(network,view.bounds):null,[network,view,detailVisible]);
  const requestDetail=NETWORK_MODES.some(m=>m.id!=='rail'&&layerState[m.id].lines)?'all':'stops';
  useEffect(()=>{let active=true;loadLeaflet().then(L=>{if(!active||!container.current)return;
-  const m=L.map(container.current,{zoomControl:false,scrollWheelZoom:true,preferCanvas:true}).setView((region==='mexico'?REGIONS.mexico:REGIONS.europe).centre,(region==='mexico'?REGIONS.mexico:REGIONS.europe).zoom);map.current=m;
+  const m=L.map(container.current,{zoomControl:false,scrollWheelZoom:true,preferCanvas:true,zoomAnimation:false}).setView((region==='mexico'?REGIONS.mexico:REGIONS.europe).centre,(region==='mexico'?REGIONS.mexico:REGIONS.europe).zoom);map.current=m;
   L.control.zoom({position:'bottomright'}).addTo(m);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap-Mitwirkende'}).addTo(m);
   railway.current=L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenRailwayMap · Schieneninfrastruktur'}).on('tileerror',()=>{if(active)setTileError(true);});

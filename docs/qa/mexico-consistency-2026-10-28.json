@@ -3066,5 +3066,72 @@
         "elapsedMs": 457
       }
     ]
+  },
+  "publishedVersion": 32,
+  "finalSourceCommit": "47161c303822c85c7405db2f617bf39e935a2d86",
+  "finalPublishedJourney": {
+    "status": 200,
+    "journeys": 3,
+    "departure": "2026-10-31T15:00:00.000Z",
+    "arrival": "2026-10-31T17:15:00.000Z",
+    "sourceWarning": "Transitous-Fahrplanauskunft; Datenabdeckung und Echtzeitdaten sind partiell. Gelieferte Fahrzeugverläufe werden farbig gestrichelt gezeigt; ihre Original-GTFS-Herkunft ist nicht bestätigt. Fehlende Geometrie bleibt offen."
+  },
+  "publishedCdmxNetwork": {
+    "phase": "network",
+    "origin": "https://railatlas-europa.dunkelst.chatgpt.site",
+    "startedAt": "2026-10-28T22:30:17.084Z",
+    "finishedAt": "2026-10-28T22:30:23.397Z",
+    "results": [
+      {
+        "id": "cdmx",
+        "place": "Ciudad de México",
+        "bounds": [
+          19.4206,
+          -99.1512,
+          19.4446,
+          -99.1152
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "errors": [],
+        "counts": {
+          "rail": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "suburban": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "subway": {
+            "stops": 34,
+            "paths": 24,
+            "calculated": 0
+          },
+          "tram": {
+            "stops": 0,
+            "paths": 0,
+            "calculated": 0
+          },
+          "bus": {
+            "stops": 312,
+            "paths": 163,
+            "calculated": 0
+          },
+          "colectivo": {
+            "stops": 23,
+            "paths": 0,
+            "calculated": 0
+          }
+        },
+        "warning": "Kartierte mexikanische Netzdaten mit Quellenstand im Halte-/Linienfenster; aktuelle Bedienung und Fahrpläne sind nicht bestätigt. Für S-Bahn, Tram / Stadtbahn, Colectivo / Combi fehlen bestätigte Linienverläufe in diesem Ausschnitt. Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.",
+        "source": "Mexikanische offene Verkehrsdaten + OpenStreetMap + OpenStreetMap / Geofabrik (Mexiko)",
+        "elapsedMs": 6311
+      }
+    ]
   }
 }

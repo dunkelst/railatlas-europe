@@ -76,7 +76,7 @@ test('Actual Mexico City to Puebla plan uses the shared API and Mexican clock wi
  const f=JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-mexico-puebla.json.gz',import.meta.url))));let calls=0;
  t.mock.method(Date,'now',()=>Date.parse('2026-10-28T12:00:00Z'));
  t.mock.method(globalThis,'fetch',async url=>{calls++;const u=new URL(url);assert.equal(u.origin,'https://api.transitous.org');assert.equal(u.pathname,'/api/v6/plan');assert.equal(u.searchParams.get('fromPlace'),f.request.from.transitousId);return Response.json(f.plan);});
- const r=await handleApi(new Request('https://railatlas.local/api/journeys',{method:'POST',body:JSON.stringify(f.request)}));assert.equal(r.status,200);const result=await r.json();assert.equal(result.journeys.length,3);assert.equal(calls,1);
+ const r=await handleApi(new Request('https://railatlas.local/api/journeys',{method:'POST',body:JSON.stringify(f.request)}));assert.equal(r.status,200);const result=await r.json();assert.equal(result.journeys.length,3);assert.equal(calls,1);assert.match(result.journey.sourceWarning,/^Transitous-Fahrplanauskunft;/);
  assert.equal(zonedInput(result.journey.departure,'America/Mexico_City').slice(0,16),'2026-10-31T09:00');assert.equal(zonedInput(result.journey.arrival,'America/Mexico_City').slice(0,16),'2026-10-31T11:15');
  assert.ok(result.journeys.every(j=>j.legs.every(l=>!l.cancelled&&l.mode!=='unknown')));
 });

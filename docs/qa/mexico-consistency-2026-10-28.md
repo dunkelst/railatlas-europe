@@ -1,6 +1,6 @@
 # Mexiko: Schnittstellen, Colectivos und Kartenhalte – 28.10.2026
 
-Version 31 erweitert die bestehende RailAtlas-Anwendung. Geprüft wurden 43 kleine Innenstadt-Ausschnitte: die Hauptstädte aller 32 Bundesstaaten sowie Playa del Carmen, Cancún, Tulum, Tijuana, Puerto Escondido, Salina Cruz, Jilotepec, Zamora, Uruapan, Zitácuaro und Ixmiquilpan. Dies ist eine geografisch breite Stichprobe, keine flächendeckende Erhebung oder Zusage des aktuellen Verkehrsangebots.
+Version 32 erweitert die bestehende RailAtlas-Anwendung. Geprüft wurden 43 kleine Innenstadt-Ausschnitte: die Hauptstädte aller 32 Bundesstaaten sowie Playa del Carmen, Cancún, Tulum, Tijuana, Puerto Escondido, Salina Cruz, Jilotepec, Zamora, Uruapan, Zitácuaro und Ixmiquilpan. Dies ist eine geografisch breite Stichprobe, keine flächendeckende Erhebung oder Zusage des aktuellen Verkehrsangebots.
 
 ## Änderungen und Konsequenzen
 
@@ -87,4 +87,11 @@ Linienverläufe sind die gelieferten Varianten je Ebene. Halte sind je Verkehrsm
 
 132 Regressionen erfolgreich, einschließlich der bisherigen europäischen Verarbeitung, echter Playa-OSM-Objekte, Kartenzellen-Grenzen, getrennten Gegenrichtungshalten, mexikanischer Suche und Zeitzonen sowie der echten CDMX–Puebla-Antwort. TypeScript und Worker-, Standalone- und GitHub-Pages-Build erfolgreich.
 
-Sites-Version 31 ist veröffentlicht. Im Browser sind violette Colectivo-Verläufe und kartierte Einstiege sichtbar; die beiden Schalter wurden unabhängig geprüft. Die GitHub-Pages-Veröffentlichung und die abschließenden Bedienungsproben stehen im Versionsprotokoll.
+Sites-Version 32 ist veröffentlicht. Im Browser sind violette Colectivo-Verläufe und kartierte Einstiege sichtbar; die beiden Schalter wurden unabhängig geprüft. Die GitHub-Pages-Veröffentlichung und die abschließenden Bedienungsproben stehen im Versionsprotokoll.
+
+Die Ortsmessungen stammen aus Stand 31. Stand 32 verwendet unveränderte Daten
+und korrigiert ausschließlich die geografische Quellenbezeichnung sowie eine
+Zoomanimation, die bei schnellem Europa–Mexiko-Wechsel die alte Ansicht halten
+konnte. Der reproduzierte Wechsel über das Europa-Beispiel landet nun wieder in
+Playa del Carmen mit 39 Colectivo-Verläufen und 92 Haltepunkten.
+[Veröffentlichungs- und Browsernachweis](railatlas-v32.md).

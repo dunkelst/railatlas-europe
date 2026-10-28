@@ -2,9 +2,9 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **31**, Quellcommit `ac093da610d50d7e383a32d52386c9de7dfe5308`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **32**, Quellcommit `47161c303822c85c7405db2f617bf39e935a2d86`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
 
-## Version 31: Mexiko mit Colectivo-/Combi-Ebene
+## Version 32: Mexiko mit Colectivo-/Combi-Ebene
 
 [**Mexiko in Playa del Carmen öffnen**](https://dunkelst.github.io/railatlas-europe/?region=mexico&place=playa)
 

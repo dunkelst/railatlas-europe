@@ -1,6 +1,6 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **31**, Quellcommit `ac093da610d50d7e383a32d52386c9de7dfe5308`.
+Sites-Version **32**, Quellcommit `47161c303822c85c7405db2f617bf39e935a2d86`.
 **1.016** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
@@ -8,6 +8,9 @@ und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub C
 Mexiko ergänzt die bestehende Anwendung um eine eigene Colectivo-/Combi-Ebene,
 kartierte Einstiege, regionale Suche und Zeitzonen. 132 Regressionen, TypeScript
 und drei Builds erfolgreich. [Prüfbericht](qa/mexico-consistency-2026-10-28.md).
+Der schnelle Regionswechsel wurde im Browser korrigiert und geprüft; die
+Quellenanzeige bezeichnet Transitous auch in Mexiko zutreffend.
+[Veröffentlichungs- und Browsernachweis](qa/railatlas-v32.md).
 Die bisherigen Versionsnachweise bleiben historisch erhalten.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |
