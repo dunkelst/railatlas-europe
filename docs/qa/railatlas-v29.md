@@ -39,5 +39,34 @@ Die zusätzliche API auf api.transitous.org ist offiziell dokumentiert, aber
 experimentell und ohne Verfügbarkeitsgarantie. Vorhandene Daten bleiben bei
 Ausfall erhalten. Keine vollständige europäische Netz- oder Fahrplanabdeckung.
 
-Öffentliche Netz- und Browserabnahme folgt nach dem GitHub-Rollout und wird
-im Abschluss ergänzt.
+## Öffentliche Abnahme auf beiden Websites
+
+Die veröffentlichte API bestätigt HTTP 200 für denselben begrenzten Tavira-
+Ausschnitt: 55 Bushalte und 18 Linienverläufe, zehn TIMETABLE und acht ROUTED.
+Die Antwort benötigt rund sieben Sekunden und kennzeichnet berechnete Verläufe.
+
+Auf https://railatlas-europa.dunkelst.chatgpt.site/ und direkt auf
+https://dunkelst.github.io/railatlas-europe/ wurde Tavira aus den tatsächlichen
+Startvorschlägen gewählt, das Ziel geleert und Bus-Linien/Bus-Halte aktiviert.
+Ohne eine Reise zu berechnen zeigen beide Browseroberflächen **18 Buslinien-
+verläufe und 104 Haltestellen** im sichtbaren Ausschnitt. Linien sind sichtbar,
+berechnete Verläufe und der teilweise bestätigte Status sind ausdrücklich
+gekennzeichnet. Die abweichende Haltezahl zur API-Probe folgt aus dem anderen
+sichtbaren Browserausschnitt, nicht aus einem Wechsel der Haltequelle.
+
+GitHub-Implementierungscommit `c4a40c9d0ed064c788491a2c6078c8fb1b9bb752`:
+
+- [CI erfolgreich](https://github.com/dunkelst/railatlas-europe/actions/runs/40743799218)
+- [Gemeinsame App-Prüfung erfolgreich](https://github.com/dunkelst/railatlas-europe/actions/runs/40743799577)
+- [Pages-Veröffentlichung erfolgreich](https://github.com/dunkelst/railatlas-europe/actions/runs/40743799262)
+
+Die GitHub-Seite liefert das neue Produktionsasset `index-DNqePPlS.js`.
+Eine zusätzliche öffentliche Nachbarprobe in Berlin (52.51,13.38,52.53,13.42)
+liefert HTTP 200: U-Bahn mit U5/U8 und 18 Halten, Tram mit M4/M5/M6/M8/M10 und
+22 Halten sowie S-Bahn mit 29 Linienverläufen und sechs Halten. Die vorhandene
+Warnung zur begrenzten Linienauswahl bleibt sichtbar. Das bestätigt diese
+gelieferten Ebenen im Prüfausschnitt, keine vollständige Berliner Abdeckung.
+Der Nachtrag ändert keine App-Dateien und löst keinen weiteren Rollout aus.
+Einzelne OpenRailwayMap-Kacheln waren im Test nicht erreichbar; die separat
+geladenen Buslinien und Halte waren trotzdem sichtbar. Kein neuer GPS-Test
+und keine Garantie vollständiger europäischer Betriebs-/Geometrieabdeckung.

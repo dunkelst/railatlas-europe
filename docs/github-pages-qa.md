@@ -1,6 +1,26 @@
 # GitHub Pages – aktueller Veröffentlichungsnachweis
 
-## 28.10.2026: Gemeinsame App-Version 28 auf GitHub Pages
+## 28.10.2026: gemeinsame App-Version 29 mit allgemeinen Tavira-Buslinien
+
+Veröffentlicht und tatsächlich im Browser geprüft:
+https://dunkelst.github.io/railatlas-europe/
+
+Implementierungscommit `c4a40c9d0ed064c788491a2c6078c8fb1b9bb752`, Sites-Quelle
+`ef812d4fa5830f9717cc25547bdf9222141266ca`, 201 bytegleiche App-Dateien.
+114 Regressionen, TypeScript und alle drei Builds erfolgreich. CI, gemeinsame
+App-Prüfung und Pages-Veröffentlichung sind erfolgreich.
+
+Tavira aus dem Startvorschlag gewählt, Ziel leer gelassen, Bus-Linien und
+Bus-Halte eingeschaltet: **18 Linienverläufe und 104 Halte** im sichtbaren
+Ausschnitt, ohne Fahrtsuche. Auch auf Sites bestätigt. Berechnete Verläufe sind
+gekennzeichnet; vorhandene Halte bleiben erhalten. Die vorher geprüfte
+Faro–Madrid-Reise zeigt weiterhin gelieferte Bus-/Bahnverläufe.
+[Abnahme und verbleibende Grenzen](qa/railatlas-v29.md).
+
+Die öffentliche GitHub-Testausgabe verwendet weiterhin die gemeinsame öffentliche
+RailAtlas-API. Dieser Dokumentationsnachtrag ändert keine App-Dateien.
+
+## Historisch: 28.10.2026, gemeinsame App-Version 28 auf GitHub Pages
 
 Veröffentlicht und im Browser geprüft:
 https://dunkelst.github.io/railatlas-europe/
