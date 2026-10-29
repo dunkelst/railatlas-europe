@@ -1,11 +1,15 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **34**, Quellcommit `2a899e4c0b2897c3934b30cb29ef8fe2a9a8e465`.
-**1.023** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
+Sites-Version **37**, Quellcommit `7684cffd0630511fc888a24136c5e001bbd035d2`.
+**1.027** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
-Aktuell: Flughafen- und Terminalsuche mit 63 mexikanischen Quell-Flughäfen,
+Aktuell: DE/EN/ES-Sprachwahl mit gespeicherter Auswahl und Erhalt der Reiseeingaben.
+145 Regressionen, TypeScript und drei Builds erfolgreich.
+[Sprachprüfung](qa/railatlas-v37.md).
+
+Weiterhin enthalten: Flughafen- und Terminalsuche mit 63 mexikanischen Quell-Flughäfen,
 Ortskontext und Diagnose tatsächlicher Fahrplanantworten. Unterschiedliche
 Halte bleiben getrennt; nahe Anbietervorschläge werden ausdrücklich übernommen.
 140 Regressionen, TypeScript und drei Builds erfolgreich. ADO-Flughafenbusse

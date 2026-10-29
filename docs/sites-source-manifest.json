@@ -1,6 +1,6 @@
 {
-  "site_version": 34,
-  "site_source_commit": "2a899e4c0b2897c3934b30cb29ef8fe2a9a8e465",
+  "site_version": 37,
+  "site_source_commit": "7684cffd0630511fc888a24136c5e001bbd035d2",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.dunkelst.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -53,9 +53,9 @@
     {
       "path": "README.md",
       "mode": "100644",
-      "git_blob": "8b2bc4f654aa41dcbf93a56c70d9da0d80f865ee",
-      "sha256": "f63724ac367834262aa6fa32463080ab3762b370b4bc5c528001f40e72030723",
-      "bytes": 33377
+      "git_blob": "c42d9922db36e33e79d6e79cb1c90aa8fc863c4c",
+      "sha256": "67dd8f317da20e61ef716ec5de0b2949a8f19442a4efed381485f58b6800eed1",
+      "bytes": 33995
     },
     {
       "path": "app/api/health/route.ts",
@@ -95,9 +95,9 @@
     {
       "path": "app/globals.css",
       "mode": "100644",
-      "git_blob": "ef3699d41942cd0e1946368b5f858c732467c82e",
-      "sha256": "b384509ee704d1d6afc0c13a46d40b225a88aeb84c35141c070e45859cc7da23",
-      "bytes": 26455
+      "git_blob": "37e9770a5a00d2ab982c2f1b4b7ae9b33bc44254",
+      "sha256": "f7d871cf5eb6846d46a73923bf89c515338b71ce1bec0fd9f1d6d1a4c526f907",
+      "bytes": 27290
     },
     {
       "path": "app/layout.tsx",
@@ -109,9 +109,9 @@
     {
       "path": "app/page.tsx",
       "mode": "100644",
-      "git_blob": "001ff56119830a7ae9f80114a8bcb5dde8447c77",
-      "sha256": "5b0d4c4f7d91863164a1f3b60959b5faa87fcda5604fa03d623efe1011572a5d",
-      "bytes": 41362
+      "git_blob": "37ce6257dfa9462c9c47674681f694c0f59f03ed",
+      "sha256": "c5d9515a201a5f8ae9132ceaa3b4de70cc19906f2c6723c2227be6e30427e039",
+      "bytes": 42766
     },
     {
       "path": "build/connector-preview-plugin.mjs",
@@ -165,9 +165,9 @@
     {
       "path": "components/api-connection.tsx",
       "mode": "100644",
-      "git_blob": "82a147d1cc45540b27c49f35efd0207e0b7c5b9f",
-      "sha256": "cc28cacd53f037f934677159c852c642073eccb6f4ec1dc867affdafd0afce98",
-      "bytes": 2230
+      "git_blob": "d4adbb86c7725fda58f7425b2d26f4a57ea69cc4",
+      "sha256": "9cf4220272c19f3e5acfd1ca201b9ec8dd745d06674e3976496f4b70db3e1a15",
+      "bytes": 2354
     },
     {
       "path": "components/connector-error.tsx",
@@ -179,23 +179,30 @@
     {
       "path": "components/journey-details.tsx",
       "mode": "100644",
-      "git_blob": "d2924a191ed3d6c9a4c131f063563e1168fe780b",
-      "sha256": "32c6a71b6130f83f7f1c8eabce945afd5b4f07adbe5477ebe4b99ff03680024e",
-      "bytes": 8103
+      "git_blob": "de371a96e00c594f8d683a64ebf26e82e7da8b79",
+      "sha256": "e05fd0d06d7b7ebb8735e8901340b76f887c37c75d78bac66f53c5691063cdcc",
+      "bytes": 8813
     },
     {
       "path": "components/journey-replan.tsx",
       "mode": "100644",
-      "git_blob": "d0ebd4bc60e5fe14af041167309b591581f1bb88",
-      "sha256": "0610e9a9d7c063f987d84eed59f49f83a010713976b449c4520602828c4e3783",
-      "bytes": 1644
+      "git_blob": "0b36879b18f8a73753e3a046f9e9eceb3defc0e7",
+      "sha256": "709226cd96961bb2f3c21e97a6f3c7c173c6b2bb085dd2bf1b8c78078d508bbe",
+      "bytes": 1775
+    },
+    {
+      "path": "components/locale.tsx",
+      "mode": "100644",
+      "git_blob": "8b7a6462683ff733e92715b52e6e088f210dada8",
+      "sha256": "c58245c3186eee99b4507ab540d015095bbcd3fa1165047f4987928e21296d86",
+      "bytes": 1968
     },
     {
       "path": "components/rail-map.tsx",
       "mode": "100644",
-      "git_blob": "615c1fa1fa33a17308e11eb58de42d8fe34cecf3",
-      "sha256": "aada168fbb79a3c5d43c982beef6e90e32df1f871c223f1eeb62b32209a7d971",
-      "bytes": 16604
+      "git_blob": "74cc1ac9f38cbb540bac13b3d24676dcc0cedebe",
+      "sha256": "ff3ceb371092e1ce7dcde227cb65baa2709bd7cd7dd471d55f75f9f592e4b2c6",
+      "bytes": 17245
     },
     {
       "path": "components/ui/accordion.tsx",
@@ -758,6 +765,13 @@
       "bytes": 10170
     },
     {
+      "path": "lib/i18n.mjs",
+      "mode": "100644",
+      "git_blob": "a27693da1ca5755b276f49b9bbafb54b6e058c7b",
+      "sha256": "3aecd7220b5069796ba8bedd2f9290764f7c10a7eebf476ffe0656e05645cc41",
+      "bytes": 2845
+    },
+    {
       "path": "lib/journey.mjs",
       "mode": "100644",
       "git_blob": "36972c27127c5525ba56185a68226ee8ba8a64bd",
@@ -770,6 +784,13 @@
       "git_blob": "64fffa28d1cdd550afd8a30f40082d9594666bc4",
       "sha256": "a88a32b2240d6f279ec238168185b6f13ed3b9281cab1dd53096a5b6b2c8e42b",
       "bytes": 3849
+    },
+    {
+      "path": "lib/messages.mjs",
+      "mode": "100644",
+      "git_blob": "294e5fe71837aa26a4d87a2a46a40dfde58c1fcd",
+      "sha256": "abc4373b812278e2b52f2626df0a0f3bc7d299f7428e3996c0f15bd6a19a5255",
+      "bytes": 61567
     },
     {
       "path": "lib/mexico-airports-data.mjs",
@@ -7035,6 +7056,13 @@
       "git_blob": "734a7dd18dae355037558f556335c12924c24a3f",
       "sha256": "4c511ee9bf5611d270156fecadd93eea683454be97849b64e45e75e92b30e8a1",
       "bytes": 38712
+    },
+    {
+      "path": "tests/i18n.test.mjs",
+      "mode": "100644",
+      "git_blob": "b00bd56a35dbb9a725d5ae2e3d0d9ff40c6ea2f4",
+      "sha256": "0e1decfc7923178ff0821a7eef3054ca96b09a02eed48e7edba6fa28bd4e0670",
+      "bytes": 3575
     },
     {
       "path": "tests/mexico-routing.test.mjs",

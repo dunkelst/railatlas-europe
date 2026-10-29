@@ -2,7 +2,17 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **34**, Quellcommit `2a899e4c0b2897c3934b30cb29ef8fe2a9a8e465`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **37**, Quellcommit `7684cffd0630511fc888a24136c5e001bbd035d2`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 37: Deutsch, Englisch und Spanisch
+
+Die Sprachwahl in der Kopfzeile gilt unabhängig von der Region für Europa und
+Mexiko. Sie bleibt im Browser erhalten; `?lang=en` und `?lang=es` können die
+Sprache beim Öffnen vorgeben. Beim Umschalten bleiben Reiseeingaben, Zwischenziele,
+Zeitzone und bestehende Ergebnisse erhalten. Menüs, Karten-Popups, Reiseverlauf
+und eigene Meldungen sind übersetzt; Ortsnamen und Originalmeldungen der Anbieter
+bleiben erhalten. 145 Regressionen, TypeScript und drei Builds erfolgreich.
+[Prüfbericht](docs/qa/railatlas-v37.md).
 
 ## Version 34: Flughäfen, Ortskontext und Busfahrten
 

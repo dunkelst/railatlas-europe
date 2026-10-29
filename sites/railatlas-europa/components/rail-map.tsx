@@ -1,4 +1,6 @@
 "use client";
+import {useLocale} from '@/components/locale';
+
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {Station,Journey} from '@/lib/types';
 import {assetUrl,apiUrl,runtime} from '@/lib/urls.mjs';
@@ -11,6 +13,7 @@ type NetworkData={layers:Record<string,{lines:{id:string;name:string;ref:string;
 let leaflet:Promise<any>|undefined;
 function loadLeaflet(){if(window.L)return Promise.resolve(window.L);if(!leaflet)leaflet=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=assetUrl('vendor/leaflet.js');script.onload=()=>resolve(window.L);script.onerror=()=>{leaflet=undefined;reject(new Error('Die Karte konnte nicht geladen werden.'));};document.head.appendChild(script);});return leaflet;}
 export default function RailMap({stations,parts,picking,onPick,onStopPick,region='europe',focus}:{stations:Station[];parts:Journey[];picking:string|null;onPick:(lat:number,lon:number)=>void;onStopPick:(station:Station,target?:'start'|'end'|'via')=>void;region?:string;focus?:{centre:number[];zoom:number}}){
+ const {t,locale,language}=useLocale();
  const container=useRef<HTMLDivElement>(null),controls=useRef<HTMLElement>(null),map=useRef<any>(null),journeyLayer=useRef<any>(null),railway=useRef<any>(null),networkGroups=useRef<Record<string,any>>({});
  const pickRef=useRef(onPick),stopRef=useRef(onStopPick),modeRef=useRef(picking);
  const [ready,setReady]=useState(false),[error,setError]=useState(''),[tileError,setTileError]=useState(false),[layerState,setLayerState]=useState<LayerState>(defaultNetworkLayers),[view,setView]=useState<{zoom:number;bounds:number[]}|null>(null),[network,setNetwork]=useState<NetworkData|null>(null),[status,setStatus]=useState(''),[networkError,setNetworkError]=useState(false),[loading,setLoading]=useState(false),[retry,setRetry]=useState(0);
@@ -23,8 +26,8 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
  useEffect(()=>{let active=true;loadLeaflet().then(L=>{if(!active||!container.current)return;
   const m=L.map(container.current,{zoomControl:false,scrollWheelZoom:true,preferCanvas:true,zoomAnimation:false}).setView((region==='mexico'?REGIONS.mexico:REGIONS.europe).centre,(region==='mexico'?REGIONS.mexico:REGIONS.europe).zoom);map.current=m;
   L.control.zoom({position:'bottomright'}).addTo(m);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap-Mitwirkende'}).addTo(m);
-  railway.current=L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenRailwayMap · Schieneninfrastruktur'}).on('tileerror',()=>{if(active)setTileError(true);});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(m);
+  railway.current=L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenRailwayMap'}).on('tileerror',()=>{if(active)setTileError(true);});
   for(const mode of NETWORK_MODES)networkGroups.current[mode.id]=L.layerGroup().addTo(m);
   journeyLayer.current=L.layerGroup().addTo(m);
   if(controls.current){L.DomEvent.disableClickPropagation(controls.current);L.DomEvent.disableScrollPropagation(controls.current);}
@@ -64,51 +67,52 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
  useEffect(()=>{
   if(!ready||!map.current)return;const L=window.L;
   for(const mode of NETWORK_MODES){const group=networkGroups.current[mode.id];group?.clearLayers();const data=visibleNetwork?.layers[mode.id],enabled=layerState[mode.id];if(!data||!group)continue;
-   if(enabled.lines&&mode.id!=='rail')for(const line of data.lines){const node=document.createElement('div');node.className='map-popup';node.textContent=mode.label+' · '+line.name+(line.calculated?' · berechneter Verlauf laut Auskunft':'')+(line.source?' · '+line.source:'')+(line.sourceDate?' · Stand '+line.sourceDate:'');for(const segment of line.segments)L.polyline(segment,{color:mode.color,weight:mode.id==='bus'?3:4,opacity:.8,bubblingMouseEvents:false,...(line.calculated?{dashArray:'8 5'}:{})}).bindPopup(node).addTo(group);}
-   if(enabled.stops)for(const stop of data.stops){const node=document.createElement('div');node.className='map-popup network-popup';const heading=document.createElement('b');heading.textContent=stop.name;node.appendChild(heading);const text=document.createElement('small');text.textContent=mode.label+(stop.lines.length?' · '+stop.lines.join(', '):'')+' · '+(stop.source||network?.source||'Kartendaten');node.appendChild(text);
-    if(mode.id==='colectivo'){const note=document.createElement('small');note.textContent=stop.boardingKind==='informal'?'Informeller Einstieg laut Kartendaten · Bedienung vor Ort prüfen':'Kartierter Colectivo-Einstieg · Beschilderung und aktuelle Bedienung vor Ort prüfen';node.appendChild(note);}
-    if(stop.sourceDate){const note=document.createElement('small');note.textContent='Quellenstand '+stop.sourceDate;node.appendChild(note);}
-    if(stop.sourceUrl&&stop.sourceUrl.startsWith('https://')){const link=document.createElement('a');link.href=stop.sourceUrl;link.textContent='Datenquelle öffnen';link.target='_blank';link.rel='noreferrer';node.appendChild(link);}
+   if(enabled.lines&&mode.id!=='rail')for(const line of data.lines){const node=document.createElement('div');node.className='map-popup';node.textContent=t(mode.label)+' · '+line.name+(line.calculated?t(' · berechneter Verlauf laut Auskunft'):'')+(line.source?' · '+line.source:'')+(line.sourceDate?t(' · Stand ')+line.sourceDate:'');for(const segment of line.segments)L.polyline(segment,{color:mode.color,weight:mode.id==='bus'?3:4,opacity:.8,bubblingMouseEvents:false,...(line.calculated?{dashArray:'8 5'}:{})}).bindPopup(node).addTo(group);}
+   if(enabled.stops)for(const stop of data.stops){const node=document.createElement('div');node.className='map-popup network-popup';const heading=document.createElement('b');heading.textContent=stop.name;node.appendChild(heading);const text=document.createElement('small');text.textContent=t(mode.label)+(stop.lines.length?' · '+stop.lines.join(', '):'')+' · '+(stop.source||network?.source||t('Kartendaten'));node.appendChild(text);
+    if(mode.id==='colectivo'){const note=document.createElement('small');note.textContent=stop.boardingKind==='informal'?t('Informeller Einstieg laut Kartendaten · Bedienung vor Ort prüfen'):t('Kartierter Colectivo-Einstieg · Beschilderung und aktuelle Bedienung vor Ort prüfen');node.appendChild(note);}
+    if(stop.sourceDate){const note=document.createElement('small');note.textContent=t('Quellenstand ')+stop.sourceDate;node.appendChild(note);}
+    if(stop.sourceUrl&&stop.sourceUrl.startsWith('https://')){const link=document.createElement('a');link.href=stop.sourceUrl;link.textContent=t('Datenquelle öffnen');link.target='_blank';link.rel='noreferrer';node.appendChild(link);}
     const station:Station=stop.station?{...stop.station,networkMode:mode.id}:{id:'osm:'+stop.id,dbId:'',name:stop.name,lat:stop.lat,lon:stop.lon,country:'',main:false,networkMode:mode.id};
-    for(const [target,label] of [['start','Als Start'],['end','Als Ziel'],['via','Als Zwischenziel']] as const){const button=document.createElement('button');button.type='button';button.textContent=label;button.onclick=()=>{map.current?.closePopup();stopRef.current(station,target);};node.appendChild(button);}
+    for(const [target,label] of [['start','Als Start'],['end','Als Ziel'],['via','Als Zwischenziel']] as const){const button=document.createElement('button');button.type='button';button.textContent=t(label);button.onclick=()=>{map.current?.closePopup();stopRef.current(station,target);};node.appendChild(button);}
     const tooltip=document.createElement('span');tooltip.textContent=stop.name;
     const marker=L.circleMarker([stop.lat,stop.lon],{radius:mode.id==='rail'||mode.id==='colectivo'?5:4,color:mode.color,fillColor:mode.id==='colectivo'?'#efdfff':'#ffffff',fillOpacity:1,weight:2,bubblingMouseEvents:false,...(stop.boardingKind==='informal'?{dashArray:'2 3'}:{})}).bindPopup(node).bindTooltip(tooltip,{direction:'top'}).addTo(group);
     marker.on('click',()=>{if(modeRef.current){map.current?.closePopup();stopRef.current(station);}});
    }
   }
- },[ready,visibleNetwork,layerState,region]);
+ },[ready,visibleNetwork,layerState,region,language]);
+ useEffect(()=>{if(!ready)return;for(const [selector,label] of [['.leaflet-control-zoom-in','Vergrößern'],['.leaflet-control-zoom-out','Verkleinern']]){const button=container.current?.querySelector<HTMLElement>(selector);if(button){button.title=t(label);button.setAttribute('aria-label',t(label));}}},[ready,language]);
  const toggle=(mode:string,field:'lines'|'stops',value:boolean)=>setLayerState(old=>({...old,[mode]:{...old[mode],[field]:value}}));
  const visibleObjects=visibleNetwork?NETWORK_MODES.reduce((n,m)=>n+(layerState[m.id].stops?visibleNetwork.layers[m.id].stops.length:0)+(layerState[m.id].lines&&m.id!=='rail'?visibleNetwork.layers[m.id].lines.length:0),0):0;
  const visibleStatus=visibleNetwork&&!loading&&!networkError&&!visibleObjects?'Für den sichtbaren Ausschnitt fehlen passende Netzdaten. Das bestätigt keine fehlende Bedienung.':status;
- return <section className={'map-stage '+(picking?'picking':'')} aria-label="Bahn- und Nahverkehrskarte">
+ return <section className={'map-stage '+(picking?'picking':'')} aria-label={t("Bahn- und Nahverkehrskarte")}>
   <div ref={container} className="map-canvas"/>
-  {error&&<div role="alert" className="map-message">{error} Die Reiseplanung steht weiterhin zur Verfügung.</div>}
-  <div className="map-tag"><span className="live-dot"/>{region==='mexico'?'MEXIKOS':'EUROPAS'} BAHN & ÖPNV-NETZE</div>
-  <aside ref={controls} className="map-options network-controls" aria-label="Netzebenen"><details open>
-   <summary>Netzebenen <span>Linien & Halte</span></summary>
-   <div className="network-grid"><span>VERKEHRSMITTEL</span><span>Linien</span><span>Halte</span>
+  {error&&<div role="alert" className="map-message">{t(error)} {t(" Die Reiseplanung steht weiterhin zur Verfügung.")}</div>}
+  <div className="map-tag"><span className="live-dot"/>{t(region==='mexico'?'MEXIKO · BAHN & ÖPNV-NETZE':'EUROPA · BAHN & ÖPNV-NETZE')}</div>
+  <aside ref={controls} className="map-options network-controls" aria-label={t("Netzebenen")}><details open>
+   <summary>{t("Netzebenen ")}<span>{t("Linien & Halte")}</span></summary>
+   <div className="network-grid"><span>{t("VERKEHRSMITTEL")}</span><span>{t("Linien")}</span><span>{t("Halte")}</span>
     {NETWORK_MODES.map(mode=><div key={mode.id} className="network-row">
-     <span><i style={{background:mode.color}}/>{mode.label}</span>
-     <label><input type="checkbox" aria-label={mode.label+' Linien'} checked={layerState[mode.id].lines} onChange={e=>toggle(mode.id,'lines',e.target.checked)}/><span className="sr-only">{mode.label} Linien</span></label>
-     <label><input type="checkbox" aria-label={mode.label+' Halte'} checked={layerState[mode.id].stops} onChange={e=>toggle(mode.id,'stops',e.target.checked)}/><span className="sr-only">{mode.label} Halte</span></label>
+     <span><i style={{background:mode.color}}/>{t(mode.label)}</span>
+     <label><input type="checkbox" aria-label={t(mode.label)+t(' Linien')} checked={layerState[mode.id].lines} onChange={e=>toggle(mode.id,'lines',e.target.checked)}/><span className="sr-only">{t(mode.label)} {t(" Linien")}</span></label>
+     <label><input type="checkbox" aria-label={t(mode.label)+t(' Halte')} checked={layerState[mode.id].stops} onChange={e=>toggle(mode.id,'stops',e.target.checked)}/><span className="sr-only">{t(mode.label)} {t(" Halte")}</span></label>
     </div>)}
    </div>
-   {region==='mexico'&&<small>Colectivos / Combis: eigene Linien- und Halteebene. Violett: kartierte Verläufe und übliche Einstiegspunkte laut Quelle. Zusätzliche Einstiege können fehlen; kein bestätigter Fahrplan.</small>}
-   <p className={'network-status '+(networkError?'has-error':'')} role="status">{loading&&<span className="network-spinner"/>}{visibleStatus}</p>
+   {region==='mexico'&&<small>{t("Colectivos / Combis: eigene Linien- und Halteebene. Violett: kartierte Verläufe und übliche Einstiegspunkte laut Quelle. Zusätzliche Einstiege können fehlen; kein bestätigter Fahrplan.")}</small>}
+   <p className={'network-status '+(networkError?'has-error':'')} role="status">{loading&&<span className="network-spinner"/>}{t(visibleStatus)}</p>
    {visibleNetwork&&<>
-    <div className="network-counts"><b>Im sichtbaren Ausschnitt</b>
+    <div className="network-counts"><b>{t("Im sichtbaren Ausschnitt")}</b>
      {NETWORK_MODES.filter(m=>(layerState[m.id].lines||layerState[m.id].stops)&&visibleNetwork.modes?.includes(m.id)).map(m=><span key={m.id}>
-      {m.label}: {layerState[m.id].lines&&m.id!=='rail'?visibleNetwork.layers[m.id].lines.length+' Linienverläufe'+(layerState[m.id].stops?' · ':''):''}{layerState[m.id].stops?visibleNetwork.layers[m.id].stops.length+' Halte':''}
+      {t(m.label)}: {layerState[m.id].lines&&m.id!=='rail'?visibleNetwork.layers[m.id].lines.length+t(' Linienverläufe')+(layerState[m.id].stops?' · ':''):''}{layerState[m.id].stops?visibleNetwork.layers[m.id].stops.length+t(' Halte'):''}
      </span>)}
     </div>
-    <p className="network-source">Quelle: {visibleNetwork.source}{visibleNetwork.attributions?.map(a=><a key={a.url} href={a.url} target="_blank" rel="noreferrer">{a.label}</a>)}</p>
-    {(requestDetail==='all'||visibleNetwork.warningScope!=='lines')&&visibleNetwork.warning&&<p className="network-warning" role="status">{visibleNetwork.warning}</p>}
+    <p className="network-source">{t("Quelle: ")}{t(visibleNetwork.source)}{visibleNetwork.attributions?.map(a=><a key={a.url} href={a.url} target="_blank" rel="noreferrer">{t(a.label)}</a>)}</p>
+    {(requestDetail==='all'||visibleNetwork.warningScope!=='lines')&&visibleNetwork.warning&&<p className="network-warning" role="status">{t(visibleNetwork.warning)}</p>}
    </>}
-   {tileError&&layerState.rail.lines&&<p className="network-status has-error">Einige Kacheln des Bahnnetzes konnten nicht geladen werden.</p>}
-   <button type="button" onClick={()=>{setTileError(false);railway.current?.redraw();setRetry(n=>n+1);}} disabled={loading}>Ausschnitt neu laden</button>
-   <small>Die Ebenenschalter ändern die Karte. Die Fahrtsuche berücksichtigt unabhängig davon Bus, Bahn und Nahverkehr. Die Schienenkarte enthält auch Güterstrecken.</small><small>Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Daten können fehlen; keine Zusage zum aktuellen Betrieb.</small>
+   {tileError&&layerState.rail.lines&&<p className="network-status has-error">{t("Einige Kacheln des Bahnnetzes konnten nicht geladen werden.")}</p>}
+   <button type="button" onClick={()=>{setTileError(false);railway.current?.redraw();setRetry(n=>n+1);}} disabled={loading}>{t("Ausschnitt neu laden")}</button>
+   <small>{t("Die Ebenenschalter ändern die Karte. Die Fahrtsuche berücksichtigt unabhängig davon Bus, Bahn und Nahverkehr. Die Schienenkarte enthält auch Güterstrecken.")}</small><small>{t("Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Daten können fehlen; keine Zusage zum aktuellen Betrieb.")}</small>
   </details></aside>
-  {picking&&<div className="pick-banner">Kartenpunkt oder Halt wählen · als {picking}</div>}
-  <div className="map-caption">{parts.length?<>Reiseverlauf: {[...new Set(parts.map(p=>p.source))].join(' · ')} · Grün/Blau: Bahn · Braun: Bus · Grau: Fußweg{parts.some(p=>p.legs.some(l=>!l.walking&&l.geometry?.reason==='unverified'&&l.geometry.segments.length))?' · Farbig gestrichelt: Anbieterverlauf, Originalpfad nicht bestätigt':''}{parts.some(p=>p.alternativeKind==='walking')?' · Rot gestrichelt: Fußweg-Notlösung':''}{parts.some(p=>p.legs.some(l=>l.geometry?.status!=='complete'))?' · Fehlende Geometrie bleibt offen.':''}</>:(region==='mexico'?'Mexiko':'Europa')+' entdecken · Netzebenen unabhängig von deiner Reise einblenden'}</div>
+  {picking&&<div className="pick-banner">{t("Kartenpunkt oder Halt wählen · als ")}{picking}</div>}
+  <div className="map-caption">{parts.length?<>{t("Reiseverlauf: ")}{[...new Set(parts.map(p=>p.source))].join(' · ')} {t(" · Grün/Blau: Bahn · Braun: Bus · Grau: Fußweg")}{parts.some(p=>p.legs.some(l=>!l.walking&&l.geometry?.reason==='unverified'&&l.geometry.segments.length))?t(' · Farbig gestrichelt: Anbieterverlauf, Originalpfad nicht bestätigt'):''}{parts.some(p=>p.alternativeKind==='walking')?t(' · Rot gestrichelt: Fußweg-Notlösung'):''}{parts.some(p=>p.legs.some(l=>l.geometry?.status!=='complete'))?t(' · Fehlende Geometrie bleibt offen.'):''}</>:t('{0} entdecken · Netzebenen unabhängig von deiner Reise einblenden',[t(region==='mexico'?'Mexiko':'Europa')])}</div>
  </section>;
 }

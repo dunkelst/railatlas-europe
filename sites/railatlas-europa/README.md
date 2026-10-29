@@ -462,3 +462,15 @@ Die tatsächlichen DB- und EFA-Antworten liegen als Regressionen unter `tests/fi
 Der öffentliche DB-Webservice ist nicht als garantierte API zugesichert. Die
 Abfrageformate wurden mit dem öffentlichen db-vendo-client verglichen:
 https://github.com/public-transport/db-vendo-client/tree/main/p/dbweb.
+
+
+## Wählbare Sprachen
+
+Die Kopfzeile bietet Deutsch, English und Español für Europa und Mexiko.
+Die Auswahl bleibt im Browser gespeichert; `?lang=en` und `?lang=es` setzen
+die Sprache beim Öffnen. Ein Sprachwechsel erhält Eingaben, Zwischenziele,
+Kartenansicht, Zeitzone und vorhandene Reiseergebnisse. Menüs, Kartenaktionen,
+Reiseverlauf und eigene Meldungen sind übersetzt. Ortsnamen und Originalhinweise
+der Verkehrsunternehmen bleiben erhalten und werden als Originaltext kenntlich.
+Datum, Länder und Zahlen verwenden die gewählte Sprache, Fahrzeiten weiterhin
+die ausdrücklich gewählte Reisezeitzone.
