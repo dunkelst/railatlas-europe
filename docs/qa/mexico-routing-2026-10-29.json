@@ -885,5 +885,8 @@
       }
     ]
   },
-  "scope": "Station searches, airport/terminal selection and explicitly listed journey cases; not a national timetable-coverage certification."
+  "scope": "Station searches, airport/terminal selection and explicitly listed journey cases; not a national timetable-coverage certification.",
+  "finalVersion": 34,
+  "finalSourceCommit": "2a899e4c0b2897c3934b30cb29ef8fe2a9a8e465",
+  "finalChange": "Explicit type annotation only; runtime and source data are unchanged from the measured version 33."
 }

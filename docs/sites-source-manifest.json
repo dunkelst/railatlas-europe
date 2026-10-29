@@ -1,6 +1,6 @@
 {
-  "site_version": 33,
-  "site_source_commit": "aa37a613c1af2e97d141cab1271188afe6c82a28",
+  "site_version": 34,
+  "site_source_commit": "2a899e4c0b2897c3934b30cb29ef8fe2a9a8e465",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.dunkelst.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -109,9 +109,9 @@
     {
       "path": "app/page.tsx",
       "mode": "100644",
-      "git_blob": "10e21d2ddb225883d3f0836aa532ad49b93ba24d",
-      "sha256": "5c402a1663d37a90048919b34eb2f70545183d3f4ac1b3dbb44fb579d7658aa1",
-      "bytes": 41334
+      "git_blob": "001ff56119830a7ae9f80114a8bcb5dde8447c77",
+      "sha256": "5b0d4c4f7d91863164a1f3b60959b5faa87fcda5604fa03d623efe1011572a5d",
+      "bytes": 41362
     },
     {
       "path": "build/connector-preview-plugin.mjs",
