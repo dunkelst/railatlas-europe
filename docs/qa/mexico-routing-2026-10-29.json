@@ -1,0 +1,889 @@
+{
+  "publicAcceptance": {
+    "source": "aa37a613c1af2e97d141cab1271188afe6c82a28",
+    "version": 33,
+    "checkedAt": "2026-10-29T17:49:11.488Z",
+    "rows": [
+      {
+        "type": "stations",
+        "q": "CUN",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "stations": [
+          {
+            "id": "airport:MMUN",
+            "name": "Cancún International Airport (CUN)",
+            "placeType": "airport"
+          }
+        ]
+      },
+      {
+        "type": "stations",
+        "q": "MEX",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "stations": [
+          {
+            "id": "airport:MMMX",
+            "name": "Mexico City Benito Juárez International Airport (MEX)",
+            "placeType": "airport"
+          }
+        ]
+      },
+      {
+        "type": "stations",
+        "q": "Terminal 2 CUN",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "stations": [
+          {
+            "id": "airport:MMUN",
+            "name": "Cancún International Airport (CUN)",
+            "placeType": "airport"
+          },
+          {
+            "id": "osm:relation/11901768",
+            "name": "Terminal 2",
+            "placeType": "terminal"
+          },
+          {
+            "id": "osm:node/14156202901",
+            "name": "Bus station to other Terminals (T3 & T4)"
+          }
+        ]
+      },
+      {
+        "type": "stations",
+        "q": "Terminal 2 MEX",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "stations": [
+          {
+            "id": "airport:MMMX",
+            "name": "Mexico City Benito Juárez International Airport (MEX)",
+            "placeType": "airport"
+          },
+          {
+            "id": "osm:way/27582743",
+            "name": "Terminal 2",
+            "placeType": "terminal"
+          },
+          {
+            "id": "osm:way/131358772",
+            "name": "Terminal 2",
+            "placeType": "terminal"
+          },
+          {
+            "id": "osm:node/3041962655",
+            "name": "Terminal 2 Autobuses"
+          },
+          {
+            "id": "osm:node/12568543201",
+            "name": "Bus Tetsa T2/T1"
+          },
+          {
+            "id": "osm:node/10704357805",
+            "name": "Metrobus Aeropuerto T2"
+          },
+          {
+            "id": "osm:node/1111845446",
+            "name": "Terminal 2"
+          },
+          {
+            "id": "mx-gtfs:mex-cdmx-cdmx:B_0300L4-AEROT2",
+            "name": "Terminal 2 - Aeropuerto"
+          },
+          {
+            "id": "mx-gtfs:mex-cdmx-cdmx:B_010C1101-EJ1NAEROTER2",
+            "name": "Eje 1 Norte Fuerza Aérea Mexicana - Aeropuerto Terminal 2"
+          }
+        ]
+      },
+      {
+        "type": "journeys",
+        "id": "monterrey-selected",
+        "status": 422,
+        "cors": "https://dunkelst.github.io",
+        "code": "JOURNEY_REJECTED",
+        "error": "Transitous liefert Reisen mit einem abweichenden Start- oder Zielhalt. Bitte den vorgeschlagenen Haltepunkt prüfen und gezielt übernehmen.",
+        "diagnostics": {
+          "provider": "Transitous / MOTIS (GTFS)",
+          "received": 3,
+          "accepted": 0,
+          "rejected": {
+            "ENDPOINT_MISMATCH": 3
+          }
+        },
+        "alternatives": [
+          {
+            "side": "to",
+            "name": "Monterrey Centro (B. Reyes 1214 - Titanes)",
+            "distanceMeters": 63
+          }
+        ]
+      },
+      {
+        "type": "journeys",
+        "id": "monterrey-actual",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "journeys": 3
+      },
+      {
+        "type": "journeys",
+        "id": "cancun-airport",
+        "status": 422,
+        "cors": "https://dunkelst.github.io",
+        "code": "NO_JOURNEY",
+        "error": "Transitous liefert für diese Orte und Abfahrtszeit keine Fahrplanverbindung. Die Datenabdeckung kann unvollständig sein.",
+        "diagnostics": {
+          "provider": "Transitous / MOTIS (GTFS)",
+          "received": 0,
+          "accepted": 0,
+          "rejected": {}
+        },
+        "alternatives": []
+      }
+    ]
+  },
+  "stationsAudit": {
+    "phase": "stations",
+    "origin": "local",
+    "startedAt": "2026-10-29T17:37:11.879Z",
+    "finishedAt": "2026-10-29T17:42:46.460Z",
+    "results": [
+      {
+        "id": "agu",
+        "place": "Aguascalientes",
+        "bounds": [
+          21.8698,
+          -102.3096,
+          21.8938,
+          -102.2736
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 9607
+      },
+      {
+        "id": "bcn",
+        "place": "Mexicali",
+        "bounds": [
+          32.6125,
+          -115.4703,
+          32.6365,
+          -115.4343
+        ],
+        "timeZone": "America/Tijuana",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 3,
+        "errors": [],
+        "elapsedMs": 6367
+      },
+      {
+        "id": "bcs",
+        "place": "La Paz",
+        "bounds": [
+          24.1306,
+          -110.3308,
+          24.1546,
+          -110.2948
+        ],
+        "timeZone": "America/Mazatlan",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 10,
+        "errors": [],
+        "elapsedMs": 6860
+      },
+      {
+        "id": "cam",
+        "place": "Campeche",
+        "bounds": [
+          19.8331,
+          -90.541,
+          19.8571,
+          -90.505
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 6056
+      },
+      {
+        "id": "chp",
+        "place": "Tuxtla Gutiérrez",
+        "bounds": [
+          16.741,
+          -93.133,
+          16.765,
+          -93.097
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 6,
+        "errors": [],
+        "elapsedMs": 6983
+      },
+      {
+        "id": "chh",
+        "place": "Chihuahua",
+        "bounds": [
+          28.621,
+          -106.087,
+          28.645,
+          -106.051
+        ],
+        "timeZone": "America/Chihuahua",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 10,
+        "errors": [],
+        "elapsedMs": 6043
+      },
+      {
+        "id": "coa",
+        "place": "Saltillo",
+        "bounds": [
+          25.4112,
+          -101.0233,
+          25.4352,
+          -100.9873
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 7098
+      },
+      {
+        "id": "col",
+        "place": "Colima",
+        "bounds": [
+          19.2332,
+          -103.7421,
+          19.2572,
+          -103.7061
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 6159
+      },
+      {
+        "id": "dur",
+        "place": "Durango",
+        "bounds": [
+          24.0157,
+          -104.6712,
+          24.0397,
+          -104.6352
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 12,
+        "errors": [],
+        "elapsedMs": 7817
+      },
+      {
+        "id": "gua",
+        "place": "Guanajuato",
+        "bounds": [
+          21.007,
+          -101.2754,
+          21.031,
+          -101.2394
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 11,
+        "errors": [],
+        "elapsedMs": 6007
+      },
+      {
+        "id": "gro",
+        "place": "Chilpancingo",
+        "bounds": [
+          17.5395,
+          -99.5186,
+          17.5635,
+          -99.4826
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 8,
+        "errors": [],
+        "elapsedMs": 7926
+      },
+      {
+        "id": "hid",
+        "place": "Pachuca",
+        "bounds": [
+          20.0891,
+          -98.7771,
+          20.1131,
+          -98.7411
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 10,
+        "errors": [],
+        "elapsedMs": 6147
+      },
+      {
+        "id": "jal",
+        "place": "Guadalajara",
+        "bounds": [
+          20.6616,
+          -103.362,
+          20.6856,
+          -103.326
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 11,
+        "errors": [],
+        "elapsedMs": 7672
+      },
+      {
+        "id": "mex",
+        "place": "Toluca",
+        "bounds": [
+          19.2706,
+          -99.6737,
+          19.2946,
+          -99.6377
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 6242
+      },
+      {
+        "id": "mic",
+        "place": "Morelia",
+        "bounds": [
+          19.694,
+          -101.213,
+          19.718,
+          -101.177
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 16,
+        "errors": [],
+        "elapsedMs": 6859
+      },
+      {
+        "id": "mor",
+        "place": "Cuernavaca",
+        "bounds": [
+          18.912,
+          -99.24,
+          18.936,
+          -99.204
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 6110
+      },
+      {
+        "id": "nay",
+        "place": "Tepic",
+        "bounds": [
+          21.4965,
+          -104.913,
+          21.5205,
+          -104.877
+        ],
+        "timeZone": "America/Mazatlan",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 13,
+        "errors": [],
+        "elapsedMs": 6909
+      },
+      {
+        "id": "nle",
+        "place": "Monterrey",
+        "bounds": [
+          25.6746,
+          -100.3341,
+          25.6986,
+          -100.2981
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 16,
+        "errors": [],
+        "elapsedMs": 6890
+      },
+      {
+        "id": "oax",
+        "place": "Oaxaca de Juárez",
+        "bounds": [
+          17.051,
+          -96.744,
+          17.075,
+          -96.708
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 8,
+        "errors": [],
+        "elapsedMs": 6356
+      },
+      {
+        "id": "pue",
+        "place": "Puebla",
+        "bounds": [
+          19.0313,
+          -98.2199,
+          19.0553,
+          -98.1839
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 6254
+      },
+      {
+        "id": "que",
+        "place": "Querétaro",
+        "bounds": [
+          20.5768,
+          -100.4079,
+          20.6008,
+          -100.3719
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 6156
+      },
+      {
+        "id": "roo",
+        "place": "Chetumal",
+        "bounds": [
+          18.4881,
+          -88.3141,
+          18.5121,
+          -88.2781
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 6036
+      },
+      {
+        "id": "slp",
+        "place": "San Luis Potosí",
+        "bounds": [
+          22.1445,
+          -101.0035,
+          22.1685,
+          -100.9675
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 18,
+        "errors": [],
+        "elapsedMs": 7139
+      },
+      {
+        "id": "sin",
+        "place": "Culiacán",
+        "bounds": [
+          24.7971,
+          -107.412,
+          24.8211,
+          -107.376
+        ],
+        "timeZone": "America/Mazatlan",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 6,
+        "errors": [],
+        "elapsedMs": 6073
+      },
+      {
+        "id": "son",
+        "place": "Hermosillo",
+        "bounds": [
+          29.0609,
+          -110.9739,
+          29.0849,
+          -110.9379
+        ],
+        "timeZone": "America/Hermosillo",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 8413
+      },
+      {
+        "id": "tab",
+        "place": "Villahermosa",
+        "bounds": [
+          17.9775,
+          -92.9655,
+          18.0015,
+          -92.9295
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 3,
+        "errors": [],
+        "elapsedMs": 6134
+      },
+      {
+        "id": "tam",
+        "place": "Ciudad Victoria",
+        "bounds": [
+          23.7249,
+          -99.1591,
+          23.7489,
+          -99.1231
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 6,
+        "errors": [],
+        "elapsedMs": 8200
+      },
+      {
+        "id": "tla",
+        "place": "Tlaxcala",
+        "bounds": [
+          19.3062,
+          -98.2555,
+          19.3302,
+          -98.2195
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 13,
+        "errors": [],
+        "elapsedMs": 6198
+      },
+      {
+        "id": "ver",
+        "place": "Xalapa",
+        "bounds": [
+          19.5318,
+          -96.9282,
+          19.5558,
+          -96.8922
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 6,
+        "errors": [],
+        "elapsedMs": 7182
+      },
+      {
+        "id": "yuc",
+        "place": "Mérida",
+        "bounds": [
+          20.9554,
+          -89.6106,
+          20.9794,
+          -89.5746
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 11,
+        "errors": [],
+        "elapsedMs": 6185
+      },
+      {
+        "id": "zac",
+        "place": "Zacatecas",
+        "bounds": [
+          22.7589,
+          -102.6012,
+          22.7829,
+          -102.5652
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 13,
+        "errors": [],
+        "elapsedMs": 8734
+      },
+      {
+        "id": "cdmx",
+        "place": "Ciudad de México",
+        "bounds": [
+          19.4206,
+          -99.1512,
+          19.4446,
+          -99.1152
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 7,
+        "errors": [],
+        "elapsedMs": 6236
+      },
+      {
+        "id": "playa",
+        "place": "Playa del Carmen",
+        "bounds": [
+          20.615,
+          -87.0913,
+          20.639,
+          -87.0553
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 8,
+        "errors": [],
+        "elapsedMs": 7816
+      },
+      {
+        "id": "cancun",
+        "place": "Cancún",
+        "bounds": [
+          21.1499,
+          -86.8695,
+          21.1739,
+          -86.8335
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 11,
+        "errors": [],
+        "elapsedMs": 6089
+      },
+      {
+        "id": "tulum",
+        "place": "Tulum",
+        "bounds": [
+          20.1994,
+          -87.4834,
+          20.2234,
+          -87.4474
+        ],
+        "timeZone": "America/Cancun",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 9,
+        "errors": [],
+        "elapsedMs": 6996
+      },
+      {
+        "id": "tijuana",
+        "place": "Tijuana",
+        "bounds": [
+          32.5029,
+          -117.0562,
+          32.5269,
+          -117.0202
+        ],
+        "timeZone": "America/Tijuana",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 16,
+        "errors": [],
+        "elapsedMs": 6190
+      },
+      {
+        "id": "puerto",
+        "place": "Puerto Escondido",
+        "bounds": [
+          15.852,
+          -97.089,
+          15.876,
+          -97.053
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 7,
+        "errors": [],
+        "elapsedMs": 7055
+      },
+      {
+        "id": "salina",
+        "place": "Salina Cruz",
+        "bounds": [
+          16.173,
+          -95.225,
+          16.197,
+          -95.189
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 13,
+        "errors": [],
+        "elapsedMs": 6278
+      },
+      {
+        "id": "jilotepec",
+        "place": "Jilotepec",
+        "bounds": [
+          19.9406,
+          -99.5507,
+          19.9646,
+          -99.5147
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 3,
+        "errors": [],
+        "elapsedMs": 7045
+      },
+      {
+        "id": "zamora",
+        "place": "Zamora",
+        "bounds": [
+          19.973,
+          -102.3014,
+          19.997,
+          -102.2654
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 12,
+        "errors": [],
+        "elapsedMs": 6091
+      },
+      {
+        "id": "uruapan",
+        "place": "Uruapan",
+        "bounds": [
+          19.4086,
+          -102.0806,
+          19.4326,
+          -102.0446
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 6,
+        "errors": [],
+        "elapsedMs": 6618
+      },
+      {
+        "id": "zitacuaro",
+        "place": "Zitácuaro",
+        "bounds": [
+          19.4241,
+          -100.3753,
+          19.4481,
+          -100.3393
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 4,
+        "errors": [],
+        "elapsedMs": 6281
+      },
+      {
+        "id": "ixmiquilpan",
+        "place": "Ixmiquilpan",
+        "bounds": [
+          20.4738,
+          -99.2367,
+          20.4978,
+          -99.2007
+        ],
+        "timeZone": "America/Mexico_City",
+        "status": 200,
+        "cors": "https://dunkelst.github.io",
+        "error": null,
+        "count": 5,
+        "errors": [],
+        "elapsedMs": 6975
+      }
+    ]
+  },
+  "scope": "Station searches, airport/terminal selection and explicitly listed journey cases; not a national timetable-coverage certification."
+}

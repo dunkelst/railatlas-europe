@@ -157,7 +157,7 @@ test('A successful existing source needs no extra European journey query',async 
 test('European journey cache rechecks endpoints; source rate limits pause calls and caller abort remains an abort',async t=>{
  const module=await import('../lib/transitous.mjs?journey-cache'),[a,b]=endpoints();let now=Date.parse('2026-10-26T19:00:00Z'),calls=0;t.mock.method(Date,'now',()=>now);
  t.mock.method(globalThis,'fetch',async()=>{calls++;return calls===1?Response.json(plan()):new Response('limited',{status:429,headers:{'Retry-After':'120'}});});
- assert.equal((await module.getTransitousJourneys(a,b,requested)).length,3);await assert.rejects(module.getTransitousJourneys({...a,name:'Anderer Halt'},b,requested),e=>e.code==='NO_JOURNEY');assert.equal(calls,1);
+ assert.equal((await module.getTransitousJourneys(a,b,requested)).length,3);await assert.rejects(module.getTransitousJourneys({...a,name:'Anderer Halt'},b,requested),e=>e.code==='JOURNEY_REJECTED');assert.equal(calls,1);
  now+=31000;await assert.rejects(module.getTransitousJourneys(a,b,requested),/HTTP 429/);now+=119000;await assert.rejects(module.getTransitousJourneys(a,b,requested),/pausiert/);assert.equal(calls,2);
  const controller=new AbortController();controller.abort();await assert.rejects(module.getTransitousJourneys(a,b,requested,controller.signal),{name:'AbortError'});assert.equal(calls,2);
 });
@@ -198,7 +198,7 @@ test('Common API resolves the Faro catalogue identity before one plan, retains m
 test('An unconfirmed walking path outranks another provider outage in the common API error',async t=>{
  const f=faro(),from={...f.fromCatalog,id:'coord:37.017596:-7.96972',locationType:'coordinate'};t.mock.method(Date,'now',()=>Date.parse('2026-10-27T16:00:00Z'));
  t.mock.method(globalThis,'fetch',async(url,init)=>{const u=new URL(url);if(u.hostname==='fahrplan.oebb.at')return Response.json({err:'OK',svcResL:[{err:'OK',res:{locL:[]}}]});if(u.hostname==='www.efa.de')return Response.json({locations:[]});if(u.hostname==='int.bahn.de')return new Response('provider outage',{status:503});assert.equal(u.pathname,'/api/v6/plan');return Response.json(f.coordinatePlan);});
- const r=await handleApi(new Request('https://railatlas.example/api/journeys',{method:'POST',body:JSON.stringify({from,to:f.toCatalog,departure:faroRequested,source:'auto'})}));assert.equal(r.status,502);const body=await r.json();assert.match(body.error,/Fußweg.*Faro Airport.*245 m/);assert.doesNotMatch(body.error,/Datenquelle ist nicht erreichbar/);
+ const r=await handleApi(new Request('https://railatlas.example/api/journeys',{method:'POST',body:JSON.stringify({from,to:f.toCatalog,departure:faroRequested,source:'auto'})}));assert.equal(r.status,422);const body=await r.json();assert.match(body.error,/Fußweg.*Faro Airport.*245 m/);assert.doesNotMatch(body.error,/Datenquelle ist nicht erreichbar/);
 });
 
 test('Optional catalogue lookup outages preserve safe coordinate routing; rate limiting blocks a new plan',async t=>{

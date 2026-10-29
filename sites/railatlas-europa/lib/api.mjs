@@ -27,6 +27,7 @@ export async function handleApi(request) {
     const near=url.searchParams.has('near')?url.searchParams.get('near').split(',').map(Number):undefined;
     if(near&&(near.length!==2||!near.every(Number.isFinite)||!withinRegion(near[0],near[1],region)))return json({error:'Ungültige Suchposition.'},{status:400});
     if (!timetableSources.includes(source)) return json({error: 'Unbekannte Auskunft.'}, {status: 400});
+    if(region==='mexico'&&source!=='auto')return json({error:'Für Mexiko bitte die automatische Auskunft verwenden.'},{status:400});
     if (q.length < 2 || q.length > 120) return json({stations: []});
     try {return json({stations: await findTimetableStations(q, source, request.signal,region,near)}, {headers: {'Cache-Control': source === 'oebb' ? 'private, max-age=3600' : 'private, no-store'}});}
     catch (e) {return json({stations: [], error: e.message || 'Die ergänzende Online-Suche ist gerade nicht erreichbar.'}, {status: 502});}
@@ -37,6 +38,7 @@ export async function handleApi(request) {
     let input; try {input = JSON.parse(text);} catch {return json({error: 'Die Anfrage enthält kein gültiges JSON.'}, {status: 400});}
     const {from, to, departure, source = 'auto', preference = 'arrival', walkingBudget = 0,region='europe'} = input || {};
     if(!Object.hasOwn(REGIONS,region))return json({error:'Unbekannte Region.'},{status:400});
+    if(region==='mexico'&&source!=='auto')return json({error:'Für Mexiko bitte die automatische Auskunft verwenden.'},{status:400});
     if(walkingBudget&&(region==='mexico'||from?.country==='MX'&&to?.country==='MX'))return json({error:'Zusätzliche Fußweg-Notlösungen sind für Mexiko nicht bestätigt.'},{status:400});
     if(![0,15,30,60].includes(walkingBudget)||walkingBudget&&source!=='auto')return json({error:'Fußweg-Notlösungen bitte mit automatischer Auskunft und einem Gehbudget von 15, 30 oder 60 Minuten je Teilstrecke wählen.'},{status:400});
     if (!timetableSources.includes(source) || !journeyPreferences.includes(preference) || [from, to].some(s => ['vrrId', 'efaId'].some(key => s?.[key] !== undefined && !validVrrId(s[key])))) return json({error: 'Bitte eine gültige Auskunft und Haltestelle wählen.'}, {status: 400});
@@ -44,5 +46,5 @@ export async function handleApi(request) {
     if (Date.parse(departure) < Date.now() - 5 * 60000) return json({error: 'Die Abfahrt liegt in der Vergangenheit. Bitte Datum oder Uhrzeit anpassen.'}, {status: 400});
     if (Date.parse(departure) > Date.now() + 365 * 86400000) return json({error: 'Bitte eine Abfahrt innerhalb der nächsten zwölf Monate wählen.'}, {status: 400});
     const journeys=await getTimetableJourneys(from,to,departure,source,request.signal,preference,walkingBudget,region);return json({journey:journeys[0],journeys});
-  } catch (e) {return json({error: e instanceof Error ? e.message : 'Die Fahrplanabfrage ist fehlgeschlagen.', notices: Array.isArray(e?.notices) ? e.notices : []}, {status: 502});}
+  } catch (e) {return json({error: e instanceof Error ? e.message : 'Die Fahrplanabfrage ist fehlgeschlagen.',code:e.code||'UPSTREAM_UNAVAILABLE',notices:Array.isArray(e?.notices)?e.notices:[],...(e.diagnostics?{diagnostics:e.diagnostics}:{}),...(e.endpointAlternatives?{endpointAlternatives:e.endpointAlternatives}:{} )}, {status: ['NO_JOURNEY','JOURNEY_REJECTED','WALKING_PATH_UNCONFIRMED'].includes(e.code)?422:502});}
 }

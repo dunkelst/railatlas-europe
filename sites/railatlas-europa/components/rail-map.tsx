@@ -106,7 +106,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
    </>}
    {tileError&&layerState.rail.lines&&<p className="network-status has-error">Einige Kacheln des Bahnnetzes konnten nicht geladen werden.</p>}
    <button type="button" onClick={()=>{setTileError(false);railway.current?.redraw();setRetry(n=>n+1);}} disabled={loading}>Ausschnitt neu laden</button>
-   <small>Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Daten können fehlen; keine Zusage zum aktuellen Betrieb.</small>
+   <small>Die Ebenenschalter ändern die Karte. Die Fahrtsuche berücksichtigt unabhängig davon Bus, Bahn und Nahverkehr. Die Schienenkarte enthält auch Güterstrecken.</small><small>Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Daten können fehlen; keine Zusage zum aktuellen Betrieb.</small>
   </details></aside>
   {picking&&<div className="pick-banner">Kartenpunkt oder Halt wählen · als {picking}</div>}
   <div className="map-caption">{parts.length?<>Reiseverlauf: {[...new Set(parts.map(p=>p.source))].join(' · ')} · Grün/Blau: Bahn · Braun: Bus · Grau: Fußweg{parts.some(p=>p.legs.some(l=>!l.walking&&l.geometry?.reason==='unverified'&&l.geometry.segments.length))?' · Farbig gestrichelt: Anbieterverlauf, Originalpfad nicht bestätigt':''}{parts.some(p=>p.alternativeKind==='walking')?' · Rot gestrichelt: Fußweg-Notlösung':''}{parts.some(p=>p.legs.some(l=>l.geometry?.status!=='complete'))?' · Fehlende Geometrie bleibt offen.':''}</>:(region==='mexico'?'Mexiko':'Europa')+' entdecken · Netzebenen unabhängig von deiner Reise einblenden'}</div>

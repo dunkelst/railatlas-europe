@@ -1,0 +1,17 @@
+{
+  "retrieved": "2026-10-29",
+  "airports": 63,
+  "sources": [
+    {
+      "url": "https://ourairports.com/data/airports.csv",
+      "license": "Public Domain",
+      "sha256": "f508467c19122ea549200daa215ea477eae2dc5375f339fd4e8226736c5981ea"
+    },
+    {
+      "url": "https://download.geofabrik.de/north-america/mexico.poly",
+      "license": "ODbL-1.0",
+      "sha256": "0fe2e2b9ecc2d16db4d7e945dd0a13eed1e2384597b2f668b43879b7c93cfc77"
+    }
+  ],
+  "notes": "Airport reference coordinates do not confirm a terminal entrance, pedestrian access or timetable. The search polygon excludes distant foreign matches; no country is inferred for native timetable stops."
+}

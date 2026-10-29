@@ -2,7 +2,19 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **32**, Quellcommit `47161c303822c85c7405db2f617bf39e935a2d86`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **33**, Quellcommit `aa37a613c1af2e97d141cab1271188afe6c82a28`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 33: Flughäfen, Ortskontext und Busfahrten
+
+CUN/MEX, Flughafen- und Terminalnamen sind auffindbar. 63 mexikanische
+Flughafenpunkte ergänzen die gemeinsame Suche; reale ÖPNV-Halte können in der
+Nähe ausgewählt werden. Mexiko-Stadt–Monterrey liefert nach bewusster Auswahl
+des tatsächlichen Zielhalts drei Busreisen. Abweichende Halte werden mit Name
+und Entfernung angeboten; die Endpunktprüfung bleibt streng. Fehlende Fahrpläne
+und verworfene Vorschläge werden getrennt erklärt. 140 Regressionen und alle
+drei Builds erfolgreich. [Prüfbericht und verbleibende Abdeckungslücken](docs/qa/railatlas-v33.md).
+ADO-Flughafenbusse bleiben eine externe Anbieterauskunft, ohne intern erfundene
+Abfahrten oder Fußwege.
 
 ## Version 32: Mexiko mit Colectivo-/Combi-Ebene
 

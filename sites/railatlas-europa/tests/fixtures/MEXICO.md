@@ -34,3 +34,17 @@ Mexico City Buenavista (Fórum Buenavista) → Puebla (Explanada), requested
 31 October 2026 at 15:00 UTC (09:00 America/Mexico_City). All three source
 itineraries and exact inputs are retained. The first arrives 11:15 local.
 This is a historical parser fixture, never a live timetable replacement.
+
+## 29 October 2026: native Monterrey reply and airports
+
+`transitous-mexico-monterrey.json.gz` is the unmodified response from
+`https://api.transitous.org/api/v6/plan`, requested 31 October 2026 at 15:00 UTC,
+Mexico City Buenavista → Monterrey - Centro/ B. Reyes. All three supplied coach
+journeys end at the distinct native point Monterrey Centro (B. Reyes 1214 - Titanes),
+63 metres from the selected result. This fixture proves endpoint diagnosis and
+explicit recovery; it never makes the two stops equal or manufactures a footpath.
+
+Airport locations come from the Public Domain OurAirports download of 29 October
+2026. `public/data/mexico-places-sources.json` records the original whole-file SHA-256
+and the Geofabrik source-area checksum. Airports are source reference coordinates,
+not bus stops, terminal entrances or a timetable import.

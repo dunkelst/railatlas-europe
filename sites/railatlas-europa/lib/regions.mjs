@@ -1,8 +1,10 @@
+import mexicoSearchArea from './mexico-search-area.mjs';
 export const REGIONS={
  europe:{label:'Europa',bounds:[27,-32,84,70],centre:[49.3,8.5],zoom:5,timeZone:'Europe/Berlin'},
  mexico:{label:'Mexiko',bounds:[14.3,-118.5,32.8,-86.5],centre:[23.6,-102.5],zoom:5,timeZone:'America/Mexico_City'},
 };
-export const withinRegion=(lat,lon,region)=>{const [s,w,n,e]=REGIONS[region].bounds;return lat>=s&&lat<=n&&lon>=w&&lon<=e;};
+function insideRing(lat,lon,points){let inside=false;for(let i=0,j=points.length-1;i<points.length;j=i++){const [x,y]=points[i],[px,py]=points[j];if((y>lat)!==(py>lat)&&lon<(px-x)*(lat-y)/(py-y)+x)inside=!inside;}return inside;}
+export const withinRegion=(lat,lon,region)=>{const [s,w,n,e]=REGIONS[region].bounds;if(!(lat>=s&&lat<=n&&lon>=w&&lon<=e))return false;return region!=='mexico'||mexicoSearchArea.some(r=>!r.exclude&&insideRing(lat,lon,r.points))&&!mexicoSearchArea.some(r=>r.exclude&&insideRing(lat,lon,r.points));};
 export const mexicanBounds=b=>b[0]>=14.3&&b[2]<=32.8&&b[1]>=-118.5&&b[3]<=-86.5;
 // City centres for navigation and bounded acceptance probes, never station data.
 export const MEXICO_PLACES=[
@@ -28,4 +30,4 @@ export const MEXICO_PLACES=[
  ['jilotepec','Jilotepec',19.9526,-99.5327],['zamora','Zamora',19.985,-102.2834],
  ['uruapan','Uruapan',19.4206,-102.0626],['zitacuaro','Zitácuaro',19.4361,-100.3573],['ixmiquilpan','Ixmiquilpan',20.4858,-99.2187],
 ].map(([id,label,lat,lon,timeZone])=>({id:String(id),label:String(label),centre:[Number(lat),Number(lon)],timeZone:String(timeZone||'America/Mexico_City')}));
-export const TIME_ZONES=['Europe/Berlin','America/Mexico_City','America/Cancun','America/Mazatlan','America/Hermosillo','America/Chihuahua','America/Tijuana'];
+export const TIME_ZONES=['Europe/Berlin','America/Mexico_City','America/Cancun','America/Mazatlan','America/Hermosillo','America/Chihuahua','America/Tijuana','America/Monterrey','America/Merida','America/Matamoros','America/Ojinaga','America/Ciudad_Juarez','America/Bahia_Banderas'];

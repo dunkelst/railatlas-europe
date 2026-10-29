@@ -1,11 +1,11 @@
-import {AlertTriangle,BusFront,Clock,Footprints,Ship,TrainFront,TramFront} from 'lucide-react';
+import {AlertTriangle,BusFront,Clock,Footprints,MapPin,Plane,Ship,TrainFront,TramFront} from 'lucide-react';
 import type {Journey,Leg,Notice} from '@/lib/types';
 
 const time=(s:string,timeZone='Europe/Berlin')=>new Intl.DateTimeFormat('de-DE',{timeZone,hour:'2-digit',minute:'2-digit'}).format(new Date(s));
 const dateTime=(s:string,timeZone='Europe/Berlin')=>new Intl.DateTimeFormat('de-DE',{timeZone,day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(s));
 const day=(s:string,timeZone='Europe/Berlin')=>new Intl.DateTimeFormat('de-DE',{timeZone,day:'2-digit',month:'2-digit'}).format(new Date(s));
 const minutes=(a:string,b:string)=>Math.round((Date.parse(b)-Date.parse(a))/60000);
-export function ModeIcon({mode}:{mode:string}){const Icon=mode==='walk'?Footprints:mode==='bus'||mode==='colectivo'||mode==='replacement-bus'?BusFront:mode==='ferry'?Ship:mode==='tram'?TramFront:TrainFront;return <Icon size={13} aria-hidden="true"/>;}
+export function ModeIcon({mode}:{mode:string}){const Icon=mode==='location'?MapPin:mode==='airport'?Plane:mode==='walk'?Footprints:mode==='bus'||mode==='colectivo'||mode==='replacement-bus'?BusFront:mode==='ferry'?Ship:mode==='tram'?TramFront:TrainFront;return <Icon size={13} aria-hidden="true"/>;}
 function NoticeCard({notice:n,timeZone}:{notice:Notice;timeZone:string}){return <article className={'notice-card '+n.kind}>
  <div className="notice-title"><AlertTriangle size={14}/><b>{n.kind==='closure'?'Sperrhinweis':n.kind==='cancellation'?'Ausfallhinweis':n.kind==='delay'?'Verspätung':n.title}</b></div>
  <small>{n.scope}</small>{n.title&&n.title!=='Betriebshinweis'&&n.title!==n.text&&<strong>{n.title}</strong>}

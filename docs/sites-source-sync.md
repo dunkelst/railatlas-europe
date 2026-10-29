@@ -1,16 +1,17 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **32**, Quellcommit `47161c303822c85c7405db2f617bf39e935a2d86`.
-**1.016** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
+Sites-Version **33**, Quellcommit `aa37a613c1af2e97d141cab1271188afe6c82a28`.
+**1.023** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
-Mexiko ergänzt die bestehende Anwendung um eine eigene Colectivo-/Combi-Ebene,
-kartierte Einstiege, regionale Suche und Zeitzonen. 132 Regressionen, TypeScript
-und drei Builds erfolgreich. [Prüfbericht](qa/mexico-consistency-2026-10-28.md).
-Der schnelle Regionswechsel wurde im Browser korrigiert und geprüft; die
-Quellenanzeige bezeichnet Transitous auch in Mexiko zutreffend.
-[Veröffentlichungs- und Browsernachweis](qa/railatlas-v32.md).
+Aktuell: Flughafen- und Terminalsuche mit 63 mexikanischen Quell-Flughäfen,
+Ortskontext und Diagnose tatsächlicher Fahrplanantworten. Unterschiedliche
+Halte bleiben getrennt; nahe Anbietervorschläge werden ausdrücklich übernommen.
+140 Regressionen, TypeScript und drei Builds erfolgreich. ADO-Flughafenbusse
+bleiben eine externe Anbieterauskunft ohne interne Fahrplanberechnung.
+[Veröffentlichungs- und Browsernachweis 33](qa/railatlas-v33.md).
+
 Die bisherigen Versionsnachweise bleiben historisch erhalten.
 
 | Bestandteil | Sites | Eigenständiger Node-Server | GitHub Pages |

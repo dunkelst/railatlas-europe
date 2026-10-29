@@ -1,5 +1,40 @@
 # RailAtlas Europa & Mexiko
 
+## Nacharbeit: Flughäfen und nachvollziehbare Reiseantworten (29.10.2026)
+
+63 reale mexikanische Flughäfen aus OurAirports sind über IATA/ICAO, Namen und
+Ortsnamen auffindbar. CUN, MEX und Terminal 2 CUN/MEX werden unterstützt.
+Flughafenareale, Terminals und Stadtgebiete sind ausdrücklich Koordinatenziele,
+keine erfundenen Haltestellen. Die vorhandene Suche ergänzt echte OSM-Orte und
+Halte; Quellkoordinaten bleiben erhalten. Über „ÖPNV-Halte in der Nähe“ werden
+reale Kartenhalte zur bewussten Auswahl angeboten. Start, Ziel und Zwischenziele
+verwenden denselben Such- und Auswahlpfad. Als Start gewählte Flughäfen nahe
+bekannten Ortsauswahlen übernehmen deren Zeitzone unter Erhalt des Zeitpunkts;
+bei nativen Halten bleibt die vom Anbieter gelieferte Zeitzone erhalten.
+
+Mexiko-Stadt–Monterrey liefert tatsächlich drei Busreisen, deren Zielhalt rund
+63 m neben dem Suchtreffer liegt. Die App setzt unterschiedliche Halte weiterhin
+nicht gleich: Eine konkrete Alternative wird mit Entfernung zur ausdrücklichen
+Übernahme angeboten. Erst nach Übernahme wird die Reise neu gesucht. Leere
+Fahrplanantworten, verworfene Vorschläge und nicht bestätigte Fußwege werden
+unterschieden; fachlich negative Reiseantworten liefern HTTP 422 mit Diagnose.
+
+Mexikanische Suchtreffer werden räumlich eingegrenzt; der bisher als Mexiko-Treffer
+gelieferte „Handley & Monterrey“ in Texas fällt heraus. Ortskontext und Koordinaten
+helfen, gleichnamige Halte zu unterscheiden. Die Kartenschalter steuern weiterhin
+nur die Anzeige und bestätigen keinen Personenverkehr auf einer Schiene.
+
+OurAirports: Public Domain. Der räumliche Suchfilter stammt aus dem OSM-/Geofabrik-
+Extraktgebiet (ODbL), nicht aus einer rechtsverbindlichen Staatsgrenzendatei.
+Quellen und Originalprüfsummen: `public/data/mexico-places-sources.json`.
+ADO-Flughafenbusse sind kein integrierter Fahrplanfeed; bei CUN/MEX/TQO und den
+von dort gewählten nahegelegenen Halten verweist die App ausdrücklich auf die
+offizielle Anbieterauskunft, ohne Fahrten, Fußwege oder Abfahrtszeiten zu erfinden.
+
+140 Regressionen einschließlich echter Monterrey- und Puebla-Antworten erfolgreich.
+Die Ortsproben prüfen Stationssuche und Karten; sie belegen keine vollständige
+mexikoweite Reiseabdeckung.
+
 ## Mexiko mit eigener Colectivo-Ebene (28.10.2026)
 
 `?region=mexico&place=playa` öffnet Mexiko in Playa del Carmen. Ortsauswahl,

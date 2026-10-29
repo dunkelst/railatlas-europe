@@ -10,7 +10,7 @@ const localMode=new Map(Object.entries(modes).flatMap(([mode,values])=>values.ma
 export function transitousModes(raw){return [...new Set((Array.isArray(raw?.modes)?raw.modes:[]).map(m=>localMode.get(m)).filter(Boolean))];}
 export function parseTransitousStation(raw){
  if(typeof raw?.stopId!=='string'||!raw.stopId.length||raw.stopId.length>500||typeof raw.name!=='string'||!raw.name.trim()||raw.name.length>=200||![raw.lat,raw.lon].every(Number.isFinite)||Math.abs(raw.lat)>90||Math.abs(raw.lon)>180)return null;
- return {id:'transitous:'+raw.stopId,transitousId:raw.stopId,name:raw.name,lat:raw.lat,lon:raw.lon,dbId:'',country:'',main:false,networkModes:transitousModes(raw).map(m=>m==='rail'?'train':m),lookupSource:TRANSITOUS_SOURCE,timetableStatus:'unverified'};
+ return {id:'transitous:'+raw.stopId,transitousId:raw.stopId,name:raw.name,lat:raw.lat,lon:raw.lon,dbId:'',country:'',main:false,networkModes:transitousModes(raw).map(m=>m==='rail'?'train':m),...(typeof raw.tz==='string'?{timeZone:raw.tz}:{}),lookupSource:TRANSITOUS_SOURCE,timetableStatus:'unverified'};
 }
 const searchCache=new Map();let nextSearchRequestAt=0;
 export async function findTransitousStations(query,signal,region='mexico',near){
@@ -58,13 +58,13 @@ export async function fetchTransitousRoutes(bounds,signal){
 // Bounds and map modes are validated by the shared network handler.
 export async function fetchTransitousStops(bounds,selected,signal){
  signal?.throwIfAborted();
- if(Date.now()<nextRequestAt)throw Error('Die europäische Haltestellenquelle pausiert nach einem Anbieterfehler.');
+ if(Date.now()<nextRequestAt)throw Error('Transitous pausiert nach einem Anbieterfehler.');
  const native=[...new Set(selected.flatMap(m=>modes[m]||[]))];if(!native.length)throw Error('Ungültige Verkehrsmittelauswahl.');
  const [s,w,n,e]=bounds,url=new URL('https://api.transitous.org/api/v6/map/stops');
  url.search=new URLSearchParams({min:s+','+w,max:n+','+e,grouped:'true',modes:native.join(',')});
  try{
   const data=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/24 (+https://github.com/dunkelst/railatlas-europe)'}},signal,16000,4*1024*1024);
-  if(!Array.isArray(data))throw Object.assign(Error('Die europäische Haltestellenquelle liefert keine lesbare Liste.'),{code:'SOURCE_RESPONSE_INVALID'});
+  if(!Array.isArray(data))throw Object.assign(Error('Transitous liefert keine lesbare Haltestellenliste.'),{code:'SOURCE_RESPONSE_INVALID'});
   return data;
  }catch(error){
   signal?.throwIfAborted();if(!error.responseTooLarge)nextRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;
@@ -88,11 +88,13 @@ function alerts(raw,start,end,scope){
  });
 }
 export function parseTransitousJourneys(data,from,to,requested){
- const journeys=[],excluded=[],walkingErrors=[];
+ const journeys=[],excluded=[],walkingErrors=[],endpointAlternatives=[],rejected={};
+ const reject=reason=>{rejected[reason]=(rejected[reason]||0)+1;};
+ const suggest=(side,asked,actual)=>{const distance=distanceKm(asked,actual);if(!actual.transitousId||actual.id===asked.id||distance>.8)return;const old=endpointAlternatives.find(a=>a.side===side&&a.station.id===actual.id);if(old){old.journeys++;return;}endpointAlternatives.push({side,station:actual,distanceMeters:Math.round(distance*1000),journeys:1});};
  for(const trip of data.itineraries||[])try{
   const legs=(trip.legs||[]).map(raw=>{
    const a=place(raw.from),b=place(raw.to),departure=iso(raw.startTime),arrival=iso(raw.endTime),walking=raw.mode==='WALK',product=transportProduct({cls:classes[raw.mode]||0},walking);
-   if(!departure||!arrival||product.mode==='unknown'||raw.loopedCalendarSince)throw Error('Unbestätigte Fahrplandaten');
+   if(!departure||!arrival||product.mode==='unknown'||raw.loopedCalendarSince)throw Object.assign(Error('Unbestätigte Fahrplandaten'),{code:raw.loopedCalendarSince?'STALE_CALENDAR':'INVALID_DATA'});
    const notes=alerts([...(raw.alerts||[]),...(raw.from.alerts||[]),...(raw.to.alerts||[])],departure,arrival,a.name+' → '+b.name);
    const points=decodePolyline(raw.legGeometry?.points,raw.legGeometry?.precision);
    const gap=(p,s)=>p?distanceKm({lat:p[0],lon:p[1]},s)*1000:Infinity;
@@ -114,16 +116,24 @@ export function parseTransitousJourneys(data,from,to,requested){
    return {from:a,to:b,departure,arrival,plannedDeparture:iso(raw.scheduledStartTime),plannedArrival:iso(raw.scheduledEndTime),...product,line:walking?'Fußweg':raw.routeShortName||raw.displayName||raw.tripShortName||raw.mode,operator:raw.agencyName||'',direction:raw.headsign||'',tripId:raw.tripId||null,platform:walking?undefined:raw.from.track,arrivalPlatform:walking?undefined:raw.to.track,plannedPlatform:raw.from.scheduledTrack,plannedArrivalPlatform:raw.to.scheduledTrack,walking,distanceMeters:walking?raw.distance:null,throughService:!!raw.interlineWithPreviousLeg,realtime:raw.realTime===true,cancelled:!!(raw.cancelled||raw.from.cancelled||raw.to.cancelled||raw.from.pickupType==='NOT_ALLOWED'||raw.to.dropoffType==='NOT_ALLOWED'),stops:stopovers.map(s=>s.station),stopovers,notices:notes,notes:walking?[]:[geometry.segments.length?'Gelieferter Anbieterverlauf: farbig gestrichelt dargestellt, Original-GTFS-Herkunft nicht bestätigt.':'Für diesen Fahrabschnitt fehlt ein nutzbarer gelieferter Verlauf; die Kartenlücke bleibt offen.'],geometry};
   });
   const notices=mergeNotices([alerts(trip.alerts,trip.startTime,trip.endTime,from.name+' → '+to.name),...legs.flatMap(l=>[l.notices,...l.stopovers.map(s=>s.notices)])]);
-  if(legs.some(l=>l.cancelled)||notices.some(n=>n.code==='NO_SERVICE'||n.routingUncertain)){excluded.push(...notices.map(n=>({...n,scope:'Verworfener Verbindungsvorschlag: '+n.scope})));continue;}
-  if(!legs.length||!legs.some(l=>!l.walking)||legs.some((l,i)=>Date.parse(l.arrival)<Date.parse(l.departure)||i&&(Date.parse(l.departure)<Date.parse(legs[i-1].arrival)||!samePlace(legs[i-1].to,l.from))))continue;
-  if(Date.parse(legs[0].departure)<Date.parse(requested)||!samePlace(from,legs[0].from)||!samePlace(to,legs.at(-1).to))continue;
+  if(legs.some(l=>l.cancelled)||notices.some(n=>n.code==='NO_SERVICE'||n.routingUncertain)){excluded.push(...notices.map(n=>({...n,scope:'Verworfener Verbindungsvorschlag: '+n.scope})));reject('CANCELLED');continue;}
+  if(!legs.length||!legs.some(l=>!l.walking)){reject('NO_TRANSIT');continue;}
+  if(legs.some((l,i)=>Date.parse(l.arrival)<Date.parse(l.departure)||i&&Date.parse(l.departure)<Date.parse(legs[i-1].arrival))){reject('TIME_CONFLICT');continue;}
+  if(legs.some((l,i)=>i&&!samePlace(legs[i-1].to,l.from))){reject('DISCONNECTED');continue;}
+  if(Date.parse(legs[0].departure)<Date.parse(requested)){reject('TOO_EARLY');continue;}
+  if(!samePlace(from,legs[0].from)||!samePlace(to,legs.at(-1).to)){
+   reject('ENDPOINT_MISMATCH');
+   if(!samePlace(from,legs[0].from))suggest('from',from,legs[0].from);
+   if(!samePlace(to,legs.at(-1).to))suggest('to',to,legs.at(-1).to);
+   continue;
+  }
   if(legs[0].from.locationType==='coordinate')legs[0].from={...legs[0].from,name:from.name};
   if(legs.at(-1).to.locationType==='coordinate')legs.at(-1).to={...legs.at(-1).to,name:to.name};
   journeys.push({departure:legs[0].departure,arrival:legs.at(-1).arrival,legs,notices,transfers:Math.max(0,legs.filter(l=>!l.walking&&!l.throughService).length-1),source:TRANSITOUS_SOURCE,sourceWarning:'Transitous-Fahrplanauskunft; Datenabdeckung und Echtzeitdaten sind partiell. Gelieferte Fahrzeugverläufe werden farbig gestrichelt gezeigt; ihre Original-GTFS-Herkunft ist nicht bestätigt. Fehlende Geometrie bleibt offen.',disruptionCoverage:'partial',disruptionCheck:'trip-only',routingStatus:'provider-checked',attributions:TRANSITOUS_ATTRIBUTIONS,fetchedAt:new Date().toISOString()});
- }catch(error){if(error.code==='WALKING_PATH_UNCONFIRMED')walkingErrors.push(error.message);/* A malformed alternative cannot conceal valid connections. */}
+ }catch(error){if(error.code==='WALKING_PATH_UNCONFIRMED')walkingErrors.push(error.message);reject(['WALKING_PATH_UNCONFIRMED','STALE_CALENDAR'].includes(error.code)?error.code:'INVALID_DATA');/* A malformed alternative cannot conceal valid connections. */}
  journeys.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));
  for(const journey of journeys)journey.notices=mergeNotices([journey.notices,excluded]);
- return {journeys,notices:excluded,walkingErrors:[...new Set(walkingErrors)]};
+ return {journeys,notices:excluded,walkingErrors:[...new Set(walkingErrors)],endpointAlternatives,diagnostics:{provider:TRANSITOUS_SOURCE,received:(data.itineraries||[]).length,accepted:journeys.length,rejected}};
 }
 let nextJourneyRequestAt=0;const journeyCache=new Map();
 export async function getTransitousJourneys(from,to,departure,signal){
@@ -135,17 +145,21 @@ export async function getTransitousJourneys(from,to,departure,signal){
  // Keep source responses, then revalidate endpoints for every caller.
  let data=cached&&cached.until>Date.now()?cached.data:null;
  if(!data){
-  if(Date.now()<nextJourneyRequestAt)throw Object.assign(Error('Die ergänzende europäische Auskunft pausiert nach einem Anbieterfehler.'),{code:'UPSTREAM_UNAVAILABLE'});
+  if(Date.now()<nextJourneyRequestAt)throw Object.assign(Error('Transitous pausiert nach einem Anbieterfehler.'),{code:'UPSTREAM_UNAVAILABLE'});
   const url=new URL('https://api.transitous.org/api/v6/plan');
   url.search=new URLSearchParams({fromPlace:endpoint(origin),toPlace:endpoint(destination),time:departure,directModes:'',numItineraries:'3',maxItineraries:'3',searchWindow:'900',useRoutedTransfers:'true',detailedTransfers:'true',maxPreTransitTime:'900',maxPostTransitTime:'900'});
   try{
    data=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/25 (+https://github.com/dunkelst/railatlas-europe)'}},signal,22000,4*1024*1024);
-   if(!Array.isArray(data.itineraries))throw Object.assign(Error('Die europäische Auskunft hat keine auswertbare Verbindungsliste geliefert.'),{code:'SOURCE_RESPONSE_INVALID'});
+   if(!Array.isArray(data.itineraries))throw Object.assign(Error('Transitous hat keine auswertbare Verbindungsliste geliefert.'),{code:'SOURCE_RESPONSE_INVALID'});
    if(journeyCache.size>=64)journeyCache.delete(journeyCache.keys().next().value);journeyCache.set(key,{data,until:Date.now()+30000});
   }catch(error){signal?.throwIfAborted();if(!error.responseTooLarge)nextJourneyRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
  }
  const parsed=parseTransitousJourneys(data,origin,destination,departure);
- if(!parsed.journeys.length)throw Object.assign(Error(parsed.walkingErrors[0]||'Die ergänzende europäische Auskunft hat für diese Halte und Zeit keine nutzbare Verbindung bestätigt.'),{code:parsed.walkingErrors.length?'WALKING_PATH_UNCONFIRMED':'NO_JOURNEY',notices:parsed.notices});
+ if(!parsed.journeys.length){
+  const rejected=parsed.diagnostics.received>0;
+  const message=parsed.walkingErrors[0]||(parsed.endpointAlternatives.length?'Transitous liefert Reisen mit einem abweichenden Start- oder Zielhalt. Bitte den vorgeschlagenen Haltepunkt prüfen und gezielt übernehmen.':rejected?'Transitous hat '+parsed.diagnostics.received+' Vorschläge geliefert; keiner bestätigt eine durchgehend nutzbare Reise zwischen den gewählten Punkten.':'Transitous liefert für diese Orte und Abfahrtszeit keine Fahrplanverbindung. Die Datenabdeckung kann unvollständig sein.');
+  throw Object.assign(Error(message),{code:parsed.walkingErrors.length?'WALKING_PATH_UNCONFIRMED':rejected?'JOURNEY_REJECTED':'NO_JOURNEY',notices:parsed.notices,diagnostics:parsed.diagnostics,endpointAlternatives:parsed.endpointAlternatives});
+ }
  for(const journey of parsed.journeys)journey.endpointMappings=[[from,origin,'beginnt'],[to,destination,'endet']].filter(([asked,resolved])=>asked!==resolved).map(([asked,resolved,action])=>'Der Kataloghalt „'+asked.name+'“ wurde dem Haltepunkt „'+resolved.name+'“ zugeordnet ('+Math.round(distanceKm(asked,resolved)*1000)+' m vom Katalogpunkt). Die Reise '+action+' am zugeordneten Halt; bitte den Zugang prüfen.');
  return parsed.journeys.slice(0,3);
 }
