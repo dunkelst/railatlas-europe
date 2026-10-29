@@ -21,9 +21,9 @@ python3 -m pip install -r requirements-builder.txt
 bash tools/build_stuttgart_graph.sh
 ```
 
-Der Build lädt den aktuellen Geofabrik-Extrakt des Regierungsbezirks Stuttgart, pinnt die tatsächlich geladene Snapshot-URL, erzeugt `data/de-bw-stuttgart.graph.json`, führt Graph-QA aus und muss eine verbundene Route zwischen Heilbronn und Stuttgart nachweisen. Derselbe Build läuft vor jedem GitHub-Pages-Deployment und als eigener CI-Gate für relevante Pull Requests.
+Der Build löst den aktuellen Geofabrik-Extrakt des Regierungsbezirks Stuttgart zuerst auf eine **datierte, unveränderliche Snapshot-Datei** auf und lädt anschließend genau diese Datei. Normalerweise geschieht das über das Redirect-Ziel von `stuttgart-regbez-latest.osm.pbf`; falls ein Mirror oder Proxy die stabile `-latest`-URL beibehält, wird die neueste datierte PBF aus Geofabriks eigenem Verzeichnisindex ermittelt. Kann keine datierte Snapshot-URL sicher bestimmt werden, bricht der Build ab. Danach erzeugt er `data/de-bw-stuttgart.graph.json`, führt Graph-QA aus und muss eine verbundene Route zwischen Heilbronn und Stuttgart nachweisen. Derselbe Build läuft vor jedem GitHub-Pages-Deployment und als eigener CI-Gate für relevante Pull Requests.
 
-OSM-Daten: © OpenStreetMap contributors, ODbL 1.0. Geofabrik-Extrakte werden regelmäßig aktualisiert; der erzeugte Graph enthält Quelle und Snapshot-Datum in den Metadaten.
+OSM-Daten: © OpenStreetMap contributors, ODbL 1.0. Geofabrik-Extrakte werden regelmäßig aktualisiert; der erzeugte Graph enthält die tatsächlich verwendete datierte Quelle und das Snapshot-Datum in den Metadaten.
 
 ## Ausbauplan
 
