@@ -11,7 +11,7 @@ const cities=[['tulum','MXTUL'],['playa','MXPCM'],['cancun','MXCUN']].map(([id,c
 const cun=findMexicanAirports('CUN')[0];
 const stationCode=code=>typeof code==='string'&&/^MX[A-Z0-9]{3,17}$/.test(code);
 export function adoLocation(s){
- if(!s||s.transitousId||!withinRegion(s.lat,s.lon,'mexico'))return null;
+ if(!s||s.transitousId||s.trenMayaId||s.networkMode==='rail'||!withinRegion(s.lat,s.lon,'mexico'))return null;
  if(stationCode(s.adoStationCode)&&s.id==='ado:'+s.adoStationCode)return {type:'stations',code:s.adoStationCode,timeZone:mexicanLocationTimeZone({...s,timeZone:undefined})||s.timeZone};
  if(distanceKm(s,cun)<3)return {type:'area',code:'MXCUNCA',timeZone:'America/Cancun'};
  const city=cities.find(p=>distanceKm(s,{lat:p.centre[0],lon:p.centre[1]})<5);

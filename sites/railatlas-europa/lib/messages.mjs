@@ -1,20 +1,65 @@
 // RailAtlas-owned interface copy. Provider notices and place names retain their original wording.
 export const messages = {
-  "Fahrzeiten und Verfügbarkeit laut ADO. Echtzeit- und Störungsmeldungen sind nicht bestätigt. Der genaue Fahrweg wird nicht angezeigt.": ["Times and availability supplied by ADO. Live updates and disruption information are unconfirmed. The exact route is not displayed.", "Horarios y disponibilidad según ADO. No se confirman datos en tiempo real ni avisos de incidencias. No se muestra el recorrido exacto."],
-  "ADO liefert Reisen mit einem abweichenden Start- oder Zielhalt. Bitte die vorgeschlagenen Einstiege prüfen und übernehmen.": ["ADO returned journeys using a different origin or destination stop. Review and select the proposed boarding points.", "ADO devolvió viajes con una parada de origen o destino diferente. Revisa y selecciona los puntos propuestos."],
-  "ADO bestätigt keine nutzbare Reise zwischen den gewählten Punkten für diese Abfahrtszeit.": ["ADO could not confirm a usable journey between the selected points for this departure time.", "ADO no confirma un viaje utilizable entre los puntos seleccionados para esta hora de salida."],
-  "ADO liefert für diese Orte und Abfahrtszeit keine verfügbare Fahrplanverbindung.": ["ADO returned no available scheduled journey for these places and departure time.", "ADO no devuelve un viaje disponible para estos lugares y hora de salida."],
-  "Die ADO-Auskunft ist gerade nicht erreichbar. Bitte gleich erneut suchen.": ["The ADO journey service is currently unavailable. Please try again shortly.", "La consulta de ADO no está disponible. Inténtalo de nuevo en breve."],
-  "Die ADO-Auskunft pausiert nach einem Anbieterfehler. Bitte gleich erneut suchen.": ["The ADO journey service is paused after a provider error. Please try again shortly.", "La consulta de ADO está en pausa tras un error del proveedor. Inténtalo de nuevo en breve."],
-  "ADO hat keine auswertbare Verbindungsliste geliefert.": ["ADO returned no readable journey list.", "ADO no devolvió una lista de viajes legible."],
-  "Für mexikanische Linien und Halte näher heranzoomen (ab Zoom 9).": ["Zoom in for Mexican routes and stops (from zoom 9).", "Acerca el mapa para ver rutas y paradas de México (desde el nivel 9)."],
-  "Für diesen großen Netzausschnitt bitte näher heranzoomen.": ["Zoom in to load this large network area.", "Acerca el mapa para cargar esta zona extensa de la red."],
-  "Die Transitous-Haltestellenquelle ist gerade nicht erreichbar; ergänzende Quelldaten werden gezeigt.": ["The Transitous stop source is currently unavailable; supplementary source data is shown.", "La fuente de paradas Transitous no está disponible; se muestran datos de fuentes complementarias."],
-  "Bahnlinien: Schieneninfrastruktur. Kartierte mexikanische Linien und Halte ab Zoom 9. Daten können fehlen; aktuelle Bedienung und Fahrpläne sind nicht bestätigt.": ["Rail lines: railway infrastructure. Mapped Mexican routes and stops from zoom 9. Data may be missing; current service and timetables are unconfirmed.", "Líneas ferroviarias: infraestructura. Rutas y paradas cartográficas de México desde el nivel 9. Pueden faltar datos; el servicio actual y los horarios no están confirmados."],
-  "ÖPNV-Einstiege prüfen": ["Check public transport boarding points", "Comprobar puntos de acceso al transporte público"],
-  "Ein Stadt- oder Flughafenpunkt ist noch kein Einstieg. Wähle einen kartierten Halt; Fahrplan und Zugang werden anschließend geprüft.": ["A city or airport point is not yet a boarding point. Choose a mapped stop; its timetable and access will then be checked.", "Un punto de ciudad o aeropuerto todavía no es una parada de acceso. Elige una parada cartográfica; después se comprobarán el horario y el acceso."],
-  "Einstiege für {0} anzeigen": ["Show boarding points for {0}", "Mostrar puntos de acceso para {0}"],
-  "bei {0}": ["Near {0}", "Cerca de {0}"],
+  "Fahrzeiten und Verfügbarkeit laut ADO. Echtzeit- und Störungsmeldungen sind nicht bestätigt. Der genaue Fahrweg wird nicht angezeigt.": [
+    "Times and availability supplied by ADO. Live updates and disruption information are unconfirmed. The exact route is not displayed.",
+    "Horarios y disponibilidad según ADO. No se confirman datos en tiempo real ni avisos de incidencias. No se muestra el recorrido exacto."
+  ],
+  "ADO liefert Reisen mit einem abweichenden Start- oder Zielhalt. Bitte die vorgeschlagenen Einstiege prüfen und übernehmen.": [
+    "ADO returned journeys using a different origin or destination stop. Review and select the proposed boarding points.",
+    "ADO devolvió viajes con una parada de origen o destino diferente. Revisa y selecciona los puntos propuestos."
+  ],
+  "ADO bestätigt keine nutzbare Reise zwischen den gewählten Punkten für diese Abfahrtszeit.": [
+    "ADO could not confirm a usable journey between the selected points for this departure time.",
+    "ADO no confirma un viaje utilizable entre los puntos seleccionados para esta hora de salida."
+  ],
+  "ADO liefert für diese Orte und Abfahrtszeit keine verfügbare Fahrplanverbindung.": [
+    "ADO returned no available scheduled journey for these places and departure time.",
+    "ADO no devuelve un viaje disponible para estos lugares y hora de salida."
+  ],
+  "Die ADO-Auskunft ist gerade nicht erreichbar. Bitte gleich erneut suchen.": [
+    "The ADO journey service is currently unavailable. Please try again shortly.",
+    "La consulta de ADO no está disponible. Inténtalo de nuevo en breve."
+  ],
+  "Die ADO-Auskunft pausiert nach einem Anbieterfehler. Bitte gleich erneut suchen.": [
+    "The ADO journey service is paused after a provider error. Please try again shortly.",
+    "La consulta de ADO está en pausa tras un error del proveedor. Inténtalo de nuevo en breve."
+  ],
+  "ADO hat keine auswertbare Verbindungsliste geliefert.": [
+    "ADO returned no readable journey list.",
+    "ADO no devolvió una lista de viajes legible."
+  ],
+  "Für mexikanische Linien und Halte näher heranzoomen (ab Zoom 9).": [
+    "Zoom in for Mexican routes and stops (from zoom 9).",
+    "Acerca el mapa para ver rutas y paradas de México (desde el nivel 9)."
+  ],
+  "Für diesen großen Netzausschnitt bitte näher heranzoomen.": [
+    "Zoom in to load this large network area.",
+    "Acerca el mapa para cargar esta zona extensa de la red."
+  ],
+  "Die Transitous-Haltestellenquelle ist gerade nicht erreichbar; ergänzende Quelldaten werden gezeigt.": [
+    "The Transitous stop source is currently unavailable; supplementary source data is shown.",
+    "La fuente de paradas Transitous no está disponible; se muestran datos de fuentes complementarias."
+  ],
+  "Bahnlinien: Schieneninfrastruktur. Kartierte mexikanische Linien und Halte ab Zoom 9. Daten können fehlen; aktuelle Bedienung und Fahrpläne sind nicht bestätigt.": [
+    "Rail lines: railway infrastructure. Mapped Mexican routes and stops from zoom 9. Data may be missing; current service and timetables are unconfirmed.",
+    "Líneas ferroviarias: infraestructura. Rutas y paradas cartográficas de México desde el nivel 9. Pueden faltar datos; el servicio actual y los horarios no están confirmados."
+  ],
+  "ÖPNV-Einstiege prüfen": [
+    "Check public transport boarding points",
+    "Comprobar puntos de acceso al transporte público"
+  ],
+  "Ein Stadt- oder Flughafenpunkt ist noch kein Einstieg. Wähle einen kartierten Halt; Fahrplan und Zugang werden anschließend geprüft.": [
+    "A city or airport point is not yet a boarding point. Choose a mapped stop; its timetable and access will then be checked.",
+    "Un punto de ciudad o aeropuerto todavía no es una parada de acceso. Elige una parada cartográfica; después se comprobarán el horario y el acceso."
+  ],
+  "Einstiege für {0} anzeigen": [
+    "Show boarding points for {0}",
+    "Mostrar puntos de acceso para {0}"
+  ],
+  "bei {0}": [
+    "Near {0}",
+    "Cerca de {0}"
+  ],
   "Sprache": [
     "Language",
     "Idioma"
@@ -1443,10 +1488,6 @@ export const messages = {
     ", test access. Individual live requests only; no timetable download. Journeys affected by disruptions explicitly excluded by the provider are rejected. EFA-BW and Trainline Partner Solutions are not connected; approved access is missing.",
     ", acceso de prueba. Solo consultas puntuales en directo; sin descarga de horarios. Se descartan viajes afectados por incidencias que el proveedor indique expresamente que no ha tenido en cuenta. EFA-BW y Trainline Partner Solutions aún no están conectados; faltan accesos autorizados."
   ],
-  "Mexiko: Flughafenareale aus OurAirports (Public Domain), mit Quellkoordinaten und IATA-Codes; Referenzpunkte sind keine bestätigten Terminalzugänge oder ÖPNV-Halte. Details unter data/mexico-places-sources.json. Separate Colectivo-/Combi-Ebene aus ausdrücklich gekennzeichneten OSM-Routen und kartierten Einstiegen. Quelle und Datenstand sind sichtbar. Offene mexikanische GTFS-Geometrien ergänzen Bus, Metro und Bahn; ausdrücklich virtuelle Haltepunkte werden nicht als übliche Einstiege übernommen. ADO / Distribusion ergänzt die Fahrplanauskunft für bestätigte Anbieterorte rund um Cancún, Playa del Carmen und Tulum. Weitere mexikanische Fahrpläne kommen aus Transitous; eine kartierte Linie bestätigt keine Verbindung.": [
-    "Mexico: airport areas from OurAirports (public domain), with source coordinates and IATA codes; reference points are not confirmed terminal accesses or public transport stops. Details in data/mexico-places-sources.json. A separate colectivo/combi layer uses explicitly tagged OSM routes and mapped boarding points. Source and data dates are visible. Open Mexican GTFS shapes supplement bus, metro and rail; explicitly virtual stops are not treated as usual boarding points. ADO / Distribusion adds timetables for confirmed provider locations around Cancún, Playa del Carmen and Tulum. Other Mexican timetables come from Transitous; a mapped route does not confirm a journey.",
-    "México: recintos aeroportuarios de OurAirports (dominio público), con coordenadas de origen y códigos IATA; los puntos de referencia no son accesos a terminales ni paradas de transporte público confirmados. Detalles en data/mexico-places-sources.json. Una capa separada de colectivos y combis usa rutas OSM etiquetadas expresamente y puntos de subida registrados. Se muestran la fuente y la fecha de los datos. Las geometrías GTFS abiertas de México complementan autobús, metro y tren; las paradas expresamente virtuales no se tratan como puntos habituales de subida. ADO / Distribusion añade horarios para lugares confirmados del proveedor en Cancún, Playa del Carmen y Tulum. Otros horarios de México proceden de Transitous; una línea en el mapa no confirma un viaje."
-  ],
   "Standortkoordinaten werden im Browser verarbeitet. Die fünf nächsten erfassten Halte stehen zur Auswahl. Kartenkacheln: OpenStreetMap / OpenRailwayMap. Unabhängige Kartenhalte und zusätzliche Fahrplanauskunft bei erfolgloser ÖBB-/EFA-Suche:": [
     "Location coordinates are processed in your browser. The five nearest listed stops can be selected. Map tiles: OpenStreetMap / OpenRailwayMap. Independent map stops and an additional journey planner when ÖBB/EFA searches fail:",
     "Las coordenadas se procesan en tu navegador. Puedes elegir entre las cinco paradas registradas más cercanas. Teselas: OpenStreetMap / OpenRailwayMap. Paradas independientes en el mapa y planificador adicional cuando falla la búsqueda de ÖBB/EFA:"
@@ -1506,5 +1547,65 @@ export const messages = {
   "Fernbus": [
     "Coach",
     "Autobús de larga distancia"
+  ],
+  "Tren Maya hat keinen auswertbaren datumsbezogenen Fahrplan geliefert.": [
+    "Tren Maya returned no readable timetable for the requested date.",
+    "Tren Maya no devolvió un horario legible para la fecha solicitada."
+  ],
+  "Datumsbezogener Sollfahrplan von Tren Maya. Sitzplätze, Echtzeit und Störungen sind nicht bestätigt. Bahnhofszugänge und genauer Fahrweg sind nicht geliefert.": [
+    "Dated scheduled timetable from Tren Maya. Seats, live updates and disruption status are unconfirmed. Station access and the exact route are not supplied.",
+    "Horario programado de Tren Maya para la fecha solicitada. No se confirman plazas, datos en tiempo real ni incidencias. No se proporcionan los accesos a las estaciones ni el recorrido exacto."
+  ],
+  "Tren Maya · Fahrplan": [
+    "Tren Maya · Timetable",
+    "Tren Maya · Horarios"
+  ],
+  "Tren Maya · Bahnhöfe und Fahrplan": [
+    "Tren Maya · Stations and timetable",
+    "Tren Maya · Estaciones y horarios"
+  ],
+  "Für die Tren-Maya-Reise bitte zwei erfasste Bahnhöfe oder zugehörige Orte wählen.": [
+    "Select two listed stations or their associated places for the Tren Maya journey.",
+    "Selecciona dos estaciones registradas o sus lugares asociados para el viaje en Tren Maya."
+  ],
+  "Für die Tren-Maya-Reise bitte zwei unterschiedliche Bahnhöfe wählen.": [
+    "Select two different stations for the Tren Maya journey.",
+    "Selecciona dos estaciones diferentes para el viaje en Tren Maya."
+  ],
+  "Die Tren-Maya-Auskunft pausiert nach einem Anbieterfehler. Bitte gleich erneut suchen.": [
+    "The Tren Maya timetable service is paused after a provider error. Please try again shortly.",
+    "La consulta de Tren Maya está en pausa tras un error del proveedor. Inténtalo de nuevo en breve."
+  ],
+  "Die Tren-Maya-Auskunft ist gerade nicht erreichbar. Bitte gleich erneut suchen.": [
+    "The Tren Maya timetable service is currently unavailable. Please try again shortly.",
+    "La consulta de Tren Maya no está disponible. Inténtalo de nuevo en breve."
+  ],
+  "Tren Maya liefert Fahrten ab tatsächlichen Bahnhöfen. Bitte die vorgeschlagenen Bahnhöfe prüfen und übernehmen.": [
+    "Tren Maya returned journeys from actual railway stations. Review and select the proposed stations.",
+    "Tren Maya devolvió viajes desde estaciones ferroviarias reales. Revisa y selecciona las estaciones propuestas."
+  ],
+  "Tren Maya bestätigt für diese Bahnhöfe und Abfahrtszeit keine nutzbare Direktfahrt.": [
+    "Tren Maya could not confirm a usable direct train for these stations and departure time.",
+    "Tren Maya no confirma un tren directo utilizable para estas estaciones y hora de salida."
+  ],
+  "Die Auskünfte liefern Fahrten ab anderen Einstiegen. Bitte die vorgeschlagenen Halte und Bahnhöfe prüfen und übernehmen.": [
+    "The services returned journeys from different boarding points. Review and select the proposed stops and stations.",
+    "Las consultas devolvieron viajes desde otros puntos de subida. Revisa y selecciona las paradas y estaciones propuestas."
+  ],
+  "Haltezeit laut Quelle; Ankunft und Abfahrt nicht getrennt geliefert.": [
+    "Stop time supplied by the source; separate arrival and departure times are not provided.",
+    "Hora de parada según la fuente; no se proporcionan por separado la llegada y la salida."
+  ],
+  "Für mindestens eine Auskunft sind keine aktuellen Betriebs- oder Sperrmeldungen angebunden. Fahrplanangaben bestätigen keine störungsfreie Fahrt.": [
+    "Current service or closure alerts are not connected for at least one source. Scheduled times do not confirm a disruption-free journey.",
+    "No hay avisos actuales de servicio o cierre conectados para al menos una fuente. Los horarios programados no confirman un viaje sin incidencias."
+  ],
+  "Mexiko · Tren Maya, ADO & Transitous (partielle Abdeckung)": [
+    "Mexico · Tren Maya, ADO & Transitous (partial coverage)",
+    "México · Tren Maya, ADO y Transitous (cobertura parcial)"
+  ],
+  "Mexiko: Flughafenareale aus OurAirports (Public Domain), mit Quellkoordinaten und IATA-Codes; Referenzpunkte sind keine bestätigten Terminalzugänge oder ÖPNV-Halte. Details unter data/mexico-places-sources.json. Separate Colectivo-/Combi-Ebene aus ausdrücklich gekennzeichneten OSM-Routen und kartierten Einstiegen. Quelle und Datenstand sind sichtbar. Offene mexikanische GTFS-Geometrien ergänzen Bus, Metro und Bahn; ausdrücklich virtuelle Haltepunkte werden nicht als übliche Einstiege übernommen. ADO / Distribusion ergänzt die Fahrplanauskunft für bestätigte Anbieterorte rund um Cancún, Playa del Carmen und Tulum. Tren Maya ergänzt datumsbezogene Bahnfahrpläne zwischen seinen erfassten Bahnhöfen. Weitere mexikanische Fahrpläne kommen aus Transitous; eine kartierte Linie bestätigt keine Verbindung.": [
+    "Mexico: airport areas from OurAirports (public domain), with source coordinates and IATA codes; reference points are not confirmed terminal accesses or public transport stops. Details in data/mexico-places-sources.json. A separate colectivo/combi layer uses explicitly tagged OSM routes and mapped boarding points. Source and data dates are visible. Open Mexican GTFS shapes supplement bus, metro and rail; explicitly virtual stops are not treated as usual boarding points. ADO / Distribusion adds timetables for confirmed provider locations around Cancún, Playa del Carmen and Tulum. Tren Maya adds dated railway timetables between its listed stations. Other Mexican timetables come from Transitous; a mapped route does not confirm a journey.",
+    "México: recintos aeroportuarios de OurAirports (dominio público), con coordenadas de origen y códigos IATA; los puntos de referencia no son accesos a terminales ni paradas de transporte público confirmados. Detalles en data/mexico-places-sources.json. Una capa separada de colectivos y combis usa rutas OSM etiquetadas expresamente y puntos de subida registrados. Se muestran la fuente y la fecha de los datos. Las geometrías GTFS abiertas de México complementan autobús, metro y tren; las paradas expresamente virtuales no se tratan como puntos habituales de subida. ADO / Distribusion añade horarios para lugares confirmados del proveedor en Cancún, Playa del Carmen y Tulum. Tren Maya añade horarios ferroviarios para la fecha solicitada entre sus estaciones registradas. Otros horarios de México proceden de Transitous; una línea en el mapa no confirma un viaje."
   ]
 };

@@ -52,18 +52,22 @@ export function parseJourneys(data,from,to,requested){
  return parsed.sort((a,b)=>Date.parse(a.arrival)-Date.parse(b.arrival)||Date.parse(a.departure)-Date.parse(b.departure));
 }
 const stationsCache=new Map();
-export async function fetchJSON(url,init={},signal,timeout=16000,maxBytes){
+export async function fetchText(url,init={},signal,timeout=16000,maxBytes=2*1024*1024){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout),abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});
  try{
   if(signal?.aborted)controller.abort();
   const r=await fetch(url,{...init,signal:controller.signal,headers:{Accept:'application/json','User-Agent':'RailAtlas-Europa/1.0',...(init.headers||{})}});
   if(!r.ok)throw Object.assign(new Error('Fahrplandienst HTTP '+r.status),{code:'UPSTREAM_UNAVAILABLE',status:r.status,retryAfterMs:(()=>{const value=r.headers.get('Retry-After')||'';return /^\d+$/.test(value)?Number(value)*1000:Math.max(0,Date.parse(value)-Date.now())||0;})()});
-  if(!maxBytes)return await r.json();
+  if(!maxBytes)return await r.text();
   const reader=r.body.getReader(),chunks=[];let size=0;
   while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>maxBytes){await reader.cancel();throw Object.assign(Error('Zu viele Quelldaten. Bitte näher heranzoomen.'),{code:'SOURCE_RESPONSE_INVALID',responseTooLarge:true});}chunks.push(value);}
   const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
-  return JSON.parse(new TextDecoder().decode(bytes));
+  return new TextDecoder().decode(bytes);
  }catch(e){if(!signal?.aborted&&!e.code)e.code=e.name==='SyntaxError'?'SOURCE_RESPONSE_INVALID':'UPSTREAM_UNAVAILABLE';throw e;}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
+}
+export async function fetchJSON(url,init={},signal,timeout=16000,maxBytes){
+ try{return JSON.parse(await fetchText(url,init,signal,timeout,maxBytes??0));}
+ catch(error){if(error.name==='SyntaxError')error.code='SOURCE_RESPONSE_INVALID';throw error;}
 }
 // ÖBB's public HAFAS protocol profile is documented by hafas-client (ISC).
 const hafasProfile={lang:'de',client:{type:'IPH',id:'OEBB',v:'6030600',name:'oebbPROD-ADHOC'},ver:'1.45',auth:{type:'AID',aid:'OWDL4fE4ixNiPBBm'}};

@@ -19,7 +19,7 @@ test('CUN, MEX and their names resolve to actual airports, not bus stops or inve
 
 test('Airport codes use the shared API even when external searches are unavailable',async t=>{
  let calls=0;t.mock.method(globalThis,'fetch',async()=>{calls++;throw Error('offline');});
- for(const q of ['CUN','MEX']){const r=await handleApi(new Request('https://railatlas.test/api/stations?'+new URLSearchParams({region:'mexico',q,near:'19.4326,-99.1332'}),{headers:{Origin:'https://dunkelst.github.io'}}));assert.equal(r.status,200);const d=await r.json();assert.equal(d.stations.length,1);assert.equal(d.stations[0].iata,q);assert.equal(r.headers.get('access-control-allow-origin'),'https://dunkelst.github.io');}
+ for(const q of ['CUN','MEX']){const r=await handleApi(new Request('https://railatlas.test/api/stations?'+new URLSearchParams({region:'mexico',q,near:'19.4326,-99.1332'}),{headers:{Origin:'https://dunkelst.github.io'}}));assert.equal(r.status,200);const d=await r.json();assert.equal(d.stations.length,q==='CUN'?2:1);assert.equal(d.stations[0].iata,q);if(q==='CUN')assert.equal(d.stations[1].trenMayaId,'22');assert.equal(r.headers.get('access-control-allow-origin'),'https://dunkelst.github.io');}
  assert.equal(calls,0);
 });
 

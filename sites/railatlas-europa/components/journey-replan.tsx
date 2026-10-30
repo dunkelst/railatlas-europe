@@ -10,7 +10,7 @@ export default function JourneyReplan({parts,busy,onChoose}:{parts:Journey[];bus
  const [selected,setSelected]=useState('');
  const options=parts.flatMap((p,part)=>{
   const seen=new Set<string>();
-  return p.legs.flatMap(l=>[{station:l.from,when:l.departure},...l.stopovers.filter(s=>!s.cancelled).map(s=>({station:s.station,when:s.departure||s.arrival})),{station:l.to,when:l.arrival}]).filter(s=>{
+  return p.legs.flatMap(l=>[{station:l.from,when:l.departure},...l.stopovers.filter(s=>!s.cancelled).map(s=>({station:s.station,when:s.departure||s.arrival||s.scheduledTime||null})),{station:l.to,when:l.arrival}]).filter(s=>{
    if(!s.when||s.station.locationType==='coordinate'||seen.has(s.station.id))return false;
    seen.add(s.station.id);return true;
   }).map((s,i)=>({...s,part,key:part+':'+i}));

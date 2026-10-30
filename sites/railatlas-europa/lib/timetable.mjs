@@ -5,6 +5,7 @@ import {findTransportLocations as findBusStops} from './stop-search.mjs';
 import {getDbJourneys} from './db.mjs';
 import {getTransitousJourneys,findTransitousStations} from './transitous.mjs';
 import {getAdoJourneys} from './ado.mjs';
+import {getTrenMayaJourneys,findTrenMayaStations} from './tren-maya.mjs';
 import {findMexicanMapStations} from './network.mjs';
 import {mexicoLookupContext,rankMexicanLocations} from './location-search.mjs';
 
@@ -21,9 +22,10 @@ export async function findTimetableStations(query, source='auto', signal,region=
   if (source !== 'auto') return providers[source].find(query, signal);
   if(region==='mexico'){
    const context=mexicoLookupContext(query,near);
-   if(context.airports.some(a=>a.iata.toLowerCase()===query.trim().toLowerCase()))return rankMexicanLocations(context.airports,context);
+   const trains=findTrenMayaStations(query);
+   if(context.airports.some(a=>a.iata.toLowerCase()===query.trim().toLowerCase()))return rankMexicanLocations([...context.airports,...trains],context);
    const queries=[context.query,context.photonQuery,context.mapQuery],results=await Promise.allSettled([findTransitousStations(queries[0],signal,region,context.near),findBusStops(queries[1],signal,region,context.near),findMexicanMapStations(queries[2],context.near)]);signal?.throwIfAborted();
-   const matches=rankMexicanLocations([...context.airports,...results.flatMap((r,i)=>r.status==='fulfilled'?relevantStations(r.value,queries[i]):[])],context);
+   const matches=rankMexicanLocations([...context.airports,...trains,...results.flatMap((r,i)=>r.status==='fulfilled'?relevantStations(r.value,queries[i]):[])],context);
    if(!matches.length&&results.some(r=>r.status==='rejected'))throw Error('Die mexikanische Haltestellensuche ist gerade nur teilweise erreichbar. Bitte erneut suchen.');return matches;
   }
   const results = await Promise.allSettled([providers.oebb.find(query, signal), providers.efa.find(query, signal), findBusStops(query,signal,region,near)]);
@@ -39,7 +41,16 @@ export const journeyPreferences=['arrival','transfers','walking'];
 export async function getTimetableJourneys(from,to,departure,source='auto',signal,preference='arrival',walkingBudget=0,region='europe') {
   signal?.throwIfAborted();
   if(source!=='auto')return [await providers[source].journey(from,to,departure,signal)];
-  if(region==='mexico'||from.country==='MX'&&to.country==='MX')return rankJourneys(await getAdoJourneys(from,to,departure,signal)||await getTransitousJourneys(from,to,departure,signal),preference);
+  if(region==='mexico'||from.country==='MX'&&to.country==='MX'){
+   const results=await Promise.allSettled([getAdoJourneys(from,to,departure,signal),getTrenMayaJourneys(from,to,departure,signal)]);signal?.throwIfAborted();
+   const journeys=rankJourneys(results.flatMap(r=>r.status==='fulfilled'?r.value||[]:[]),preference),errors=results.filter(r=>r.status==='rejected').map(r=>r.reason);
+   if(journeys.length){for(const j of journeys)if(errors.some(e=>['UPSTREAM_UNAVAILABLE','SOURCE_RESPONSE_INVALID'].includes(e.code)))j.sourceWarning=[j.sourceWarning,'Der automatische Vergleich konnte nur einen Teil der Auskünfte bestätigen.'].join(' ');return journeys;}
+   if(results.every(r=>r.status==='fulfilled'&&r.value===null))return rankJourneys(await getTransitousJourneys(from,to,departure,signal),preference);
+   // Keep provider-specific boarding proposals together in the existing recovery flow.
+   if(errors.length===1)throw errors[0];
+   const endpointAlternatives=errors.flatMap(e=>e.endpointAlternatives||[]).sort((a,b)=>a.side.localeCompare(b.side)||a.distanceMeters-b.distanceMeters),received=errors.reduce((n,e)=>n+(e.diagnostics?.received||0),0);
+   throw Object.assign(Error(endpointAlternatives.length?'Die Auskünfte liefern Fahrten ab anderen Einstiegen. Bitte die vorgeschlagenen Halte und Bahnhöfe prüfen und übernehmen.':errors.map(e=>e.message).join(' ')),{code:endpointAlternatives.length?'JOURNEY_REJECTED':errors.some(e=>e.code==='UPSTREAM_UNAVAILABLE'||e.code==='SOURCE_RESPONSE_INVALID')?'UPSTREAM_UNAVAILABLE':received?'JOURNEY_REJECTED':'NO_JOURNEY',endpointAlternatives,diagnostics:{provider:'ADO / Tren Maya',received,accepted:0,providers:errors.filter(e=>e.diagnostics).map(e=>e.diagnostics)}});
+  }
   const results=await Promise.allSettled([getJourneys(from,to,departure,signal),getEfaJourneys(from,to,departure,signal),...(walkingBudget?[getEfaWalkingJourneys(from,to,departure,signal,walkingBudget)]:[])]);
   signal?.throwIfAborted();
   if(!results.some(r=>r.status==='fulfilled'&&r.value.length))try{results.push({status:'fulfilled',value:await getTransitousJourneys(from,to,departure,signal)});}catch(reason){signal?.throwIfAborted();results.push({status:'rejected',reason});}

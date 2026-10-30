@@ -34,11 +34,12 @@ test('ADO lookup respects native provider selections and bounded actual search a
  assert.equal(adoLocation({...f.request.to,lat:19.4326,lon:-99.1332}),null);assert.equal(adoLocation({...f.request.to,transitousId:'real-other-provider-stop'}),null);assert.equal(adoLocation({...f.request.to,lat:49.14,lon:9.2}),null);
 });
 
-test('Shared API uses the dated ADO source instead of Transitous, and revalidates adopted endpoints',async t=>{
+test('Shared API compares dated ADO and Tren Maya sources and revalidates adopted endpoints',async t=>{
  const f=fixture();t.mock.method(Date,'now',()=>Date.parse('2026-10-30T12:00:00Z'));let calls=0;
- t.mock.method(globalThis,'fetch',async url=>{const u=new URL(url);calls++;assert.equal(u.origin,'https://book.api.distribusion.com');assert.equal(u.pathname,'/api/connections');assert.equal(u.searchParams.get('search_bounds[0][departure_date]'),'2026-10-31');assert.equal(u.searchParams.get('search_bounds[0][departure_start_time]'),'09:00');assert.equal(u.searchParams.get('retailerPartnerNumber'),'343401');return Response.json(f.raw);});
+ const train=JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/tren-maya-timetables.json.gz',import.meta.url)))).cases[0];let trainCalls=0;
+ t.mock.method(globalThis,'fetch',async url=>{const u=new URL(url);if(u.origin==='https://reservas.ventaboletostrenmaya.com.mx'){trainCalls++;return new Response(train.html);}calls++;assert.equal(u.origin,'https://book.api.distribusion.com');assert.equal(u.pathname,'/api/connections');assert.equal(u.searchParams.get('search_bounds[0][departure_date]'),'2026-10-31');assert.equal(u.searchParams.get('search_bounds[0][departure_start_time]'),'09:00');assert.equal(u.searchParams.get('retailerPartnerNumber'),'343401');return Response.json(f.raw);});
  const send=request=>handleApi(new Request('https://railatlas.test/api/journeys',{method:'POST',body:JSON.stringify(request)}));
- const first=await send(f.request);assert.equal(first.status,422);const d=await first.json();assert.equal(d.code,'JOURNEY_REJECTED');assert.equal(d.diagnostics.provider,'ADO / Distribusion');assert.equal(calls,1);
+ const first=await send(f.request);assert.equal(first.status,422);const d=await first.json();assert.equal(d.code,'JOURNEY_REJECTED');assert.equal(d.diagnostics.provider,'ADO / Tren Maya');assert.equal(trainCalls,1);assert.ok(d.endpointAlternatives.some(a=>a.station.trenMayaId==='22'));assert.ok(d.endpointAlternatives.some(a=>a.station.trenMayaId==='25'));assert.equal(calls,1);
  const again=await send({...f.request,from:{...f.request.from,lat:f.request.from.lat+.0001}});assert.equal(again.status,422);const changed=await again.json();assert.equal(calls,1);assert.notEqual(changed.endpointAlternatives[0].distanceMeters,d.endpointAlternatives[0].distanceMeters);
  const {from,to}=selected(f),accepted=await send({...f.request,from,to});assert.equal(accepted.status,200);const result=await accepted.json();assert.equal(result.journeys.length,6);assert.equal(result.journey.legs[0].from.adoStationCode,'MXCUNCIF');assert.equal(result.journey.legs[0].to.adoStationCode,'MXTULTAT');assert.equal(calls,2);
 });

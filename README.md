@@ -2,7 +2,19 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **41**, Quellcommit `df776cc2d57c3ef9eb6daadf1fadbbe827f1e61e`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **42**, Quellcommit `448603aae10c99f55822ae2f8578e8bbf2e0f36e`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 42: datumsbezogene Tren-Maya-Fahrpläne
+
+Tren Maya ist in die gemeinsame Mexiko-Suche, Bahnhofs- und Kartenauswahl sowie
+Reiseplanung eingebunden. 34 Anbieterbahnhöfe sind tatsächlichen OSM-Bahnhofsflächen
+zugeordnet. Die öffentliche offizielle Fahrplansuche liefert Züge für das gewählte
+Datum, einschließlich Rückrichtung und Zeitzonenwechsel. Stadt-, Flughafen-,
+ADO- und Bahnpunkte bleiben getrennt; abweichende Einstiege werden ausdrücklich
+übernommen. Zwischenhalte und ihre gelieferten Haltezeiten sind sichtbar und
+für die Neuplanung wählbar. Keine erfundenen Zugänge oder Fahrweggeometrien;
+Sitzplätze, Echtzeit und Störungen sind nicht bestätigt. 162 Regressionen,
+TypeScript und drei Builds erfolgreich. [Prüfung](docs/qa/railatlas-v42.md).
 
 ## Version 41: lesbare Verbindungskennungen
 

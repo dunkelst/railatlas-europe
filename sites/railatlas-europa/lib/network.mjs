@@ -5,6 +5,7 @@ import {sameNearbyStation} from './journey.mjs';
 import {fetchTransitousStops,fetchTransitousRoutes,parseTransitousStation,transitousModes,TRANSITOUS_SOURCE,TRANSITOUS_ATTRIBUTIONS} from './transitous.mjs';
 import {decodePolyline} from './transit.mjs';
 import {mexicanBounds,withinRegion} from './regions.mjs';
+import {trenMayaStations} from './tren-maya.mjs';
 export const NETWORK_MODES = [
   {id: 'rail', label: 'Bahn', color: '#405d74'},
   {id: 'suburban', label: 'S-Bahn', color: '#21834a'},
@@ -177,7 +178,9 @@ async function decodeMexicoData(encoded){
  const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).json();
 }
 async function loadMexicoData(){
- if(!mexicoData)mexicoData=import('./mexico-network-data.mjs').then(({default:encoded})=>decodeMexicoData(encoded)).then(data=>{const osm=data.sources?.find(s=>s.id==='osm-playa');if(osm)for(const layer of Object.values(data.layers))for(const object of [...layer.lines,...layer.stops])if(/^(relation|node|way)\//.test(object.id)){object.source||='OpenStreetMap';object.sourceUrl||='https://www.openstreetmap.org/'+object.id;}return data;}).catch(error=>{mexicoData=undefined;throw error;});
+ if(!mexicoData)mexicoData=import('./mexico-network-data.mjs').then(({default:encoded})=>decodeMexicoData(encoded)).then(data=>{const osm=data.sources?.find(s=>s.id==='osm-playa');if(osm)for(const layer of Object.values(data.layers))for(const object of [...layer.lines,...layer.stops])if(/^(relation|node|way)\//.test(object.id)){object.source||='OpenStreetMap';object.sourceUrl||='https://www.openstreetmap.org/'+object.id;}
+  data.layers.rail.stops.push(...trenMayaStations.map(station=>({id:station.id,name:station.name,lat:station.lat,lon:station.lon,lines:['Tren Maya'],station:{...station},source:'Tren Maya / OpenStreetMap',sourceUrl:station.sourceUrl,sourceDate:'2026-10-30'})));
+  data.source+=' + Tren Maya';data.attributions=[...(data.attributions||[]),{label:'Tren Maya · Bahnhöfe und Fahrplan',url:'https://www.trenmaya.gob.mx/'}];return data;}).catch(error=>{mexicoData=undefined;throw error;});
  return mexicoData;
 }
 async function loadMexicoTiles(bounds,modes,signal){
