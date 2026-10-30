@@ -1,4 +1,5 @@
 import mexicoSearchArea from './mexico-search-area.mjs';
+import {distanceKm,normalize} from './rail.mjs';
 export const REGIONS={
  europe:{label:'Europa',bounds:[27,-32,84,70],centre:[49.3,8.5],zoom:5,timeZone:'Europe/Berlin'},
  mexico:{label:'Mexiko',bounds:[14.3,-118.5,32.8,-86.5],centre:[23.6,-102.5],zoom:5,timeZone:'America/Mexico_City'},
@@ -31,3 +32,15 @@ export const MEXICO_PLACES=[
  ['uruapan','Uruapan',19.4206,-102.0626],['zitacuaro','Zitácuaro',19.4361,-100.3573],['ixmiquilpan','Ixmiquilpan',20.4858,-99.2187],
 ].map(([id,label,lat,lon,timeZone])=>({id:String(id),label:String(label),centre:[Number(lat),Number(lon)],timeZone:String(timeZone||'America/Mexico_City')}));
 export const TIME_ZONES=['Europe/Berlin','America/Mexico_City','America/Cancun','America/Mazatlan','America/Hermosillo','America/Chihuahua','America/Tijuana','America/Monterrey','America/Merida','America/Matamoros','America/Ojinaga','America/Ciudad_Juarez','America/Bahia_Banderas'];
+
+// Provider metadata takes priority. City centres only supply a bounded fallback;
+// they must not assign a timezone to distant namesakes or arbitrary rural points.
+export function mexicanLocationTimeZone(station){
+ if(!station||!withinRegion(station.lat,station.lon,'mexico'))return undefined;
+ if(TIME_ZONES.includes(station.timeZone))return station.timeZone;
+ const cities=MEXICO_PLACES.map(p=>({p,d:distanceKm(station,{lat:p.centre[0],lon:p.centre[1]})})).sort((a,b)=>a.d-b.d);
+ const named=station.placeType==='city'&&cities.find(({p,d})=>d<60&&normalize(p.label)===normalize(station.name));
+ if(named)return named.p.timeZone;
+ const nearest=cities[0];
+ return nearest?.d<(['airport','terminal'].includes(station.placeType)||station.relatedAirport?60:10)?nearest.p.timeZone:undefined;
+}

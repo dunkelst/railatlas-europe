@@ -1,13 +1,17 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **37**, Quellcommit `7684cffd0630511fc888a24136c5e001bbd035d2`.
+Sites-Version **38**, Quellcommit `4163d1d31cb18acda4ed3d2375fbbdeeae129fa7`.
 **1.027** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
-Aktuell: DE/EN/ES-Sprachwahl mit gespeicherter Auswahl und Erhalt der Reiseeingaben.
-145 Regressionen, TypeScript und drei Builds erfolgreich.
-[Sprachprüfung](qa/railatlas-v37.md).
+Aktuell: Startorte in Mexiko übernehmen eine passende Zeitzone anhand der
+Anbieterangabe oder eines begrenzten Ortskontexts. Reisezeitpunkte bleiben erhalten;
+Start/Ziel-Tausch und Neuplanung verwenden denselben Pfad. 146 Regressionen,
+TypeScript und drei Builds erfolgreich. [Prüfung und Grenzen](qa/railatlas-v38.md).
+
+Weiterhin enthalten: DE/EN/ES-Sprachwahl mit gespeicherter Auswahl und Erhalt der
+Reiseeingaben. [Sprachprüfung](qa/railatlas-v37.md).
 
 Weiterhin enthalten: Flughafen- und Terminalsuche mit 63 mexikanischen Quell-Flughäfen,
 Ortskontext und Diagnose tatsächlicher Fahrplanantworten. Unterschiedliche

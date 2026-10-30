@@ -8,9 +8,12 @@ Flughafenareale, Terminals und Stadtgebiete sind ausdrücklich Koordinatenziele,
 keine erfundenen Haltestellen. Die vorhandene Suche ergänzt echte OSM-Orte und
 Halte; Quellkoordinaten bleiben erhalten. Über „ÖPNV-Halte in der Nähe“ werden
 reale Kartenhalte zur bewussten Auswahl angeboten. Start, Ziel und Zwischenziele
-verwenden denselben Such- und Auswahlpfad. Als Start gewählte Flughäfen nahe
-bekannten Ortsauswahlen übernehmen deren Zeitzone unter Erhalt des Zeitpunkts;
-bei nativen Halten bleibt die vom Anbieter gelieferte Zeitzone erhalten.
+verwenden denselben Such- und Auswahlpfad. Als Start gewählte Städte,
+nahegelegene Halte und Kartenpunkte sowie Flughäfen
+übernehmen die passende Zeitzone unter Erhalt des Zeitpunkts. Anbieterangaben
+haben Vorrang; unbekannte oder weit entfernte Punkte behalten die bisherige
+Zeitzone. Das gilt auch beim Tauschen von Start und Ziel und bei der Neuplanung.
+Eine danach manuell eingestellte Zeitzone bleibt bei der Suche erhalten.
 
 Mexiko-Stadt–Monterrey liefert tatsächlich drei Busreisen, deren Zielhalt rund
 63 m neben dem Suchtreffer liegt. Die App setzt unterschiedliche Halte weiterhin
@@ -31,7 +34,7 @@ ADO-Flughafenbusse sind kein integrierter Fahrplanfeed; bei CUN/MEX/TQO und den
 von dort gewählten nahegelegenen Halten verweist die App ausdrücklich auf die
 offizielle Anbieterauskunft, ohne Fahrten, Fußwege oder Abfahrtszeiten zu erfinden.
 
-140 Regressionen einschließlich echter Monterrey- und Puebla-Antworten erfolgreich.
+146 Regressionen einschließlich echter Monterrey- und Puebla-Antworten erfolgreich.
 Die Ortsproben prüfen Stationssuche und Karten; sie belegen keine vollständige
 mexikoweite Reiseabdeckung.
 

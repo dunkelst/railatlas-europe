@@ -5,7 +5,7 @@ import {gunzipSync} from 'node:zlib';
 import {handleApi} from '../lib/api.mjs';
 import {findMexicanAirports,mexicoLookupContext,rankMexicanLocations} from '../lib/location-search.mjs';
 import {parseBusStops} from '../lib/stop-search.mjs';
-import {withinRegion} from '../lib/regions.mjs';
+import {withinRegion,mexicanLocationTimeZone} from '../lib/regions.mjs';
 import {parseTransitousJourneys} from '../lib/transitous.mjs';
 const monterrey=()=>JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-mexico-monterrey.json.gz',import.meta.url))));
 
@@ -62,4 +62,19 @@ test('The common journey API distinguishes rejected trips from an empty source a
  const r=await send(f.from,f.to);assert.equal(r.status,422);const d=await r.json();assert.equal(d.code,'JOURNEY_REJECTED');assert.equal(d.diagnostics.received,3);assert.doesNotMatch(d.error,/europäisch/);assert.equal(d.endpointAlternatives.length,1);
  const result=await send(f.from,d.endpointAlternatives[0].station);assert.equal(result.status,200);assert.equal((await result.json()).journeys.length,3);assert.equal(calls,2);
  t.mock.method(globalThis,'fetch',async()=>Response.json({itineraries:[]}));const empty=await send({...f.from,id:'coord:21:-87',transitousId:undefined,locationType:'coordinate',lat:21,lon:-87},f.to);assert.equal(empty.status,422);const e=await empty.json();assert.equal(e.code,'NO_JOURNEY');assert.equal(e.diagnostics.received,0);assert.deepEqual(e.endpointAlternatives,[]);
+});
+
+
+test('Mexican origins use source timezones or nearby city context without moving their coordinates',()=>{
+ const city={name:'Playa del Carmen',lat:20.6463,lon:-87.0808,placeType:'city'},stop={name:'Playa Express - ADO',locality:'Playa del Carmen',lat:20.6263,lon:-87.0746};
+ const before=JSON.stringify([city,stop]);
+ for(const s of [city,stop,{name:'Terminal 2',lat:21.0403,lon:-86.8747,placeType:'terminal'},{lat:20.627,lon:-87.0733},...findMexicanAirports('CUN')])assert.equal(mexicanLocationTimeZone(s),'America/Cancun');
+ assert.equal(mexicanLocationTimeZone({...city,lat:20.4000,lon:-87.3192}),'America/Cancun');
+ assert.equal(mexicanLocationTimeZone({...stop,timeZone:'America/Merida'}),'America/Merida');
+ assert.equal(mexicanLocationTimeZone({name:'Monterrey',lat:19.41434,lon:-99.16299}),'America/Mexico_City');
+ assert.equal(mexicanLocationTimeZone({name:'Playa del Carmen',lat:23.6,lon:-102.5,placeType:'city'}),undefined);
+ assert.equal(mexicanLocationTimeZone({lat:49.1433,lon:9.2077,timeZone:'Europe/Berlin'}),undefined);
+ assert.equal(mexicanLocationTimeZone({lat:NaN,lon:-87.07}),undefined);
+ assert.equal(mexicanLocationTimeZone({name:'Tijuana',lat:32.5149,lon:-117.0382}),'America/Tijuana');
+ assert.equal(JSON.stringify([city,stop]),before);
 });

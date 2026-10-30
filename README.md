@@ -2,7 +2,17 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **37**, Quellcommit `7684cffd0630511fc888a24136c5e001bbd035d2`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **38**, Quellcommit `4163d1d31cb18acda4ed3d2375fbbdeeae129fa7`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 38: passende Zeitzone am mexikanischen Start
+
+Playa del Carmen und nahegelegene Kartenhalte übernehmen America/Cancun.
+Quell-Zeitzonen haben Vorrang; entfernte und unbekannte Punkte werden nicht
+pauschal zugeordnet. Der Reisezeitpunkt bleibt beim Wechsel erhalten. Das gilt
+auch beim Tauschen von Start und Ziel und bei der Neuplanung. Eine anschließend
+manuell gewählte Zeitzone bleibt bei der Suche erhalten.
+146 Regressionen, TypeScript und drei Builds erfolgreich.
+[Prüfbericht und verbleibende Flughafenbus-Abdeckung](docs/qa/railatlas-v38.md).
 
 ## Version 37: Deutsch, Englisch und Spanisch
 
