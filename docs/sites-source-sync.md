@@ -1,11 +1,17 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **39**, Quellcommit `d5e810986f6bbfd85e55e5d104acc2bd788479dc`.
-**1.027** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
+Sites-Version **40**, Quellcommit `814dc23f7d7ae6888cdd00fa399ec6fcf095891d`.
+**1.030** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
-Aktuell: Der Ortszusatz „bei …“ wird in Vorschlägen, gewählten Orten und
+Aktuell: ADO-/Distribusion-Fahrpläne für bestätigte Anbieterorte rund um Cancún,
+Playa del Carmen und Tulum; explizite Übernahme tatsächlicher Terminals und
+Zielhalte, keine erfundenen Zugänge oder Fahrwege. Mexikanische Netzübersicht
+ab Zoom 9 mit fester Region auch an der Küste. 155 Regressionen, TypeScript und
+drei Builds erfolgreich. [Prüfung und Grenzen](qa/railatlas-v40.md).
+
+Weiterhin enthalten: Der Ortszusatz „bei …“ wird in Vorschlägen, gewählten Orten und
 nahegelegenen Halten als „Near …“ / „Cerca de …“ übersetzt. Eigentliche Namen
 bleiben erhalten. [Prüfung](qa/railatlas-v39.md).
 

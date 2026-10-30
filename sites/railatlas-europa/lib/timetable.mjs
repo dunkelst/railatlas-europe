@@ -4,6 +4,7 @@ import {normalize, searchStations, rankJourneys} from './rail.mjs';
 import {findTransportLocations as findBusStops} from './stop-search.mjs';
 import {getDbJourneys} from './db.mjs';
 import {getTransitousJourneys,findTransitousStations} from './transitous.mjs';
+import {getAdoJourneys} from './ado.mjs';
 import {findMexicanMapStations} from './network.mjs';
 import {mexicoLookupContext,rankMexicanLocations} from './location-search.mjs';
 
@@ -38,7 +39,7 @@ export const journeyPreferences=['arrival','transfers','walking'];
 export async function getTimetableJourneys(from,to,departure,source='auto',signal,preference='arrival',walkingBudget=0,region='europe') {
   signal?.throwIfAborted();
   if(source!=='auto')return [await providers[source].journey(from,to,departure,signal)];
-  if(region==='mexico'||from.country==='MX'&&to.country==='MX')return rankJourneys(await getTransitousJourneys(from,to,departure,signal),preference);
+  if(region==='mexico'||from.country==='MX'&&to.country==='MX')return rankJourneys(await getAdoJourneys(from,to,departure,signal)||await getTransitousJourneys(from,to,departure,signal),preference);
   const results=await Promise.allSettled([getJourneys(from,to,departure,signal),getEfaJourneys(from,to,departure,signal),...(walkingBudget?[getEfaWalkingJourneys(from,to,departure,signal,walkingBudget)]:[])]);
   signal?.throwIfAborted();
   if(!results.some(r=>r.status==='fulfilled'&&r.value.length))try{results.push({status:'fulfilled',value:await getTransitousJourneys(from,to,departure,signal)});}catch(reason){signal?.throwIfAborted();results.push({status:'rejected',reason});}

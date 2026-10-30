@@ -18,7 +18,7 @@ export function parseTransportLocations(data,query,region='europe') {
   if(airport?!tokens.every(t=>/^\d+$/.test(t)?new RegExp('\\b'+t+'\\b').test(key):search.includes(t)):!tokens.some(t=>key.includes(t))&&!tokens.every(t=>search.includes(t)))continue;
   const id='osm:'+({N:'node',W:'way',R:'relation'}[p.osm_type])+'/'+p.osm_id;
   if(output.some(s=>s.id===id))continue;
-  output.push({id,name:p.name,country,lat:point[1],lon:point[0],dbId:'',main:false,networkMode:airport?'airport':city?'location':'bus',...(airport||city?{locationType:'coordinate',placeType:city?'city':p.osm_value==='terminal'?'terminal':'airport'}:{}),aliases,locality:p.city||p.county||p.district||'',lookupSource:'OpenStreetMap / Photon',timetableStatus:'unverified'});
+  output.push({id,name:p.name,country,lat:point[1],lon:point[0],dbId:'',main:false,networkMode:airport?'airport':city?'location':'bus',...(airport||city?{locationType:'coordinate',placeType:city?'city':p.osm_value==='terminal'?'terminal':'airport'}:{}),aliases,locality:city?p.name:p.city||p.county||p.district||'',lookupSource:'OpenStreetMap / Photon',timetableStatus:'unverified'});
  }
  return output.slice(0,8);
 }

@@ -18,7 +18,7 @@ export async function handleApi(request) {
   if (request.method !== method) return json({error: 'Unzulässige HTTP-Methode.'}, {status: 405, headers: {Allow: method}});
   if (path === '/api/health') return json({service: 'RailAtlas Europa', apiVersion: 1, standalone: true});
   if (path === '/api/network') {
-    try {return json(await fetchNetwork((url.searchParams.get('bbox') || '').split(',').map(Number), (url.searchParams.get('modes') || '').split(','), request.signal, url.searchParams.get('detail')||'all',url.searchParams.get('refresh')==='1'));}
+    try {return json(await fetchNetwork((url.searchParams.get('bbox') || '').split(',').map(Number), (url.searchParams.get('modes') || '').split(','), request.signal, url.searchParams.get('detail')||'all',url.searchParams.get('refresh')==='1',url.searchParams.get('region')||undefined));}
     catch (e) {return json({error: e.message || 'Die Netzebenen konnten nicht geladen werden.'}, {status: e.code==='INVALID_INPUT'?400:502});}
   }
   if (path === '/api/stations') {

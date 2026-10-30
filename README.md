@@ -2,7 +2,21 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **39**, Quellcommit `d5e810986f6bbfd85e55e5d104acc2bd788479dc`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **40**, Quellcommit `814dc23f7d7ae6888cdd00fa399ec6fcf095891d`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 40: ADO-Fahrpläne und nutzbare Mexiko-Übersicht
+
+Die automatische Auskunft nutzt für bestätigte ADO-Orte um Cancún, Playa del
+Carmen und Tulum die öffentliche, datumsbezogene ADO-/Distribusion-Suche. Die
+Antwort liefert echte Fahrten und tatsächliche Terminals. Abweichende Einstiege
+werden mit Entfernung ausdrücklich übernommen. Ausgebuchte, zeitlich falsche
+oder räumlich unpassende Reisen werden nicht bestätigt. Für den Tren Maya ist
+noch keine Fahrplananbindung nachgewiesen; die Schienenkarte bleibt Infrastruktur.
+
+Mexikanische Linien und Halte werden ab Zoom 9 aus vorhandenen Quelldaten gezeigt,
+auch im Küstenausschnitt. Der feste Prüfausschnitt Cancún–Tulum enthält 2 Bus- und
+39 Colectivo-Verläufe sowie 636 kartierte Halte. 155 Regressionen, TypeScript und
+drei Builds erfolgreich. [Prüfbericht](docs/qa/railatlas-v40.md).
 
 ## Version 39: Ortszusatz in der gewählten Sprache
 

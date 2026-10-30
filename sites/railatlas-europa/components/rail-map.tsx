@@ -4,7 +4,7 @@ import {useLocale} from '@/components/locale';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {Station,Journey} from '@/lib/types';
 import {assetUrl,apiUrl,runtime} from '@/lib/urls.mjs';
-import {NETWORK_MODES,NETWORK_MIN_ZOOM,defaultNetworkLayers,validateBounds,networkRequestBounds,networkCovers,networkInView,fetchNetwork} from '@/lib/network.mjs';
+import {NETWORK_MODES,NETWORK_MIN_ZOOM,MEXICO_NETWORK_MIN_ZOOM,defaultNetworkLayers,validateBounds,networkRequestBounds,networkCovers,networkInView,fetchNetwork} from '@/lib/network.mjs';
 import {REGIONS} from '@/lib/regions.mjs';
 declare global {interface Window {L:any}}
 type LayerState=Record<string,{lines:boolean;stops:boolean}>;
@@ -19,10 +19,11 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
  const [ready,setReady]=useState(false),[error,setError]=useState(''),[tileError,setTileError]=useState(false),[layerState,setLayerState]=useState<LayerState>(defaultNetworkLayers),[view,setView]=useState<{zoom:number;bounds:number[]}|null>(null),[network,setNetwork]=useState<NetworkData|null>(null),[status,setStatus]=useState(''),[networkError,setNetworkError]=useState(false),[loading,setLoading]=useState(false),[retry,setRetry]=useState(0);
  pickRef.current=onPick;stopRef.current=onStopPick;modeRef.current=picking;
  const networkRef=useRef<NetworkData|null>(null),loadedRetry=useRef(0);networkRef.current=network;
- let requestKey='';if(view)try{requestKey=networkRequestBounds(view.bounds).join(',');}catch{requestKey='outside';}
- const detailVisible=Boolean(view&&view.zoom>=NETWORK_MIN_ZOOM);
+ const overview=region==='mexico'&&Boolean(view&&view.zoom<NETWORK_MIN_ZOOM);
+ let requestKey='';if(view)try{requestKey=networkRequestBounds(view.bounds,overview).join(',');}catch{requestKey='outside';}
+ const detailVisible=Boolean(view&&view.zoom>=(region==='mexico'?MEXICO_NETWORK_MIN_ZOOM:NETWORK_MIN_ZOOM));
  const visibleNetwork=useMemo<NetworkData|null>(()=>network&&view&&detailVisible?networkInView(network,view.bounds):null,[network,view,detailVisible]);
- const requestDetail=NETWORK_MODES.some(m=>m.id!=='rail'&&layerState[m.id].lines)?'all':'stops';
+ const requestDetail=overview?'overview':NETWORK_MODES.some(m=>m.id!=='rail'&&layerState[m.id].lines)?'all':'stops';
  useEffect(()=>{let active=true;loadLeaflet().then(L=>{if(!active||!container.current)return;
   const m=L.map(container.current,{zoomControl:false,scrollWheelZoom:true,preferCanvas:true,zoomAnimation:false}).setView((region==='mexico'?REGIONS.mexico:REGIONS.europe).centre,(region==='mexico'?REGIONS.mexico:REGIONS.europe).zoom);map.current=m;
   L.control.zoom({position:'bottomright'}).addTo(m);
@@ -51,19 +52,19 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
  useEffect(()=>{
   if(!ready||!view)return;let active=true;const controller=new AbortController();setNetworkError(false);setLoading(false);
   if(!modes){setNetwork(null);setStatus('Detailnetze sind ausgeblendet.');return;}
-  if(!detailVisible){setNetwork(null);setStatus('Für Linien und Halte näher heranzoomen (ab Zoom 12).');return;}
-  let bounds:number[];try{bounds=validateBounds(requestKey.split(',').map(Number));}catch{setStatus('Für die Detailnetze bitte näher heranzoomen.');return;}
+  if(!detailVisible){setNetwork(null);setStatus(region==='mexico'?'Für mexikanische Linien und Halte näher heranzoomen (ab Zoom 9).':'Für Linien und Halte näher heranzoomen (ab Zoom 12).');return;}
+  let bounds:number[];try{bounds=validateBounds(requestKey.split(',').map(Number),overview);}catch{setStatus('Für die Detailnetze bitte näher heranzoomen.');return;}
   const forced=loadedRetry.current!==retry;loadedRetry.current=retry;
-  if(!forced&&networkCovers(networkRef.current,bounds,modes.split(','))&&networkRef.current&&(requestDetail==='stops'||networkRef.current.detail==='all')&&Date.now()-Date.parse(networkRef.current.fetchedAt)<300000){setStatus(networkRef.current.warning?'Netzdaten teilweise geladen.':'Netzdaten geladen.');return;}
+  if(!forced&&networkCovers(networkRef.current,bounds,modes.split(','))&&networkRef.current&&(networkRef.current.detail===requestDetail||requestDetail==='stops'&&networkRef.current.detail==='all')&&Date.now()-Date.parse(networkRef.current.fetchedAt)<300000){setStatus(networkRef.current.warning?'Netzdaten teilweise geladen.':'Netzdaten geladen.');return;}
   const timer=setTimeout(async()=>{setLoading(true);setStatus('Linien und Halte für diesen Ausschnitt laden …');try{
    let data;
    const config=runtime();
-   if(config.requiresApiOrigin&&!config.apiOrigin)data=await fetchNetwork(bounds,modes.split(','),controller.signal,requestDetail,forced);
-   else{const response=await fetch(apiUrl('/api/network?'+new URLSearchParams({bbox:bounds.join(','),modes,detail:requestDetail,...(forced?{refresh:'1'}:{})})),{signal:controller.signal});const body=await response.json() as NetworkData&{error?:string};if(!response.ok)throw Error(body.error||'Netzebenen nicht erreichbar.');data=body;}
+   if(config.requiresApiOrigin&&!config.apiOrigin)data=await fetchNetwork(bounds,modes.split(','),controller.signal,requestDetail,forced,region);
+   else{const response=await fetch(apiUrl('/api/network?'+new URLSearchParams({bbox:bounds.join(','),modes,region,detail:requestDetail,...(forced?{refresh:'1'}:{})})),{signal:controller.signal});const body=await response.json() as NetworkData&{error?:string};if(!response.ok)throw Error(body.error||'Netzebenen nicht erreichbar.');data=body;}
    if(!active)return;setNetwork(data);const count=modes.split(',').reduce((n,m)=>n+data.layers[m].lines.length+data.layers[m].stops.length,0);setNetworkError(false);setStatus(count?(data.warning?'Netzdaten teilweise geladen.':'Netzdaten geladen.'):'Für diesen Ausschnitt wurden keine passenden Netzdaten geliefert.');
   }catch(e){if(active&&!controller.signal.aborted){setNetworkError(true);setStatus(((e as Error).message||'Die Netzebenen sind gerade nicht erreichbar.')+(networkRef.current?' Bereits geladene Netzdaten bleiben sichtbar.':''));}}finally{if(active)setLoading(false);}},1000);
   return()=>{active=false;clearTimeout(timer);controller.abort();};
- },[ready,requestKey,detailVisible,modes,requestDetail,retry]);
+ },[ready,requestKey,detailVisible,modes,requestDetail,retry,region]);
  useEffect(()=>{
   if(!ready||!map.current)return;const L=window.L;
   for(const mode of NETWORK_MODES){const group=networkGroups.current[mode.id];group?.clearLayers();const data=visibleNetwork?.layers[mode.id],enabled=layerState[mode.id];if(!data||!group)continue;
@@ -110,7 +111,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
    </>}
    {tileError&&layerState.rail.lines&&<p className="network-status has-error">{t("Einige Kacheln des Bahnnetzes konnten nicht geladen werden.")}</p>}
    <button type="button" onClick={()=>{setTileError(false);railway.current?.redraw();setRetry(n=>n+1);}} disabled={loading}>{t("Ausschnitt neu laden")}</button>
-   <small>{t("Die Ebenenschalter ändern die Karte. Die Fahrtsuche berücksichtigt unabhängig davon Bus, Bahn und Nahverkehr. Die Schienenkarte enthält auch Güterstrecken.")}</small><small>{t("Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Daten können fehlen; keine Zusage zum aktuellen Betrieb.")}</small>
+   <small>{t("Die Ebenenschalter ändern die Karte. Die Fahrtsuche berücksichtigt unabhängig davon Bus, Bahn und Nahverkehr. Die Schienenkarte enthält auch Güterstrecken.")}</small><small>{t(region==='mexico'?'Bahnlinien: Schieneninfrastruktur. Kartierte mexikanische Linien und Halte ab Zoom 9. Daten können fehlen; aktuelle Bedienung und Fahrpläne sind nicht bestätigt.':'Bahnlinien: Schieneninfrastruktur. Allgemeines Liniennetz und Halte ab Zoom 12, auch ohne Reiseplanung. Daten können fehlen; keine Zusage zum aktuellen Betrieb.')}</small>
   </details></aside>
   {picking&&<div className="pick-banner">{t("Kartenpunkt oder Halt wählen · als ")}{picking}</div>}
   <div className="map-caption">{parts.length?<>{t("Reiseverlauf: ")}{[...new Set(parts.map(p=>p.source))].join(' · ')} {t(" · Grün/Blau: Bahn · Braun: Bus · Grau: Fußweg")}{parts.some(p=>p.legs.some(l=>!l.walking&&l.geometry?.reason==='unverified'&&l.geometry.segments.length))?t(' · Farbig gestrichelt: Anbieterverlauf, Originalpfad nicht bestätigt'):''}{parts.some(p=>p.alternativeKind==='walking')?t(' · Rot gestrichelt: Fußweg-Notlösung'):''}{parts.some(p=>p.legs.some(l=>l.geometry?.status!=='complete'))?t(' · Fehlende Geometrie bleibt offen.'):''}</>:t('{0} entdecken · Netzebenen unabhängig von deiner Reise einblenden',[t(region==='mexico'?'Mexiko':'Europa')])}</div>

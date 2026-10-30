@@ -80,3 +80,32 @@ test('Actual Mexico City to Puebla plan uses the shared API and Mexican clock wi
  assert.equal(zonedInput(result.journey.departure,'America/Mexico_City').slice(0,16),'2026-10-31T09:00');assert.equal(zonedInput(result.journey.arrival,'America/Mexico_City').slice(0,16),'2026-10-31T11:15');
  assert.ok(result.journeys.every(j=>j.legs.every(l=>!l.cancelled&&l.mode!=='unknown')));
 });
+
+test('Cancún–Tulum overview uses actual Mexican routes and boarding points across the coastal viewport without upstream calls',async t=>{
+ let calls=0;t.mock.method(globalThis,'fetch',async()=>{calls++;throw Error('No external overview request allowed');});
+ const bounds=[19.9,-88,21.5,-86.3],url='https://railatlas.local/api/network?'+new URLSearchParams({region:'mexico',bbox:bounds.join(','),modes:'bus,colectivo',detail:'overview'});
+ const response=await handleApi(new Request(url));assert.equal(response.status,200);const d=await response.json();assert.equal(calls,0);assert.equal(d.region,'mexico');assert.equal(d.detail,'overview');
+ assert.equal(d.layers.bus.lines.length,2);assert.equal(d.layers.colectivo.lines.length,39);assert.equal(d.layers.bus.stops.length,478);assert.equal(d.layers.colectivo.stops.length,158);
+ const ado=d.layers.bus.stops.find(s=>s.id==='node/3206882311');assert.equal(ado.name,'ADO bus stop');assert.equal(ado.lat,21.0398279);assert.equal(ado.lon,-86.87282);assert.equal(ado.station.id,'osm:'+ado.id);
+ assert.ok(d.layers.colectivo.lines.some(l=>l.ref==='CL02'));assert.ok(d.layers.colectivo.lines.every(l=>l.sourceUrl.startsWith('https://www.openstreetmap.org/relation/')&&l.segments.length));
+ const refreshed=await handleApi(new Request(url+'&refresh=1'));assert.equal(refreshed.status,200);assert.equal(calls,0);
+});
+
+test('The wider Mexican snapshot cannot expand external query bounds or other regions, and still honours aborts',async t=>{
+ let calls=0;t.mock.method(globalThis,'fetch',async()=>{calls++;throw Error('unexpected upstream');});
+ for(const params of [{region:'europe',bbox:'19.9,-88,21.5,-86.3',detail:'overview'},{region:'unknown',bbox:'20.62,-87.08,20.64,-87.06',detail:'all'},{region:'mexico',bbox:'15,-118,32,-87',detail:'overview'}]){
+  const r=await handleApi(new Request('https://railatlas.local/api/network?'+new URLSearchParams({...params,modes:'bus'})));assert.equal(r.status,400);
+ }
+ assert.throws(()=>networkQuery([19.9,-88,21.5,-86.3],['bus']),/heranzoomen/);
+ const c=new AbortController();c.abort();await assert.rejects(fetchNetwork([19.9,-88,21.5,-86.3],['bus'],c.signal,'overview',false,'mexico'),{name:'AbortError'});assert.equal(calls,0);
+});
+
+test('Mexican coastal detail retains Mexican stops instead of falling through to a European provider',async t=>{
+ let calls=0;t.mock.method(globalThis,'fetch',async url=>{calls++;assert.equal(new URL(url).hostname,'api.transitous.org');return Response.json([]);});
+ const r=await handleApi(new Request('https://railatlas.local/api/network?'+new URLSearchParams({region:'mexico',bbox:'21,-86.9,21.1,-86.4',modes:'bus',detail:'stops'})));assert.equal(r.status,200);const d=await r.json();assert.equal(d.region,'mexico');assert.ok(d.layers.bus.stops.some(s=>s.id==='node/3206882311'));assert.equal(calls,1);
+});
+
+test('A city reference keeps its actual city identity rather than a misleading Photon address locality',()=>{
+ const feature={type:'Feature',geometry:{type:'Point',coordinates:[-87.4628,20.2112]},properties:{osm_key:'place',osm_value:'town',osm_type:'N',osm_id:9981,name:'Tulum',city:'Manuel Antonio Ay',countrycode:'MX'}};
+ const [city]=parseBusStops({features:[feature]},'Tulum','mexico');assert.equal(city.name,'Tulum');assert.equal(city.locality,'Tulum');assert.equal(city.lat,20.2112);assert.equal(city.lon,-87.4628);assert.equal(city.placeType,'city');
+});

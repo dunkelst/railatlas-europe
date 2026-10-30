@@ -81,7 +81,7 @@ test('Merging regional labels preserves primary coordinates and identities and r
 test('An international source outage retains confirmed regional stops with a visible source warning',async t=>{
  clock(t);const module=await import('../lib/network.mjs?motis-regional-fallback'),raw=JSON.parse(fs.readFileSync(new URL('./fixtures/efa-map-welsede-stops.json',import.meta.url)));
  t.mock.method(globalThis,'fetch',async url=>{const u=new URL(url);if(u.hostname==='api.transitous.org')return new Response('busy',{status:503});assert.equal(u.hostname,'www.efa.de');return Response.json(raw);});
- const d=await module.fetchNetwork([51.99572,9.3293,52.00299,9.35194],['bus'],undefined,'stops');assert.equal(d.layers.bus.stops.length,2);assert.match(d.source,/EFA/);assert.equal(d.warningScope,'all');assert.match(d.warning,/europäische Haltestellenquelle/);assert.ok(d.layers.bus.stops.every(s=>s.station.efaId));
+ const d=await module.fetchNetwork([51.99572,9.3293,52.00299,9.35194],['bus'],undefined,'stops');assert.equal(d.layers.bus.stops.length,2);assert.match(d.source,/EFA/);assert.equal(d.warningScope,'all');assert.match(d.warning,/Transitous-Haltestellenquelle/);assert.ok(d.layers.bus.stops.every(s=>s.station.efaId));
 });
 
 test('Rate limits respect Retry-After on the international stop source',async t=>{

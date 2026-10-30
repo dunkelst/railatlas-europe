@@ -1,5 +1,40 @@
 # RailAtlas Europa & Mexiko
 
+## Mexiko: ADO-Fahrpläne und regionale Kartenübersicht (30.10.2026)
+
+Die automatische Auskunft verwendet für bestätigte ADO-Suchorte um Cancún,
+Playa del Carmen und Tulum zuerst die öffentliche, datumsbezogene
+ADO-/Distribusion-Auskunft. Sie benötigt weder Kundenkonto noch Token/Cookie.
+Native ADO-Halte behalten ihre Quellkennungen und Koordinaten. Andere mexikanische
+Orte und ausdrücklich gewählte Transitous-Halte behalten den bisherigen Pfad.
+Die Anbieterkennung und echte Standortcodes stammen aus der ADO-eigenen Suche,
+https://international.ado.com.mx/ado-bus/cancun-airport-to-tulum-by-bus.
+
+Der echte Abruf Cancún → Tulum für 31.10.2026 liefert 18 Abfahrten über die drei
+Flughafenterminals. Gebietsreferenzen werden nicht stillschweigend zu Einstiegen:
+Die tatsächlichen Anbieterhalte sind mit Abstand zur ausdrücklichen Übernahme
+angeboten. Für Stadt-/Flughafenareale darf ein Kandidat im selben vom Anbieter
+bestätigten Suchgebiet bis 5 km entfernt sein; für konkrete Punkte bleibt die
+Grenze 800 m. Die eigentliche Reisebestätigung verlangt weiter höchstens 30 m
+Abweichung. Kein unbestätigter Zugangsweg wird erzeugt. Ausgebuchte, zeitlich
+widersprüchliche oder getrennte Vorschläge werden verworfen. Uhrzeiten werden mit
+der jeweiligen Anbieterzeitzone in UTC umgerechnet, Anzeige bleibt lokal.
+
+ADO liefert hier keine Fahrweggeometrie und keine vollständigen Echtzeit-/
+Störungsmeldungen; diese Grenzen werden angezeigt. Die gemeinsame Reiseansicht,
+Alternativen, Aufenthalte, Neuplanung und die strengen Endpunktprüfungen bleiben
+bestehen. Eine Vollabdeckung aller mexikanischen Busanbieter wird nicht behauptet.
+Die echte Antwort liegt mit Abrufprovenienz in `tests/fixtures/ado-cancun-tulum.json.gz`.
+
+Mexikanische Karten laden ab Zoom 9 eine begrenzte Übersicht aus den bereits
+vorhandenen OSM-/GTFS-Quellen; weitläufige Ausschnitte werden nicht an Overpass,
+EFA oder Transitous geschickt. Detailnetze bleiben begrenzt. Die gewählte Region
+bleibt auch in Küstenausschnitten erhalten. Der geprüfte Korridor enthält
+2 Bus- und 39 Colectivo-Verläufe sowie 478 Bus- und 158 Colectivo-Halte.
+Der Photon-Stadtpunkt Tulum übernimmt seinen eigenen Stadtnamen statt einer
+irreführenden benachbarten Adresslokalität. Fahrwegfragmente werden nicht erfunden.
+
+
 ## Nacharbeit: Flughäfen und nachvollziehbare Reiseantworten (29.10.2026)
 
 63 reale mexikanische Flughäfen aus OurAirports sind über IATA/ICAO, Namen und
@@ -30,11 +65,11 @@ nur die Anzeige und bestätigen keinen Personenverkehr auf einer Schiene.
 OurAirports: Public Domain. Der räumliche Suchfilter stammt aus dem OSM-/Geofabrik-
 Extraktgebiet (ODbL), nicht aus einer rechtsverbindlichen Staatsgrenzendatei.
 Quellen und Originalprüfsummen: `public/data/mexico-places-sources.json`.
-ADO-Flughafenbusse sind kein integrierter Fahrplanfeed; bei CUN/MEX/TQO und den
+Historisch vor der ADO-Ergänzung: Bei CUN/MEX/TQO und den
 von dort gewählten nahegelegenen Halten verweist die App ausdrücklich auf die
 offizielle Anbieterauskunft, ohne Fahrten, Fußwege oder Abfahrtszeiten zu erfinden.
 
-146 Regressionen einschließlich echter Monterrey- und Puebla-Antworten erfolgreich.
+155 Regressionen einschließlich echter Monterrey- und Puebla-Antworten erfolgreich.
 Die Ortsproben prüfen Stationssuche und Karten; sie belegen keine vollständige
 mexikoweite Reiseabdeckung.
 
