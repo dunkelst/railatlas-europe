@@ -1,11 +1,14 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **40**, Quellcommit `814dc23f7d7ae6888cdd00fa399ec6fcf095891d`.
+Sites-Version **41**, Quellcommit `df776cc2d57c3ef9eb6daadf1fadbbe827f1e61e`.
 **1.030** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
-Aktuell: ADO-/Distribusion-Fahrpläne für bestätigte Anbieterorte rund um Cancún,
+Aktuell: besser lesbare Transportkennungen auf hellen Verbindungskarten,
+bei unveränderter ADO-Funktion und Mexiko-Übersicht. [Prüfung](qa/railatlas-v41.md).
+
+Weiterhin enthalten: ADO-/Distribusion-Fahrpläne für bestätigte Anbieterorte rund um Cancún,
 Playa del Carmen und Tulum; explizite Übernahme tatsächlicher Terminals und
 Zielhalte, keine erfundenen Zugänge oder Fahrwege. Mexikanische Netzübersicht
 ab Zoom 9 mit fester Region auch an der Küste. 155 Regressionen, TypeScript und

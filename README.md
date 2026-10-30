@@ -2,7 +2,14 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **40**, Quellcommit `814dc23f7d7ae6888cdd00fa399ec6fcf095891d`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **41**, Quellcommit `df776cc2d57c3ef9eb6daadf1fadbbe827f1e61e`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 41: lesbare Verbindungskennungen
+
+Transportkennungen auf hellen Verbindungskarten haben dunkle Schriftfarben für
+Bus, U-Bahn, Tram und Fußwege. Die dunklen Reiseverlauf-Badges bleiben erhalten.
+ADO-Fahrpläne und Mexiko-Übersicht entsprechen Version 40. Die Tren-Maya-
+Anbindung ist weiterhin offen. [Prüfung](docs/qa/railatlas-v41.md).
 
 ## Version 40: ADO-Fahrpläne und nutzbare Mexiko-Übersicht
 

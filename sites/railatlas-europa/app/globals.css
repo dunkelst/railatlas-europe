@@ -30,3 +30,9 @@
 
 /* Language is independent of journey region and remains available on mobile. */
 .language-picker{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;white-space:nowrap}.language-picker select{background:#1b2b32;color:var(--ink);border:1px solid #52665b;border-radius:7px;min-height:36px;padding:5px 25px 5px 8px;max-width:130px}.header-actions{gap:12px}.network-row>span{min-width:0;overflow-wrap:anywhere}.network-grid{grid-template-columns:minmax(0,1fr) 44px 44px}@media(max-width:1000px){.header-center{display:none}.language-picker>span{display:none}.topbar{gap:12px}}@media(max-width:700px){.language-picker select{min-height:34px;max-width:112px;font-size:11px;padding-right:18px}.header-actions{gap:7px;max-width:none}.private-badge{display:none}.topbar{padding:0 12px}.source-code-link{font-size:10px}}
+
+/* Transport badges on the light connection cards need their own text colours. */
+.journey-option .mini-line{color:#244b40}
+.journey-option .mini-line.mode-bus,.journey-option .mini-line.mode-replacement-bus{background:#fff0d6;color:#713b0d}
+.journey-option .mini-line.mode-subway,.journey-option .mini-line.mode-tram{background:#e8eefc;color:#24447d}
+.journey-option .mini-line.mode-walk{background:#edf2f0;color:#3d5b50}
