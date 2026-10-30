@@ -2,7 +2,16 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **38**, Quellcommit `4163d1d31cb18acda4ed3d2375fbbdeeae129fa7`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **39**, Quellcommit `d5e810986f6bbfd85e55e5d104acc2bd788479dc`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 39: Ortszusatz in der gewählten Sprache
+
+Der eigene Hinweis „bei …“ erscheint auf Englisch als „Near …“ und auf Spanisch
+als „Cerca de …“. Eigentliche Ortsnamen und Quellkoordinaten bleiben erhalten.
+Startvorschläge, ausgewählte Orte und nahegelegene Halte verwenden dieselbe
+Darstellung. Die Zeitzonenkorrektur aus Version 38 und die bekannten Grenzen der
+Flughafenbus-Abdeckung bleiben erhalten. 146 Regressionen und alle drei Builds
+erfolgreich. [Prüfbericht](docs/qa/railatlas-v39.md).
 
 ## Version 38: passende Zeitzone am mexikanischen Start
 

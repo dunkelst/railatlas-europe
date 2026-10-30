@@ -40,3 +40,7 @@ export function translate(language,message,values) {
   if(values)result=result.replace(/\{(\d+)\}/g,(token,id)=>String(values[id]??token));
   return leading+result+trailing;
 }
+export function locationHintText(language,station){
+  const hint=station?.locationHint;
+  return typeof hint==='string'&&hint.startsWith('bei ')?translate(language,'bei {0}',[hint.slice(4)]):hint||station?.locality||'';
+}

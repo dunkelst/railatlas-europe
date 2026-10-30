@@ -1,11 +1,15 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **38**, Quellcommit `4163d1d31cb18acda4ed3d2375fbbdeeae129fa7`.
+Sites-Version **39**, Quellcommit `d5e810986f6bbfd85e55e5d104acc2bd788479dc`.
 **1.027** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
-Aktuell: Startorte in Mexiko übernehmen eine passende Zeitzone anhand der
+Aktuell: Der Ortszusatz „bei …“ wird in Vorschlägen, gewählten Orten und
+nahegelegenen Halten als „Near …“ / „Cerca de …“ übersetzt. Eigentliche Namen
+bleiben erhalten. [Prüfung](qa/railatlas-v39.md).
+
+Weiterhin enthalten: Startorte in Mexiko übernehmen eine passende Zeitzone anhand der
 Anbieterangabe oder eines begrenzten Ortskontexts. Reisezeitpunkte bleiben erhalten;
 Start/Ziel-Tausch und Neuplanung verwenden denselben Pfad. 146 Regressionen,
 TypeScript und drei Builds erfolgreich. [Prüfung und Grenzen](qa/railatlas-v38.md).

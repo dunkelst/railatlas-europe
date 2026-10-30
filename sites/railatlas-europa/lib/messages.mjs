@@ -1,5 +1,6 @@
 // RailAtlas-owned interface copy. Provider notices and place names retain their original wording.
 export const messages = {
+  "bei {0}": ["Near {0}", "Cerca de {0}"],
   "Sprache": [
     "Language",
     "Idioma"

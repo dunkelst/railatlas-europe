@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {initialLanguage,LANGUAGE_KEY,LANGUAGES,localeFor,translate} from '../lib/i18n.mjs';
+import {initialLanguage,LANGUAGE_KEY,LANGUAGES,localeFor,translate,locationHintText} from '../lib/i18n.mjs';
 import {messages} from '../lib/messages.mjs';
 
 test('Language preference is explicit, persists independently of region and rejects unsupported values',()=>{
@@ -25,6 +25,9 @@ test('Translations preserve names, values, punctuation and original provider tex
  }
  assert.equal(translate('es','  Verbindung finden '),'  Buscar viaje ');
  assert.equal(translate('es',translate('en',original)),translate('es',original));
+ for(const [language,expected] of [['de','bei Playa del Carmen'],['en','Near Playa del Carmen'],['es','Cerca de Playa del Carmen']])assert.equal(locationHintText(language,{locationHint:'bei Playa del Carmen'}),expected);
+ assert.equal(locationHintText('es',{locality:'Mexiko'}),'Mexiko');
+ assert.equal(locationHintText('en',{locationHint:'Cancún · Terminal 2'}),'Cancún · Terminal 2');
 });
 test('Every interface translation is complete and preserves all substitution tokens',()=>{
  for(const [source,translations] of Object.entries(messages)){

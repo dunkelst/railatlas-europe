@@ -1,6 +1,6 @@
 {
-  "site_version": 38,
-  "site_source_commit": "4163d1d31cb18acda4ed3d2375fbbdeeae129fa7",
+  "site_version": 39,
+  "site_source_commit": "d5e810986f6bbfd85e55e5d104acc2bd788479dc",
   "site_project_id": "appgprj_6ad7024dce688191b17cca024104c456",
   "site_url": "https://railatlas-europa.dunkelst.chatgpt.site",
   "target_directory": "sites/railatlas-europa",
@@ -109,9 +109,9 @@
     {
       "path": "app/page.tsx",
       "mode": "100644",
-      "git_blob": "88165d79a2fe74ba1a00eef229372c0d3f3c639d",
-      "sha256": "a165391e40c0f6af0f0a1716633bbb6c2d002961819445f1eca78d379cc87d1a",
-      "bytes": 42943
+      "git_blob": "1d53b2ab0dd7f1011ce6c160f7d98727f760065b",
+      "sha256": "9147689ffc49094c577ea5a2ddf1f57be0766bf4e6a9e4326d443853f5eaff89",
+      "bytes": 42989
     },
     {
       "path": "build/connector-preview-plugin.mjs",
@@ -767,9 +767,9 @@
     {
       "path": "lib/i18n.mjs",
       "mode": "100644",
-      "git_blob": "a27693da1ca5755b276f49b9bbafb54b6e058c7b",
-      "sha256": "3aecd7220b5069796ba8bedd2f9290764f7c10a7eebf476ffe0656e05645cc41",
-      "bytes": 2845
+      "git_blob": "2c40d324890fc04585ccf1abc7589f126ca6f49a",
+      "sha256": "1dae53f11a3678f85bc5c8308365e945fe0d4bf2daea0f28f096ee9c1991b15c",
+      "bytes": 3067
     },
     {
       "path": "lib/journey.mjs",
@@ -788,9 +788,9 @@
     {
       "path": "lib/messages.mjs",
       "mode": "100644",
-      "git_blob": "294e5fe71837aa26a4d87a2a46a40dfde58c1fcd",
-      "sha256": "abc4373b812278e2b52f2626df0a0f3bc7d299f7428e3996c0f15bd6a19a5255",
-      "bytes": 61567
+      "git_blob": "17536cb3ed944c7282662c6b438e2c77df348bd3",
+      "sha256": "4f63baece548e2b3c62acbb06ef3a0c6d1f3fc140e49d132e9981a894ed871b8",
+      "bytes": 61610
     },
     {
       "path": "lib/mexico-airports-data.mjs",
@@ -7060,9 +7060,9 @@
     {
       "path": "tests/i18n.test.mjs",
       "mode": "100644",
-      "git_blob": "b00bd56a35dbb9a725d5ae2e3d0d9ff40c6ea2f4",
-      "sha256": "0e1decfc7923178ff0821a7eef3054ca96b09a02eed48e7edba6fa28bd4e0670",
-      "bytes": 3575
+      "git_blob": "7bf8e6bf415369e8d6c7ed1093e46e51b2ebe116",
+      "sha256": "2057eb16bba4a8a24a0fe80901685d26b2aed3e3efc305f888fb717c2ba05906",
+      "bytes": 3983
     },
     {
       "path": "tests/mexico-routing.test.mjs",
