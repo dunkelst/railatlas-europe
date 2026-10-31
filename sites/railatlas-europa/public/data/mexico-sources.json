@@ -50,5 +50,19 @@
       20.635,
       -87.065
     ]
+  },
+  {
+    "id": "ahorrobus-oriente",
+    "publisher": "Mobility ADO / Ahorrobus / Oriente",
+    "url": "https://ahorrobus.com.mx/es/quintana-roo",
+    "sourceDate": "2026-10-31",
+    "retrieved": "2026-10-31",
+    "license": null,
+    "sha256": "bbf399464afdeb3d14cc81fd8f6db53b413915daaf3beeeecdf3d435e4127c69",
+    "routes": [
+      "608",
+      "609"
+    ],
+    "notes": "Operator-supplied map geometry and named stops. No dated operating times, disruptions or seats. Original operator rights remain applicable; no open-data licence stated. The hash identifies the retained source extract."
   }
 ]

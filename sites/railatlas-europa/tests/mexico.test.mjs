@@ -38,7 +38,9 @@ test('Mexican source stops can be searched with city context, while excluded vir
  const stops=await findMexicanMapStations('Zócalo');assert.ok(stops.length);assert.ok(stops.every(s=>s.country==='MX'&&s.dbId===''));
  const playa=await findMexicanMapStations('Playa del Carmen');assert.ok(playa.some(s=>s.networkMode==='colectivo'));
  const sources=JSON.parse(fs.readFileSync(new URL('../public/data/mexico-sources.json',import.meta.url)));assert.equal(sources.find(s=>s.id==='mex-oax-salinacruz').excludedVirtualStops,497);
- assert.ok(sources.every(s=>s.sha256.length===64&&s.license&&s.sourceDate));
+ assert.ok(sources.every(s=>s.sha256.length===64&&s.sourceDate));
+ assert.ok(sources.filter(s=>s.id!=='ahorrobus-oriente').every(s=>s.license));
+ const operator=sources.find(s=>s.id==='ahorrobus-oriente');assert.equal(operator.license,null);assert.match(operator.notes,/no open-data licence/);
 });
 
 test('Photon separates Mexico from Europe, and does not turn ordinary taxis into public stops',async t=>{
@@ -85,7 +87,8 @@ test('Cancún–Tulum overview uses actual Mexican routes and boarding points ac
  let calls=0;t.mock.method(globalThis,'fetch',async()=>{calls++;throw Error('No external overview request allowed');});
  const bounds=[19.9,-88,21.5,-86.3],url='https://railatlas.local/api/network?'+new URLSearchParams({region:'mexico',bbox:bounds.join(','),modes:'bus,colectivo',detail:'overview'});
  const response=await handleApi(new Request(url));assert.equal(response.status,200);const d=await response.json();assert.equal(calls,0);assert.equal(d.region,'mexico');assert.equal(d.detail,'overview');
- assert.equal(d.layers.bus.lines.length,2);assert.equal(d.layers.colectivo.lines.length,39);assert.equal(d.layers.bus.stops.length,478);assert.equal(d.layers.colectivo.stops.length,158);
+ assert.equal(d.layers.bus.lines.length,4);assert.equal(d.layers.colectivo.lines.length,39);assert.equal(d.layers.bus.stops.length,479);assert.equal(d.layers.colectivo.stops.length,158);
+ assert.deepEqual(d.layers.bus.lines.filter(l=>l.source?.startsWith('Ahorrobus')).map(l=>l.ref).sort(),['608','609']);
  const ado=d.layers.bus.stops.find(s=>s.id==='node/3206882311');assert.equal(ado.name,'ADO bus stop');assert.equal(ado.lat,21.0398279);assert.equal(ado.lon,-86.87282);assert.equal(ado.station.id,'osm:'+ado.id);
  assert.ok(d.layers.colectivo.lines.some(l=>l.ref==='CL02'));assert.ok(d.layers.colectivo.lines.every(l=>l.sourceUrl.startsWith('https://www.openstreetmap.org/relation/')&&l.segments.length));
  const refreshed=await handleApi(new Request(url+'&refresh=1'));assert.equal(refreshed.status,200);assert.equal(calls,0);

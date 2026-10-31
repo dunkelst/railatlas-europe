@@ -1,7 +1,8 @@
 import {fetchJSON} from './journey.mjs';
-import {distanceKm,localZonedISO,zonedInput} from './rail.mjs';
+import {distanceKm,localZonedISO,zonedInput,normalize,searchStations} from './rail.mjs';
 import {MEXICO_PLACES,withinRegion,mexicanLocationTimeZone} from './regions.mjs';
 import {findMexicanAirports} from './location-search.mjs';
+import stationSeeds from './ado-stations-data.mjs';
 
 export const ADO_SOURCE='ADO / Distribusion';
 const origin='https://book.api.distribusion.com/api/connections',partner='343401';
@@ -20,10 +21,42 @@ export function adoLocation(s){
 function adoUrl(from,to,departure){
  const local=zonedInput(departure,from.timeZone),url=new URL(origin);
  for(const [side,location] of [['departure',from],['arrival',to]]){url.searchParams.set(`search_bounds[0][${side}_location][type]`,location.type);url.searchParams.set(`search_bounds[0][${side}_location][value][]`,location.code);}
- for(const [key,value] of Object.entries({'search_bounds[0][departure_date]':local.slice(0,10),'search_bounds[0][departure_start_time]':local.slice(11,16),'search_bounds[0][is_requested]':'true',pax:'1',locale:'es-MX',currency:'MXN',retailerPartnerNumber:partner}))url.searchParams.set(key,value);
+ for(const [key,value] of Object.entries({'search_bounds[0][departure_date]':local.slice(0,10),'search_bounds[0][departure_start_time]':local.slice(11,16),'search_bounds[0][is_requested]':'true',pax:'1',locale:'es-MX',currency:'MXN',retailer_partner_number:partner}))url.searchParams.set(key,value);
  return url;
 }
 const ref=(record,key)=>record?.relationships?.[key]?.data;
+function sourceStation(row,get){
+ const a=row?.attributes,area=ref(row,'area')?.id;
+ if(row?.type!=='stations'||!a||!stationCode(row.id)||typeof a.name!=='string'||!a.name.trim()||a.name.length>=200||![a.latitude,a.longitude].every(Number.isFinite)||!withinRegion(a.latitude,a.longitude,'mexico'))throw Error('invalid station');
+ const airport=typeof a.iata_airport_code==='string'?a.iata_airport_code:area==='MXCUNCA'?'CUN':undefined;
+ const s={id:'ado:'+row.id,adoStationCode:row.id,name:a.name,lat:a.latitude,lon:a.longitude,dbId:'',country:'MX',main:false,networkMode:'bus',lookupSource:'Distribusion',sourceUrl:'https://international.ado.com.mx/',locality:get(ref(row,'city'))?.attributes?.name||'',...(airport?{relatedAirport:airport}:{}),timetableStatus:'unverified'};
+ const displayZone=({'America/Guatemala':'America/Mexico_City','America/Bogota':'America/Cancun'})[a.time_zone]||a.time_zone;
+ s.timeZone=mexicanLocationTimeZone({...s,timeZone:displayZone})||displayZone;
+ return {station:s,zone:a.time_zone||s.timeZone};
+}
+export function parseAdoStation(raw){
+ const records=new Map((raw.included||[]).map(r=>[r.type+':'+r.id,r]));
+ return sourceStation(raw.data,r=>r&&records.get(r.type+':'+r.id)).station;
+}
+const stationCache=new Map(stationSeeds.map(s=>[s.adoStationCode,{station:s,until:Infinity}])),lookupCache=new Map();let lookupRetryAt=0;
+export function cachedAdoStations(query){return searchStations([...stationCache.values()].map(v=>v.station).map(s=>({...s,key:normalize(s.name),search:normalize(s.name+' '+(s.locality||'')+' '+(s.relatedAirport||'')+' '+(s.aliases||'')+' '+(s.lookupSource||''))})),query,6);}
+export function adoSuggestionStations(raw){
+ if(!Array.isArray(raw?.locations))throw Object.assign(Error('Die ADO-/Distribusion-Ortssuche liefert keine lesbaren Vorschläge.'),{code:'SOURCE_RESPONSE_INVALID'});
+ const found=new Map();let visited=0;
+ function walk(locations,depth=0){if(depth>5)return;for(const location of locations){if(++visited>300)throw Error('Too many locations');if(location.countryCode==='MX'&&location.type==='station'&&stationCode(location.code)){const previous=found.get(location.code);if(!previous||(previous.score||0)<(location.score||0))found.set(location.code,location);}if(Array.isArray(location.childrenLocations))walk(location.childrenLocations,depth+1);}}
+ walk(raw.locations);return [...found.values()].sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,6);
+}
+export async function findAdoStations(query,signal){
+ signal?.throwIfAborted();const q=query.trim().replace(/\bADO\b/gi,'').trim();if(q.length<2)return cachedAdoStations(query);
+ const key=normalize(q),saved=lookupCache.get(key);if(saved?.until>Date.now())return saved.stations;
+ if(Date.now()<lookupRetryAt)throw Error('Die ADO-/Distribusion-Ortssuche pausiert kurz. Bitte gleich erneut suchen.');
+ try{
+  const url=new URL('https://global-api.distribusion.com/suggestion-service/v3/locations');url.search=new URLSearchParams({q,rpn:partner,locale:'es',limitTopLevel:'6'});
+  const rows=adoSuggestionStations(await fetchJSON(url,{},signal,8000,512*1024));
+  const results=await Promise.allSettled(rows.map(async row=>{const cached=stationCache.get(row.code);if(cached?.until>Date.now())return {...cached.station};const u=new URL('https://book.api.distribusion.com/api/stations/'+row.code);u.search=new URLSearchParams({retailer_partner_number:partner,locale:'es-MX'});const station=parseAdoStation(await fetchJSON(u,{},signal,8000,128*1024));if(station.adoStationCode!==row.code)throw Error('Wrong station');station.aliases=(row.names||[]).map(n=>n.name).filter(n=>typeof n==='string').join(' ');if(stationCache.size>=200)stationCache.delete(stationCache.keys().next().value);stationCache.set(row.code,{station,until:Date.now()+86400000});return {...station};}));
+  signal?.throwIfAborted();const stations=results.filter(r=>r.status==='fulfilled').map(r=>r.value);if(rows.length&&!stations.length)throw Error('Stations unavailable');if(lookupCache.size>=100)lookupCache.delete(lookupCache.keys().next().value);lookupCache.set(key,{stations,until:Date.now()+300000});return stations;
+ }catch(error){signal?.throwIfAborted();lookupRetryAt=Date.now()+Math.max(30000,error.retryAfterMs||0);throw Error('Die ADO-/Distribusion-Ortssuche ist gerade nicht erreichbar. Weitere Ortsquellen bleiben verfügbar.');}
+}
 export function parseAdoJourneys(raw,from,to,requested){
  if(!Array.isArray(raw?.data)||!Array.isArray(raw?.included))throw Object.assign(Error('ADO hat keine auswertbare Verbindungsliste geliefert.'),{code:'SOURCE_RESPONSE_INVALID'});
  const records=new Map(raw.included.map(r=>[r.type+':'+r.id,r])),get=r=>r&&records.get(r.type+':'+r.id),stations=new Map(),journeys=[],endpointAlternatives=[],rejected={};
@@ -31,12 +64,7 @@ export function parseAdoJourneys(raw,from,to,requested){
  function station(reference){
   if(!reference||reference.type!=='stations')throw Error('missing station');
   if(stations.has(reference.id))return stations.get(reference.id);
-  const row=get(reference),a=row?.attributes,area=ref(row,'area')?.id;
-  if(!a||!stationCode(row.id)||typeof a.name!=='string'||!a.name.trim()||a.name.length>=200||![a.latitude,a.longitude].every(Number.isFinite)||!withinRegion(a.latitude,a.longitude,'mexico'))throw Error('invalid station');
-  const s={id:'ado:'+row.id,adoStationCode:row.id,name:a.name,lat:a.latitude,lon:a.longitude,dbId:'',country:'MX',main:false,networkMode:'bus',lookupSource:ADO_SOURCE,locality:get(ref(row,'city'))?.attributes?.name||'',...(area==='MXCUNCA'?{relatedAirport:'CUN'}:{})};
-  s.timeZone=mexicanLocationTimeZone({...s,timeZone:a.time_zone})||a.time_zone;
-  // Keep the supplied timezone for interpreting the operator's local timestamps.
-  const entry={station:s,zone:a.time_zone||s.timeZone};stations.set(reference.id,entry);return entry;
+  const entry=sourceStation(get(reference),get);stations.set(reference.id,entry);return entry;
  }
  const same=(asked,actual)=>distanceKm(asked,actual)<=.03&&(!asked.adoStationCode||asked.adoStationCode===actual.adoStationCode);
  const suggest=(side,asked,actual)=>{const d=distanceKm(asked,actual),location=adoLocation(asked),row=records.get('stations:'+actual.adoStationCode),sameArea=location?.type==='area'?ref(row,'area')?.id===location.code:location?.type==='city'&&ref(row,'city')?.id===location.code,limit=['city','airport'].includes(asked.placeType)&&sameArea?5:.8;if(d>limit||same(asked,actual))return;const found=endpointAlternatives.find(a=>a.side===side&&a.station.id===actual.id);if(found)found.journeys++;else endpointAlternatives.push({side,station:actual,distanceMeters:Math.round(d*1000),journeys:1});};

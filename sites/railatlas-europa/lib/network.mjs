@@ -97,6 +97,33 @@ function stopModes(tags) {
   if (['station', 'halt'].includes(tags.railway) && !['subway', 'light_rail'].includes(tags.station) && tags.train !== 'no') modes.push('rail');
   return modes;
 }
+// Route references identify the source entry; they are not verified vehicle signs.
+export function networkRouteInfo(relation){
+ const tags=relation.tags||{};
+ return {id:'relation/'+relation.id,name:tags.name||tags.ref||'Linie ohne Namen',ref:tags.ref||'',mode:networkMode(tags),...Object.fromEntries(['from','to','via','operator','network'].filter(k=>typeof tags[k]==='string'&&tags[k].trim()).map(k=>[k,tags[k]])),source:'OpenStreetMap',sourceUrl:'https://www.openstreetmap.org/relation/'+relation.id,...(relation.timestamp?{metadataSourceDate:relation.timestamp}:{})};
+}
+// Operator-supplied GeoJSON is map information, never a dated journey.
+export function parseAhorroNetwork(raw,lineId,sourceDate){
+ const detail=typeof raw?.detalleLineaResponse==='string'?JSON.parse(raw.detalleLineaResponse):raw?.detalleLineaResponse,catalogue=typeof raw?.lineasColoresResponse==='string'?JSON.parse(raw.lineasColoresResponse):raw?.lineasColoresResponse;
+ if(!/^\d{1,6}$/.test(String(lineId))||String(detail?.idBusSAE)!==String(lineId)||!Array.isArray(detail?.outTrip?.features)||!Array.isArray(catalogue))throw Error('Keine lesbaren Betreiber-Liniendaten.');
+ const metadata=catalogue.find(l=>String(l.idBusLine)===String(lineId));if(!metadata||typeof detail.descBusLine!=='string')throw Error('Betreiberkennung fehlt.');
+ const source='Ahorrobus / '+(metadata.brands||[]).map(b=>b.desBrand).filter(n=>typeof n==='string'&&n.trim()).join(' / '),sourceUrl='https://ahorrobus.com.mx/detalle-linea?idBusLine='+lineId;
+ const valid=coordinates=>Array.isArray(coordinates)&&coordinates.length===2&&coordinates.every(Number.isFinite)&&withinRegion(coordinates[1],coordinates[0],'mexico'),segments=[],points=[];
+ for(const f of detail.outTrip.features){
+  if(String(f.properties?.idBusLine)!==String(lineId))throw Error('Abweichende Betreiberkennung.');
+  if(f.geometry?.type==='MultiLineString'||f.geometry?.type==='LineString')for(const segment of f.geometry.type==='MultiLineString'?f.geometry.coordinates:[f.geometry.coordinates]){
+   if(!Array.isArray(segment)||segment.length<2||!segment.every(valid))throw Error('Ungültiger gelieferter Linienverlauf.');segments.push(segment.map(([lon,lat])=>[lat,lon]));
+  }
+  else if(f.geometry?.type==='Point'){const p=f.properties;if(!valid(f.geometry.coordinates)||!/^\d+$/.test(String(p.idBusStop))||typeof p.desBusStop!=='string'||!p.desBusStop.trim())throw Error('Ungültiger Betreiberhalt.');points.push({id:'ahorrobus:stop/'+p.idBusStop,name:p.desBusStop,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],lines:[...new Set([String(lineId),...(Array.isArray(p.busLineCrossing)?p.busLineCrossing.filter(c=>/^\d+$/.test(String(c))).map(String):[])])]});}
+ }
+ if(!segments.length||points.length<2)throw Error('Betreiberlinie ohne nutzbaren Verlauf und Halte.');
+ const line={id:'ahorrobus:line/'+lineId,ref:String(lineId),name:detail.descBusLine,mode:'bus',operator:(metadata.brands||[]).map(b=>b.desBrand).filter(Boolean).join(' / '),source,sourceUrl,sourceDate,segments};
+ // Preserve source endpoint labels only when the supplied path confirms ordering.
+ if(distanceKm({lat:segments[0][0][0],lon:segments[0][0][1]},points[0])<.25&&distanceKm({lat:segments.at(-1).at(-1)[0],lon:segments.at(-1).at(-1)[1]},points.at(-1))<.25){line.from=points[0].name;line.to=points.at(-1).name;}
+ const {segments:_,...route}=line,stops=points.map(p=>({...p,servingRoutes:[route],source,sourceUrl,sourceDate,station:{id:p.id,name:p.name,lat:p.lat,lon:p.lon,country:'MX',dbId:'',main:false,networkMode:'bus',lookupSource:source,sourceUrl,timetableStatus:'unverified'}}));
+ const coordinates=segments.flat(),bounds=[Math.min(...coordinates.map(p=>p[0])),Math.min(...coordinates.map(p=>p[1])),Math.max(...coordinates.map(p=>p[0])),Math.max(...coordinates.map(p=>p[1]))],layers=Object.fromEntries(NETWORK_MODES.map(m=>[m.id,{lines:m.id==='bus'?[line]:[],stops:m.id==='bus'?stops:[]}])) ;
+ return {layers,bounds,modes:['bus'],source,attributions:[{label:source,url:sourceUrl}],coverage:'partial'};
+}
 export function parseNetwork(data, bounds, modes) {
   validateBounds(bounds);
   if (typeof data?.remark === 'string' && data.remark.trim()) throw Error('Die Kartendatenquelle hat die Anfrage nicht vollständig ausgeführt. Bitte erneut laden oder näher heranzoomen.');
@@ -108,21 +135,22 @@ export function parseNetwork(data, bounds, modes) {
     if (relation.type !== 'relation' || !Array.isArray(relation.members)) continue;
     const mode = networkMode(relation.tags);
     if (!mode || !modes.includes(mode)) continue;
-    const tags = relation.tags || {}, segments = [];
+    const tags = relation.tags || {}, segments = [],routeInfo=networkRouteInfo(relation);
     for (const member of relation.members) {
       const key = member.type + '/' + member.ref;
       if (/^(stop|platform)(_|$)/.test(member.role || '')) {
         if (!membership.has(key)) membership.set(key, new Set());
         membership.get(key).add(mode);
-        if (!stopInfo.has(key)) stopInfo.set(key, {lines: new Set(), member});
+        if (!stopInfo.has(key)) stopInfo.set(key, {lines: new Set(), member,routes:new Map()});
         if (tags.ref) stopInfo.get(key).lines.add(tags.ref);
+        const previous=stopInfo.get(key).routes.get(routeInfo.id);stopInfo.get(key).routes.set(routeInfo.id,{...routeInfo,boardingAllowed:Boolean(previous?.boardingAllowed)||!/(^|_)exit_only$/.test(member.role||''),alightingAllowed:Boolean(previous?.alightingAllowed)||!/(^|_)entry_only$/.test(member.role||'')});
       } else if (member.type === 'way') {
        const way=elements.get('way/'+member.ref);
        const geometry=member.geometry||way?.geometry||way?.nodes?.map(id=>elements.get('node/'+id)||null);
        segments.push(...geometrySegments(geometry));
       }
     }
-    if (segments.length) layers[mode].lines.push({id: 'relation/' + relation.id, name: tags.name || tags.ref || 'Linie ohne Namen', ref: tags.ref || '', segments});
+    if (segments.length) layers[mode].lines.push({...routeInfo,segments});
   }
   const inside = (lat, lon) => lat >= bounds[0] && lon >= bounds[1] && lat <= bounds[2] && lon <= bounds[3];
   const keys = new Set([...elements.keys(), ...membership.keys()]);
@@ -134,7 +162,10 @@ export function parseNetwork(data, bounds, modes) {
     const lat = e.lat ?? e.center?.lat, lon = e.lon ?? e.center?.lon;
     if (!Number.isFinite(lat) || !Number.isFinite(lon) || !inside(lat, lon)) continue;
     const assigned = new Set([...stopModes(tags), ...(membership.get(key) || [])]);
-    for (const mode of assigned) if (modes.includes(mode)) layers[mode].stops.push({id: key, name: tags.name || tags['name:de'] || 'Halt ohne OSM-Namen', lat, lon, lines: [...(info?.lines || [])],source:'OpenStreetMap',sourceUrl:'https://www.openstreetmap.org/'+key,...(mode==='colectivo'?{boardingKind:tags.informal==='yes'?'informal':'mapped'}:{})});
+    for (const mode of assigned) if (modes.includes(mode)){
+     const servingRoutes=[...(info?.routes.values()||[])].filter(r=>r.mode===mode);
+     layers[mode].stops.push({id:key,name:tags.name||tags['name:de']||'Halt ohne OSM-Namen',lat,lon,lines:[...new Set(servingRoutes.map(r=>r.ref).filter(Boolean))],...(servingRoutes.length?{servingRoutes}:{}),source:'OpenStreetMap',sourceUrl:'https://www.openstreetmap.org/'+key,...(mode==='colectivo'?{boardingKind:tags.informal==='yes'?'informal':'mapped'}:{})});
+    }
   }
   return {layers, bounds, modes:[...modes], fetchedAt: new Date().toISOString(), source: 'OpenStreetMap / Overpass', coverage: 'partial'};
 }
@@ -338,7 +369,7 @@ export function mergeNetworkStops(primary,regional,modes){
    const previous=lines.get(line.id);if(!previous){lines.set(line.id,line);continue;}
    const firstDate=Date.parse(previous.sourceDate),lastDate=Date.parse(line.sourceDate);
    if(Number.isFinite(firstDate)&&Number.isFinite(lastDate)&&firstDate!==lastDate){if(lastDate>firstDate)lines.set(line.id,line);continue;}
-   lines.set(line.id,{...previous,segments:[...new Map([...previous.segments,...line.segments].map(s=>[JSON.stringify(s),s])).values()]});
+   lines.set(line.id,{...line,...previous,segments:[...new Map([...previous.segments,...line.segments].map(s=>[JSON.stringify(s),s])).values()]});
   }
   return [m.id,{lines:[...lines.values()],stops:[...primary.layers[m.id].stops]}];
  }));
@@ -347,7 +378,7 @@ export function mergeNetworkStops(primary,regional,modes){
  for(const mode of modes)for(const stop of regional.layers[mode].stops){
   const index=layers[mode].stops.findIndex(p=>p.id===stop.id||primaryStopIds[mode].has(p.id)&&(!p.source||!stop.source||p.source!==stop.source)&&sameNetworkStop(p,stop,mode,cos));
   if(index<0)layers[mode].stops.push(stop);
-  else{const first=layers[mode].stops[index];layers[mode].stops[index]={...first,lines:[...new Set([...first.lines,...stop.lines])],source:[...new Set([first.source,stop.source].filter(Boolean))].join(' + ')};}
+  else{const first=layers[mode].stops[index],servingRoutes=[...new Map([...(first.servingRoutes||[]),...(stop.servingRoutes||[])].map(r=>[r.id,r])).values()];layers[mode].stops[index]={...first,lines:[...new Set([...first.lines,...stop.lines])],...(servingRoutes.length?{servingRoutes}:{}),source:[...new Set([first.source,stop.source].filter(Boolean))].join(' + ')};}
  }
  const warning=[...new Set([primary.warning,regional.warning].filter(Boolean))].join(' ');
  return {...primary,layers,source:[...new Set([primary.source,regional.source].flatMap(s=>s.split(' + ')))].join(' + '),attributions:[...new Map([...(primary.attributions||[]),...(regional.attributions||[])].map(a=>[a.url,a])).values()],...(warning?{warning,warningScope:primary.warningScope==='all'||regional.warningScope==='all'?'all':'lines'}:{})};

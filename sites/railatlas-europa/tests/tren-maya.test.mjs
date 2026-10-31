@@ -53,7 +53,7 @@ test('All provider station identities use real mapped stations; IATA search keep
  assert.equal(findTrenMayaStations('Tulum').length,2);assert.equal(findTrenMayaStations('Mérida')[0].trenMayaId,'15');
  assert.equal(findTrenMayaStations('CUN')[0].trenMayaId,'22');
  let calls=0;t.mock.method(globalThis,'fetch',async()=>{calls++;throw Error('offline');});
- const r=await handleApi(new Request('https://railatlas.test/api/stations?region=mexico&q=CUN'));assert.equal(r.status,200);const d=await r.json();assert.equal(d.stations.length,2);assert.equal(d.stations[0].iata,'CUN');assert.equal(d.stations[1].trenMayaId,'22');assert.equal(calls,0);
+ const r=await handleApi(new Request('https://railatlas.test/api/stations?region=mexico&q=CUN'));assert.equal(r.status,200);const d=await r.json();assert.equal(d.stations.length,5);assert.equal(d.stations[0].iata,'CUN');assert.equal(d.stations[1].trenMayaId,'22');assert.equal(calls,0);
  const network=await fetchNetwork([19.9,-88,21.5,-86.3],['rail'],undefined,'overview',false,'mexico');
  for(const code of ['22','23','24','25'])assert.ok(network.layers.rail.stops.some(s=>s.station?.trenMayaId===code));assert.equal(calls,0);
 });

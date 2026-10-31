@@ -1607,5 +1607,73 @@ export const messages = {
   "Mexiko: Flughafenareale aus OurAirports (Public Domain), mit Quellkoordinaten und IATA-Codes; Referenzpunkte sind keine bestätigten Terminalzugänge oder ÖPNV-Halte. Details unter data/mexico-places-sources.json. Separate Colectivo-/Combi-Ebene aus ausdrücklich gekennzeichneten OSM-Routen und kartierten Einstiegen. Quelle und Datenstand sind sichtbar. Offene mexikanische GTFS-Geometrien ergänzen Bus, Metro und Bahn; ausdrücklich virtuelle Haltepunkte werden nicht als übliche Einstiege übernommen. ADO / Distribusion ergänzt die Fahrplanauskunft für bestätigte Anbieterorte rund um Cancún, Playa del Carmen und Tulum. Tren Maya ergänzt datumsbezogene Bahnfahrpläne zwischen seinen erfassten Bahnhöfen. Weitere mexikanische Fahrpläne kommen aus Transitous; eine kartierte Linie bestätigt keine Verbindung.": [
     "Mexico: airport areas from OurAirports (public domain), with source coordinates and IATA codes; reference points are not confirmed terminal accesses or public transport stops. Details in data/mexico-places-sources.json. A separate colectivo/combi layer uses explicitly tagged OSM routes and mapped boarding points. Source and data dates are visible. Open Mexican GTFS shapes supplement bus, metro and rail; explicitly virtual stops are not treated as usual boarding points. ADO / Distribusion adds timetables for confirmed provider locations around Cancún, Playa del Carmen and Tulum. Tren Maya adds dated railway timetables between its listed stations. Other Mexican timetables come from Transitous; a mapped route does not confirm a journey.",
     "México: recintos aeroportuarios de OurAirports (dominio público), con coordenadas de origen y códigos IATA; los puntos de referencia no son accesos a terminales ni paradas de transporte público confirmados. Detalles en data/mexico-places-sources.json. Una capa separada de colectivos y combis usa rutas OSM etiquetadas expresamente y puntos de subida registrados. Se muestran la fuente y la fecha de los datos. Las geometrías GTFS abiertas de México complementan autobús, metro y tren; las paradas expresamente virtuales no se tratan como puntos habituales de subida. ADO / Distribusion añade horarios para lugares confirmados del proveedor en Cancún, Playa del Carmen y Tulum. Tren Maya añade horarios ferroviarios para la fecha solicitada entre sus estaciones registradas. Otros horarios de México proceden de Transitous; una línea en el mapa no confirma un viaje."
+  ],
+  "Die ADO-/Distribusion-Ortssuche liefert keine lesbaren Vorschläge.": [
+    "The ADO/Distribusion location search returned no readable suggestions.",
+    "La búsqueda de lugares de ADO/Distribusion no devolvió sugerencias legibles."
+  ],
+  "Die ADO-/Distribusion-Ortssuche pausiert kurz. Bitte gleich erneut suchen.": [
+    "The ADO/Distribusion location search is briefly paused. Please try again shortly.",
+    "La búsqueda de lugares de ADO/Distribusion está en pausa. Inténtalo de nuevo en breve."
+  ],
+  "Die ADO-/Distribusion-Ortssuche ist gerade nicht erreichbar. Weitere Ortsquellen bleiben verfügbar.": [
+    "The ADO/Distribusion location search is currently unavailable. Other location sources remain available.",
+    "La búsqueda de lugares de ADO/Distribusion no está disponible. Otras fuentes de lugares siguen disponibles."
+  ],
+  "Richtung {0}": [
+    "Towards {0}",
+    "Dirección {0}"
+  ],
+  "Über {0}": [
+    "Via {0}",
+    "Vía {0}"
+  ],
+  "Diese Richtung hervorheben": [
+    "Highlight this direction",
+    "Resaltar esta dirección"
+  ],
+  "Nur Ausstieg": [
+    "Alighting only",
+    "Solo bajada"
+  ],
+  "Bus-/Colectivo-Linie und Richtung": [
+    "Bus/colectivo route and direction",
+    "Línea y dirección de autobús/colectivo"
+  ],
+  "Alle kartierten Richtungen": [
+    "All mapped directions",
+    "Todas las direcciones cartográficas"
+  ],
+  "Alle Bus- und Colectivo-Richtungen anzeigen": [
+    "Show all bus and colectivo directions",
+    "Mostrar todas las direcciones de autobús y colectivo"
+  ],
+  "Weitere Busanbieter und Linien": [
+    "More bus operators and routes",
+    "Más operadores y líneas de autobús"
+  ],
+  "Betreiberverzeichnis mit Linienkennungen, z. B. Mayab 481/482 und 489/490. Kartierte Betreiberverläufe: Oriente 608/609.": [
+    "Operator directory with route identifiers, such as Mayab 481/482 and 489/490. Mapped operator routes: Oriente 608/609.",
+    "Directorio del operador con identificadores de líneas, como Mayab 481/482 y 489/490. Recorridos cartográficos del operador: Oriente 608/609."
+  ],
+  "Diese Quellen ergänzen die Orientierung. Ein Linienverzeichnis oder Kartenverlauf bestätigt keine datumsbezogene Fahrt oder einen Anschluss.": [
+    "These sources help with orientation. A route directory or mapped path does not confirm a dated journey or a connection.",
+    "Estas fuentes ayudan a orientarse. Un directorio o recorrido cartográfico no confirma un viaje para una fecha ni un enlace."
+  ],
+  "CL-Kennungen stammen aus Kartendaten. Beschriftung und Ziel am Fahrzeug prüfen. Die Auswahl hebt eine kartierte Richtung hervor; sie bestätigt keinen Fahrplan.": [
+    "CL identifiers come from map data. Check the vehicle sign and destination. The selection highlights a mapped direction; it does not confirm a timetable.",
+    "Los identificadores CL proceden de datos cartográficos. Comprueba el letrero y el destino del vehículo. La selección resalta una dirección cartográfica; no confirma un horario."
+  ],
+  "Kartierte Halte dieser Richtung": [
+    "Mapped stops in this direction",
+    "Paradas cartografiadas de esta dirección"
+  ],
+  "Halte im sichtbaren Ausschnitt, alphabetisch. Weitere Einstiege können fehlen.": [
+    "Stops in the visible area, alphabetically. Other boarding points may be missing.",
+    "Paradas del área visible, por orden alfabético. Pueden faltar otros puntos de subida."
+  ],
+  "{0} Fahrplanhalte anzeigen": [
+    "Show {0} timetable stops",
+    "Mostrar {0} paradas del horario"
   ]
 };

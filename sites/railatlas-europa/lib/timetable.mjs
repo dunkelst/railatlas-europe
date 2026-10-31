@@ -4,7 +4,7 @@ import {normalize, searchStations, rankJourneys} from './rail.mjs';
 import {findTransportLocations as findBusStops} from './stop-search.mjs';
 import {getDbJourneys} from './db.mjs';
 import {getTransitousJourneys,findTransitousStations} from './transitous.mjs';
-import {getAdoJourneys} from './ado.mjs';
+import {getAdoJourneys,findAdoStations,cachedAdoStations} from './ado.mjs';
 import {getTrenMayaJourneys,findTrenMayaStations} from './tren-maya.mjs';
 import {findMexicanMapStations} from './network.mjs';
 import {mexicoLookupContext,rankMexicanLocations} from './location-search.mjs';
@@ -23,8 +23,8 @@ export async function findTimetableStations(query, source='auto', signal,region=
   if(region==='mexico'){
    const context=mexicoLookupContext(query,near);
    const trains=findTrenMayaStations(query);
-   if(context.airports.some(a=>a.iata.toLowerCase()===query.trim().toLowerCase()))return rankMexicanLocations([...context.airports,...trains],context);
-   const queries=[context.query,context.photonQuery,context.mapQuery],results=await Promise.allSettled([findTransitousStations(queries[0],signal,region,context.near),findBusStops(queries[1],signal,region,context.near),findMexicanMapStations(queries[2],context.near)]);signal?.throwIfAborted();
+   if(context.airports.some(a=>a.iata.toLowerCase()===query.trim().toLowerCase()))return rankMexicanLocations([...context.airports,...trains,...cachedAdoStations(query)],context);
+   const queries=[context.query,context.photonQuery,context.mapQuery,context.query.replace(/\bADO\b/gi,'').trim()],results=await Promise.allSettled([findTransitousStations(queries[0],signal,region,context.near),findBusStops(queries[1],signal,region,context.near),findMexicanMapStations(queries[2],context.near),findAdoStations(queries[3],signal)]);signal?.throwIfAborted();
    const matches=rankMexicanLocations([...context.airports,...trains,...results.flatMap((r,i)=>r.status==='fulfilled'?relevantStations(r.value,queries[i]):[])],context);
    if(!matches.length&&results.some(r=>r.status==='rejected'))throw Error('Die mexikanische Haltestellensuche ist gerade nur teilweise erreichbar. Bitte erneut suchen.');return matches;
   }

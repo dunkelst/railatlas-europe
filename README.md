@@ -2,7 +2,21 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **42**, Quellcommit `448603aae10c99f55822ae2f8578e8bbf2e0f36e`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **44**, Quellcommit `e0dcc42424cb6130abee85accf58fc3036485b77`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 44: Busbahnhöfe, Linienrichtungen und Einstiegsstellen in Mexiko
+
+Die gemeinsame Suche ergänzt native ADO-/Distribusion-Terminals auch außerhalb
+der Riviera Maya, mit tatsächlichen Quellkoordinaten und strenger Reiseprüfung.
+CUN zeigt Flughafenareal, Tren-Maya-Bahnhof und drei ADO-Terminals getrennt.
+Die Karte bietet Bus-/Colectivo-Richtungen einzeln an; Namen, Betreiber und die
+kartierten Halte im sichtbaren Ausschnitt sind lesbar. 23 CL-Kennungen mit 39
+Fahrtrichtungen rund um Playa sind Kartenangaben, keine bestätigten Fahrzeugnummern.
+Zwei offizielle Oriente-Karten (608/609) ergänzen tatsächliche Liniengeometrien
+und fünf benannte Halte. Turicún und Ahorrobus sind als weitere Anbieter verlinkt.
+ADO-Fahrwege, datumsbezogene Colectivo-/Oriente-Fahrten, Echtzeit und automatische
+Bus-Bahn-Anschlüsse bleiben unbestätigt. 167 Regressionen, TypeScript und drei
+Builds erfolgreich. [Prüfung und Quellen](docs/qa/railatlas-v44.md).
 
 ## Version 42: datumsbezogene Tren-Maya-Fahrpläne
 

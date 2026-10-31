@@ -1,14 +1,18 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **42**, Quellcommit `448603aae10c99f55822ae2f8578e8bbf2e0f36e`.
-**1.034** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
+Sites-Version **44**, Quellcommit `e0dcc42424cb6130abee85accf58fc3036485b77`.
+**1.041** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
-Aktuell: datumsbezogene offizielle Tren-Maya-Fahrpläne für 34 tatsächliche
-Bahnhöfe. Dieselbe Suche, Karte, Bahnhofsvorschläge und Reiseansicht wie für die
-bestehenden Quellen, einschließlich Zwischenhalten und Neuplanung. 162
-Regressionen, TypeScript und drei Builds erfolgreich. [Prüfung](qa/railatlas-v42.md).
+Aktuell: landesweite native ADO-/Distribusion-Terminalsuche, getrennte
+Bus-/Colectivo-Richtungen und zugeordnete Einstiegsstellen; offizielle
+Oriente-Kartengeometrien 608/609. 167 Regressionen, TypeScript und drei Builds
+erfolgreich. ADO-Geometrien und automatische Bus-Bahn-Anschlüsse sind weiterhin
+offen. [Prüfung und Quellen](qa/railatlas-v44.md).
+
+Weiterhin enthalten: datumsbezogene offizielle Tren-Maya-Fahrpläne für 34 tatsächliche
+Bahnhöfe, einschließlich Zwischenhalten und Neuplanung. [Prüfung](qa/railatlas-v42.md).
 
 Weiterhin enthalten: ADO-/Distribusion-Fahrpläne für bestätigte Anbieterorte rund um Cancún,
 Playa del Carmen und Tulum; explizite Übernahme tatsächlicher Terminals und
