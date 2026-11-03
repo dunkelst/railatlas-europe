@@ -1,11 +1,14 @@
 # Gemeinsamer RailAtlas-Quellstand
 
-Sites-Version **44**, Quellcommit `e0dcc42424cb6130abee85accf58fc3036485b77`.
-**1.041** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
+Sites-Version **45**, Quellcommit `124278b26b868ddd52799f96e544d385a0b60ca1`.
+**1.044** Dateien liegen bytegleich unter `sites/railatlas-europa`; das generierte
 `tsconfig.tsbuildinfo` ist ausgenommen. Das Manifest enthält Git-Blobs, SHA-256
 und Dateigrößen. Die Paritätsprüfung läuft vor der Installation in GitHub CI.
 
-Aktuell: landesweite native ADO-/Distribusion-Terminalsuche, getrennte
+Aktuell: isolierte Linienrichtungen, Ansicht des gesamten gespeicherten
+Verlaufs und Quellenhinweise zu R901 und Conecta.
+
+Weiterhin enthalten: landesweite native ADO-/Distribusion-Terminalsuche, getrennte
 Bus-/Colectivo-Richtungen und zugeordnete Einstiegsstellen; offizielle
 Oriente-Kartengeometrien 608/609. 167 Regressionen, TypeScript und drei Builds
 erfolgreich. ADO-Geometrien und automatische Bus-Bahn-Anschlüsse sind weiterhin

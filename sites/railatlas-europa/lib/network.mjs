@@ -40,7 +40,7 @@ export function networkRequestBounds(bounds,overview=false) {
   try{return validateBounds(expanded);}catch{return bounds;}
 }
 // A partial overview is not a substitute for a substantially closer query.
-export const networkCovers = (data, bounds, modes) => containsBounds(data?.bounds,bounds) && modes.every(mode=>data.modes?.includes(mode)) && [0,1].every(axis=>data.bounds[axis+2]-data.bounds[axis]<=2*(bounds[axis+2]-bounds[axis]));
+export const networkCovers = (data, bounds, modes) => containsBounds(data?.bounds,bounds) && modes.every(mode=>data.modes?.includes(mode)) && (!data.warning||data.modes.length===modes.length) && [0,1].every(axis=>data.bounds[axis+2]-data.bounds[axis]<=2*(bounds[axis+2]-bounds[axis]));
 export function networkMode(tags = {}) {
   const route = tags.route;
   if(['share_taxi','minibus'].includes(route)||route==='bus'&&colectivoTags(tags))return 'colectivo';
@@ -260,11 +260,22 @@ export function visibleNetworkSegments(sequences,bounds){
  }if(run.length>1)output.push(run);}
  return output;
 }
+export function networkLineExtent(line){
+ const points=(line?.segments||[]).flat().filter(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite));
+ let extent=Array.isArray(line?.extent)&&line.extent.length===4&&line.extent.every(Number.isFinite)?[...line.extent]:null;
+ for(const [lat,lon] of points){if(!extent){extent=[lat,lon,lat,lon];continue;}extent[0]=Math.min(extent[0],lat);extent[1]=Math.min(extent[1],lon);extent[2]=Math.max(extent[2],lat);extent[3]=Math.max(extent[3],lon);}
+ return extent;
+}
+// A direction selection isolates both road-transport layers; rail stays independent.
+export function selectNetworkRoute(data,route){
+ if(!data||!route||!['bus','colectivo'].includes(route.mode))return data;
+ return {...data,layers:Object.fromEntries(Object.entries(data.layers).map(([mode,layer])=>[mode,['bus','colectivo'].includes(mode)?{lines:layer.lines.filter(line=>line.id===route.id),stops:layer.stops.filter(stop=>stop.servingRoutes?.some(r=>r.id===route.id))}:layer]))};
+}
 // The cache can cover a larger area. Rendering and counts use this same view.
 export function networkInView(data,bounds){
  if(!data)return null;
  const layers=Object.fromEntries(Object.entries(data.layers).map(([mode,layer])=>[mode,{
-  lines:layer.lines.map(line=>({...line,segments:visibleNetworkSegments(line.segments,bounds)})).filter(line=>line.segments.length),
+  lines:layer.lines.map(line=>({...line,extent:networkLineExtent(line),segments:visibleNetworkSegments(line.segments,bounds)})).filter(line=>line.segments.length),
   stops:layer.stops.filter(stop=>insideBounds(bounds,[stop.lat,stop.lon]))
  }]));
  return {...data,bounds,layers};
@@ -369,7 +380,8 @@ export function mergeNetworkStops(primary,regional,modes){
    const previous=lines.get(line.id);if(!previous){lines.set(line.id,line);continue;}
    const firstDate=Date.parse(previous.sourceDate),lastDate=Date.parse(line.sourceDate);
    if(Number.isFinite(firstDate)&&Number.isFinite(lastDate)&&firstDate!==lastDate){if(lastDate>firstDate)lines.set(line.id,line);continue;}
-   lines.set(line.id,{...line,...previous,segments:[...new Map([...previous.segments,...line.segments].map(s=>[JSON.stringify(s),s])).values()]});
+   const segments=[...new Map([...previous.segments,...line.segments].map(s=>[JSON.stringify(s),s])).values()];
+   lines.set(line.id,{...line,...previous,segments,extent:networkLineExtent({segments:[...[previous.extent,line.extent].filter(Boolean).map(b=>[[b[0],b[1]],[b[2],b[3]]]),...segments]})});
   }
   return [m.id,{lines:[...lines.values()],stops:[...primary.layers[m.id].stops]}];
  }));
