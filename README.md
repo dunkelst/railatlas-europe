@@ -2,7 +2,13 @@
 
 [**RailAtlas auf GitHub öffnen**](https://dunkelst.github.io/railatlas-europe/) · [RailAtlas auf Sites](https://railatlas-europa.dunkelst.chatgpt.site) · [Quellstand und Abgleich](docs/sites-source-sync.md)
 
-Der gemeinsame Quellstand entspricht Sites-Version **44**, Quellcommit `e0dcc42424cb6130abee85accf58fc3036485b77`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+Der gemeinsame Quellstand entspricht Sites-Version **45**, Quellcommit `124278b26b868ddd52799f96e544d385a0b60ca1`. Er enthält 54.114 Katalogeinträge aus 38 Ländern, Bahnhofssuche, Standort-/Kartenauswahl, Zwischenziele mit Aufenthalt und echte europäische sowie partiell mexikanische Fahrplanabfragen. Die eigenständig startbare Ausgabe verwendet keinen ChatGPT-Server.
+
+## Version 45: Linienansicht und Bahnhofszubringer
+
+Die Karte isoliert die gewählte Bus- oder Colectivo-Richtung und kann den
+gespeicherten Verlauf vollständig ins Bild holen. Bei Mérida Teya und Cancún
+ergänzen offizielle R901- und Conecta-Hinweise die Stations- und Reiseansicht.
 
 ## Version 44: Busbahnhöfe, Linienrichtungen und Einstiegsstellen in Mexiko
 
