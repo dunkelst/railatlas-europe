@@ -70,6 +70,24 @@ test('The supplementary route source respects Retry-After and abort without repe
  const c=new AbortController();c.abort();await assert.rejects(module.fetchTransitousRoutes(bbox,c.signal),{name:'AbortError'});assert.equal(calls,2);
 });
 
+test('A route-only fallback retains the scope of a combined rail and bus request',async t=>{
+ clock(t);const module=await import('../lib/network.mjs?route-only-scope');
+ const bounds=[37.108,-7.69,37.145,-7.62],modes=['rail','bus'];
+ const routes=JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-tavira-routes.json.gz',import.meta.url))));
+ t.mock.method(globalThis,'fetch',async url=>{
+  const {hostname,pathname}=new URL(url);
+  if(hostname==='www.efa.de')return new Response('unavailable',{status:503});
+  if(pathname==='/api/v6/map/stops')return Response.json([]);
+  assert.equal(pathname,'/api/experimental/map/routes');
+  return Response.json(routes);
+ });
+ const data=await module.fetchNetwork(bounds,modes,undefined,'all',false,'europe');
+ assert.ok(data.layers.bus.lines.some(line=>line.ref==='42'));
+ assert.equal(data.layers.rail.stops.length,0);
+ assert.deepEqual(data.modes,modes);
+ assert.equal(module.networkResponseCovers(data,bounds,modes,'all','europe'),true);
+});
+
 test('Merging regional labels preserves primary coordinates and identities and retains genuinely different stops',()=>{
  const primary=parseTransitousNetwork(sample.stops,bbox,['bus']),raw=sample.stops.find(s=>s.name==='Heilbronn Karmeliterstraße'),stop={id:'de:08121:99',type:'stop',name:raw.name,coord:[raw.lat+.00001,raw.lon],productClasses:[5]},regional=parseEfaNetwork([stop,{...stop,id:'de:08121:999',name:'Anderer Halt'}],[],{},bbox,['bus']);
  regional.layers.bus.stops[0].lines=['Testlinie'];const before=JSON.stringify(primary),merged=mergeNetworkStops(primary,regional,['bus']);assert.equal(merged.layers.bus.stops.length,8);

@@ -4,13 +4,13 @@ import {useLocale} from '@/components/locale';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import type {Station,Journey} from '@/lib/types';
 import {assetUrl,apiUrl,runtime} from '@/lib/urls.mjs';
-import {NETWORK_MODES,NETWORK_MIN_ZOOM,MEXICO_NETWORK_MIN_ZOOM,defaultNetworkLayers,validateBounds,networkRequestBounds,networkCovers,networkInView,selectNetworkRoute,fetchNetwork} from '@/lib/network.mjs';
+import {NETWORK_MODES,NETWORK_MIN_ZOOM,MEXICO_NETWORK_MIN_ZOOM,defaultNetworkLayers,validateBounds,networkRequestBounds,networkResponseCovers,networkInView,selectNetworkRoute,fetchNetwork} from '@/lib/network.mjs';
 import {REGIONS} from '@/lib/regions.mjs';
 declare global {interface Window {L:any}}
 type LayerState=Record<string,{lines:boolean;stops:boolean}>;
 type NetworkRoute={id:string;name:string;ref:string;mode?:string;from?:string;to?:string;via?:string;operator?:string;network?:string;source?:string;sourceUrl?:string;boardingAllowed?:boolean;alightingAllowed?:boolean;extent?:number[]};
 type NetworkStop={id:string;name:string;lat:number;lon:number;lines:string[];servingRoutes?:NetworkRoute[];station?:Station;source?:string;sourceUrl?:string;sourceDate?:string;boardingKind?:string};
-type NetworkData={layers:Record<string,{lines:(NetworkRoute&{calculated?:boolean;sourceDate?:string;segments:[number,number][][]})[];stops:NetworkStop[]}>;bounds:number[];modes:string[];detail?:string;source:string;warning?:string;warningScope?:string;attributions?:{label:string;url:string}[];fetchedAt:string};
+type NetworkData={layers:Record<string,{lines:(NetworkRoute&{calculated?:boolean;sourceDate?:string;segments:[number,number][][]})[];stops:NetworkStop[]}>;bounds:number[];modes:string[];region?:string;detail?:string;source:string;warning?:string;warningScope?:string;attributions?:{label:string;url:string}[];fetchedAt:string};
 let leaflet:Promise<any>|undefined;
 function loadLeaflet(){if(window.L)return Promise.resolve(window.L);if(!leaflet)leaflet=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=assetUrl('vendor/leaflet.js');script.onload=()=>resolve(window.L);script.onerror=()=>{leaflet=undefined;reject(new Error('Die Karte konnte nicht geladen werden.'));};document.head.appendChild(script);});return leaflet;}
 export default function RailMap({stations,parts,picking,onPick,onStopPick,region='europe',focus}:{stations:Station[];parts:Journey[];picking:string|null;onPick:(lat:number,lon:number)=>void;onStopPick:(station:Station,target?:'start'|'end'|'via')=>void;region?:string;focus?:{centre:number[];zoom:number}}){
@@ -24,7 +24,7 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
  const overview=region==='mexico'&&Boolean(view&&view.zoom<NETWORK_MIN_ZOOM);
  let requestKey='';if(view)try{requestKey=networkRequestBounds(view.bounds,overview).join(',');}catch{requestKey='outside';}
  const detailVisible=Boolean(view&&view.zoom>=(region==='mexico'?MEXICO_NETWORK_MIN_ZOOM:NETWORK_MIN_ZOOM));
- const visibleNetwork=useMemo<NetworkData|null>(()=>network&&view&&detailVisible?networkInView(network,view.bounds):null,[network,view,detailVisible]);
+ const visibleNetwork=useMemo<NetworkData|null>(()=>network?.region===region&&view&&detailVisible?networkInView(network,view.bounds):null,[network,view,detailVisible,region]);
  const displayedNetwork=useMemo<NetworkData|null>(()=>selectNetworkRoute(visibleNetwork,selectedRoute),[visibleNetwork,selectedRoute]);
  const routeChoices=[...new Map([...(['bus','colectivo'].flatMap(mode=>(visibleNetwork?.layers[mode].lines||[]).map(r=>({...r,mode})))),...(selectedRoute?[selectedRoute]:[])].map(r=>[r.id,r])).values()].sort((a,b)=>a.ref.localeCompare(b.ref,undefined,{numeric:true})||(a.to||a.name).localeCompare(b.to||b.name));
  const chooseRoute=(route:NetworkRoute|null)=>{const source=route&&visibleNetwork?.layers[route.mode||'bus']?.lines.find(line=>line.id===route.id);const selected=route?{...route,...source}:null;setSelectedRoute(selected);if(selected?.mode)setLayerState(old=>({...old,[selected.mode!]:{lines:true,stops:true}}));};
@@ -61,14 +61,14 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
   if(!detailVisible){setNetwork(null);setStatus(region==='mexico'?'Für mexikanische Linien und Halte näher heranzoomen (ab Zoom 9).':'Für Linien und Halte näher heranzoomen (ab Zoom 12).');return;}
   let bounds:number[];try{bounds=validateBounds(requestKey.split(',').map(Number),overview);}catch{setStatus('Für die Detailnetze bitte näher heranzoomen.');return;}
   const forced=loadedRetry.current!==retry;loadedRetry.current=retry;
-  if(!forced&&networkCovers(networkRef.current,bounds,modes.split(','))&&networkRef.current&&(networkRef.current.detail===requestDetail||requestDetail==='stops'&&networkRef.current.detail==='all')&&Date.now()-Date.parse(networkRef.current.fetchedAt)<300000){setStatus(networkRef.current.warning?'Netzdaten teilweise geladen.':'Netzdaten geladen.');return;}
+  if(!forced&&networkRef.current&&networkResponseCovers(networkRef.current,bounds,modes.split(','),requestDetail,region)&&Date.now()-Date.parse(networkRef.current.fetchedAt)<300000){setStatus(networkRef.current.warning?'Netzdaten teilweise geladen.':'Netzdaten geladen.');return;}
   const timer=setTimeout(async()=>{setLoading(true);setStatus('Linien und Halte für diesen Ausschnitt laden …');try{
    let data;
    const config=runtime();
    if(config.requiresApiOrigin&&!config.apiOrigin)data=await fetchNetwork(bounds,modes.split(','),controller.signal,requestDetail,forced,region);
    else{const response=await fetch(apiUrl('/api/network?'+new URLSearchParams({bbox:bounds.join(','),modes,region,detail:requestDetail,...(forced?{refresh:'1'}:{})})),{signal:controller.signal});const body=await response.json() as NetworkData&{error?:string};if(!response.ok)throw Error(body.error||'Netzebenen nicht erreichbar.');data=body;}
    if(!active)return;setNetwork(data);const count=modes.split(',').reduce((n,m)=>n+data.layers[m].lines.length+data.layers[m].stops.length,0);setNetworkError(false);setStatus(count?(data.warning?'Netzdaten teilweise geladen.':'Netzdaten geladen.'):'Für diesen Ausschnitt wurden keine passenden Netzdaten geliefert.');
-  }catch(e){if(active&&!controller.signal.aborted){setNetworkError(true);setStatus(((e as Error).message||'Die Netzebenen sind gerade nicht erreichbar.')+(networkRef.current?' Bereits geladene Netzdaten bleiben sichtbar.':''));}}finally{if(active)setLoading(false);}},1000);
+  }catch(e){if(active&&!controller.signal.aborted){setNetworkError(true);setStatus((e as Error).message||'Die Netzebenen sind gerade nicht erreichbar.');}}finally{if(active)setLoading(false);}},1000);
   return()=>{active=false;clearTimeout(timer);controller.abort();};
  },[ready,requestKey,detailVisible,modes,requestDetail,retry,region]);
  useEffect(()=>{
@@ -93,7 +93,13 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
  const shownLines=(mode:string)=>displayedNetwork?.layers[mode].lines||[];
  const shownStops=(mode:string)=>displayedNetwork?.layers[mode].stops||[];
  const visibleObjects=visibleNetwork?NETWORK_MODES.reduce((n,m)=>n+(layerState[m.id].stops?shownStops(m.id).length:0)+(layerState[m.id].lines&&m.id!=='rail'?shownLines(m.id).length:0),0):0;
- const visibleStatus=visibleNetwork&&!loading&&!networkError&&!visibleObjects?'Für den sichtbaren Ausschnitt fehlen passende Netzdaten. Das bestätigt keine fehlende Bedienung.':status;
+ const viewCanLoad=Boolean(ready&&detailVisible&&modes&&requestKey!=='outside'&&requestKey);
+ const viewConfirmed=Boolean(visibleNetwork&&viewCanLoad&&networkResponseCovers(network,requestKey.split(',').map(Number),modes.split(','),requestDetail,region));
+ let visibleStatus=status;
+ if(!networkError&&!loading){
+  if(viewCanLoad&&!viewConfirmed)visibleStatus='Linien und Halte für diesen Ausschnitt laden …';
+  else if(viewConfirmed&&!visibleObjects)visibleStatus='Für den sichtbaren Ausschnitt fehlen passende Netzdaten. Das bestätigt keine fehlende Bedienung.';
+ }
  return <section className={'map-stage '+(picking?'picking':'')} aria-label={t("Bahn- und Nahverkehrskarte")}>
   <div ref={container} className="map-canvas"/>
   {error&&<div role="alert" className="map-message">{t(error)} {t(" Die Reiseplanung steht weiterhin zur Verfügung.")}</div>}
@@ -113,14 +119,14 @@ export default function RailMap({stations,parts,picking,onPick,onStopPick,region
    {region==='mexico'&&<small>{t('CL-Kennungen stammen aus Kartendaten. Beschriftung und Ziel am Fahrzeug prüfen. Die Auswahl hebt eine kartierte Richtung hervor; sie bestätigt keinen Fahrplan.')}</small>}
    {region==='mexico'&&<small>{t("Colectivos / Combis: eigene Linien- und Halteebene. Violett: kartierte Verläufe und übliche Einstiegspunkte laut Quelle. Zusätzliche Einstiege können fehlen; kein bestätigter Fahrplan.")}</small>}
    <p className={'network-status '+(networkError?'has-error':'')} role="status">{loading&&<span className="network-spinner"/>}{t(visibleStatus)}</p>
-   {visibleNetwork&&<>
+   {viewConfirmed&&visibleNetwork&&<>
     <div className="network-counts"><b>{t("Im sichtbaren Ausschnitt")}</b>
      {NETWORK_MODES.filter(m=>(layerState[m.id].lines||layerState[m.id].stops)&&visibleNetwork.modes?.includes(m.id)).map(m=><span key={m.id}>
       {t(m.label)}: {layerState[m.id].lines&&m.id!=='rail'?shownLines(m.id).length+t(' Linienverläufe')+(layerState[m.id].stops?' · ':''):''}{layerState[m.id].stops?shownStops(m.id).length+t(' Halte'):''}
      </span>)}
     </div>
     <p className="network-source">{t("Quelle: ")}{t(visibleNetwork.source)}{visibleNetwork.attributions?.map(a=><a key={a.url} href={a.url} target="_blank" rel="noreferrer">{t(a.label)}</a>)}</p>
-    {(requestDetail==='all'||visibleNetwork.warningScope!=='lines')&&visibleNetwork.warning&&<p className="network-warning" role="status">{t(visibleNetwork.warning.replace(/Für (.*?) fehlen bestätigte Linienverläufe in diesem Ausschnitt\./g,(_sentence,names)=>t('Für {0} fehlen bestätigte Linienverläufe in diesem Ausschnitt.',[names.split(', ').map((name:string)=>t(name)).join(', ')])))}</p>}
+    {(requestDetail!=='stops'||visibleNetwork.warningScope!=='lines')&&visibleNetwork.warning&&<p className="network-warning" role="status">{t(visibleNetwork.warning.replace(/Für (.*?) fehlen bestätigte Linienverläufe in diesem Ausschnitt\./g,(_sentence,names)=>t('Für {0} fehlen bestätigte Linienverläufe in diesem Ausschnitt.',[names.split(', ').map((name:string)=>t(name)).join(', ')])))}</p>}
    </>}
    {tileError&&layerState.rail.lines&&<p className="network-status has-error">{t("Einige Kacheln des Bahnnetzes konnten nicht geladen werden.")}</p>}
    <button type="button" onClick={()=>{setTileError(false);railway.current?.redraw();setRetry(n=>n+1);}} disabled={loading}>{t("Ausschnitt neu laden")}</button>

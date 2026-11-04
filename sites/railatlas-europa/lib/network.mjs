@@ -41,6 +41,13 @@ export function networkRequestBounds(bounds,overview=false) {
 }
 // A partial overview is not a substitute for a substantially closer query.
 export const networkCovers = (data, bounds, modes) => containsBounds(data?.bounds,bounds) && modes.every(mode=>data.modes?.includes(mode)) && (!data.warning||data.modes.length===modes.length) && [0,1].every(axis=>data.bounds[axis+2]-data.bounds[axis]<=2*(bounds[axis+2]-bounds[axis]));
+// A stop-only or overview reply cannot confirm newly enabled detail layers.
+export function networkResponseCovers(data, bounds, modes, detail, region) {
+  return Boolean(data?.region === region
+    && networkCovers(data, bounds, modes)
+    && (data.detail === detail || (data.detail === 'all' && detail === 'stops')));
+}
+
 export function networkMode(tags = {}) {
   const route = tags.route;
   if(['share_taxi','minibus'].includes(route)||route==='bus'&&colectivoTags(tags))return 'colectivo';
@@ -400,7 +407,7 @@ export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=fals
  const mexico=region==='mexico'||!region&&Array.isArray(bounds)&&mexicanBounds(bounds),overview=detail==='overview';
  try{if(region&&!['mexico','europe'].includes(region))throw Error('Unbekannte Region.');if(!['all','stops','overview'].includes(detail)||overview&&!mexico)throw Error('Ungültige Auswahl für die Netzdaten.');validateBounds(bounds,overview);selectedNetworkModes(modes);}catch(error){error.code='INVALID_INPUT';throw error;}
  const resultRegion=mexico?'mexico':'europe';
- if(!refresh)for(const entry of mapCache.values())if(entry.data.region===resultRegion&&Date.now()-entry.at<300000&&networkCovers(entry.data,bounds,modes)&&(entry.data.detail===detail||entry.data.detail==='all'&&detail==='stops'))return entry.data;
+ if(!refresh)for(const entry of mapCache.values())if(Date.now()-entry.at<300000&&networkResponseCovers(entry.data,bounds,modes,detail,resultRegion))return entry.data;
  if(overview){const result={...await mexicanNetwork(bounds,modes,detail,signal),region:resultRegion};if(mapCache.size>=8)mapCache.delete(mapCache.keys().next().value);mapCache.set('overview:'+modes.join(',')+':'+bounds.join(','),{data:result,at:Date.now()});return result;}
  let result,efaError,transitousError,routeError,osmError,primary,regional;
  const hasData=data=>data&&modes.some(m=>data.layers[m].lines.length||data.layers[m].stops.length),needLines=detail==='all'&&modes.some(m=>m!=='rail');
@@ -429,7 +436,7 @@ export async function fetchNetwork(bounds,modes,signal,detail='all',refresh=fals
  if(missing.length)warnings.push('Für '+missing.map(mode=>NETWORK_MODES.find(m=>m.id===mode).label).join(', ')+' fehlen bestätigte Linienverläufe in diesem Ausschnitt. '+(routeError?.responseTooLarge?'Die Linienquelle liefert zu viele Daten; bitte näher heranzoomen. ':routeError?'Die ergänzende Transitous-Linienkarte ist nicht erreichbar. ':'')+(osmError?'Auch die ergänzende OSM-Abfrage ist nicht erreichbar. ':'')+'Die gelieferten Halte bleiben nutzbar; daraus folgt keine Aussage über vorhandenen Verkehr.');
  if(modes.some(mode=>result.layers[mode].lines.some(line=>line.calculated)))warnings.push('Berechnete Linienverläufe sind gestrichelt dargestellt; sie sind keine bestätigten Original-Fahrplanverläufe.');
  const warning=[...new Set(warnings.filter(Boolean))].join(' ');
- result={...result,detail,region:resultRegion,...(warning?{warning,warningScope:primary?.warning||transitousError?'all':'lines'}:{})};
+ result={...result,modes:[...new Set(modes)],detail,region:resultRegion,...(warning?{warning,warningScope:primary?.warning||transitousError?'all':'lines'}:{})};
  if(mapCache.size>=8)mapCache.delete(mapCache.keys().next().value);
  mapCache.set(detail+':'+modes.join(',')+':'+bounds.join(','),{data:result,at:Date.now()});return result;
 }

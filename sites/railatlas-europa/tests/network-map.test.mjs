@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {gunzipSync} from 'node:zlib';
-import {parseEfaNetwork,networkRequestBounds,containsBounds,networkCovers,networkInView,visibleNetworkSegments} from '../lib/network.mjs';
+import {parseEfaNetwork,networkRequestBounds,containsBounds,networkCovers,networkResponseCovers,networkInView,visibleNetworkSegments} from '../lib/network.mjs';
 import {handleApi} from '../lib/api.mjs';
 const bbox=[51.99572,9.3293,52.00299,9.35194],baseTime=Date.parse('2026-10-26T08:00:00Z');let step=0;
 const read=(name,gzip=false)=>JSON.parse(gzip?gunzipSync(fs.readFileSync(new URL('./fixtures/'+name+'.json.gz',import.meta.url))):fs.readFileSync(new URL('./fixtures/'+name+'.json',import.meta.url)));
@@ -34,6 +34,22 @@ test('Stable viewport cells contain the view, reuse covered data and reject miss
  const b=networkRequestBounds(bbox);assert.ok(containsBounds(b,bbox));assert.deepEqual(networkRequestBounds(bbox.map(x=>x+0.000001)),b);
  const data={bounds:b,modes:['bus','tram']};assert.equal(networkCovers(data,bbox,['bus']),true);assert.equal(networkCovers(data,bbox,['subway']),false);assert.equal(networkCovers(data,[52.1,9.3,52.2,9.4],['bus']),false);
  assert.throws(()=>networkRequestBounds([30,-10,70,30]));
+});
+
+test('Viewport counters wait for the requested detail and region without discarding visible source stops',async t=>{
+ clock(t);const module=await import('../lib/network.mjs?viewport-counters');mockMap(t);
+ const stopData=await module.fetchNetwork(bbox,['bus'],undefined,'stops',false,'europe');
+ assert.equal(networkInView(stopData,bbox).layers.bus.stops.length,2);
+ assert.equal(networkResponseCovers(stopData,bbox,['bus'],'all','europe'),false);
+ assert.equal(networkResponseCovers(stopData,bbox,['bus','subway'],'stops','europe'),false);
+ const lineData=await module.fetchNetwork(bbox,['bus'],undefined,'all',false,'europe');
+ assert.equal(networkResponseCovers(lineData,bbox,['bus'],'all','europe'),true);
+ assert.equal(networkResponseCovers(lineData,bbox,['bus'],'stops','europe'),true);
+ assert.equal(networkResponseCovers(lineData,bbox,['bus'],'all','mexico'),false);
+ assert.equal(networkResponseCovers(lineData,[52.1,9.3,52.2,9.4],['bus'],'all','europe'),false);
+ const zoom=[51.997,9.339,51.999,9.342];
+ assert.equal(networkResponseCovers(lineData,zoom,['bus'],'all','europe'),false);
+ assert.equal(networkInView(lineData,zoom).layers.bus.stops.length,1);
 });
 
 test('Visible network excludes cached off-screen objects while retaining canonical stops and source fragments',()=>{
