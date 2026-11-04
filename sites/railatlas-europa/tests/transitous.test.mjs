@@ -129,6 +129,21 @@ test('Actual Friedhof to Römerstraße plans retain three full journeys, Bus 11/
  assert.equal(parseTransitousJourneys(plan(),{...a,name:'Fremder Halt'},b,requested).journeys.length,0);assert.equal(parseTransitousJourneys(plan(),a,{...b,lat:b.lat+.01},requested).journeys.length,0);
 });
 
+test('Heilbronn accepts Hbf and Hauptbahnhof for the same nearby native stop',()=>{
+ const {from,to,departure,raw}=JSON.parse(fs.readFileSync(new URL('./fixtures/transitous-heilbronn-hbf-rathaus-2026-11-05.json',import.meta.url)));
+ const result=parseTransitousJourneys(raw,from,to,departure);
+ assert.equal(result.journeys.length,1);
+ const [walk,bus]=result.journeys[0].legs;
+ assert.equal(walk.from.id,from.id);
+ assert.equal(walk.from.name,'Heilbronn Hauptbahnhof');
+ assert.equal(walk.geometry.status,'complete');
+ assert.equal(bus.line,'10');
+ assert.equal(bus.arrival,'2026-11-05T09:14:00.000Z');
+ for(const changed of [{...from,id:to.id,transitousId:to.transitousId},{...from,lat:from.lat+.01}]){
+  assert.equal(parseTransitousJourneys(raw,changed,to,departure).diagnostics.rejected.ENDPOINT_MISMATCH,1);
+ }
+});
+
 test('Vehicle paths preserve exact supplied coordinates, while missing, malformed, remote or chord-only geometry cannot fabricate routes',()=>{
  const f=faro(),origin=matchTransitousCatalogStation(f.fromCatalog,f.geocode),raw=f.nativePlan.itineraries[0],parsed=parseTransitousJourneys(f.nativePlan,origin,f.toCatalog,faroRequested);
  for(let i=0;i<raw.legs.length;i++)if(raw.legs[i].mode!=='WALK'){

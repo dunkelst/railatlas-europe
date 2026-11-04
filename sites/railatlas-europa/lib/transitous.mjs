@@ -7,6 +7,7 @@ export const TRANSITOUS_SOURCE='Transitous / MOTIS (GTFS)';
 export const TRANSITOUS_ATTRIBUTIONS=[{label:'Transitous-Datenquellen',url:'https://transitous.org/sources/'},{label:'OpenStreetMap',url:'https://www.openstreetmap.org/copyright'}];
 const modes={rail:['HIGHSPEED_RAIL','LONG_DISTANCE','NIGHT_RAIL','REGIONAL_RAIL'],suburban:['SUBURBAN'],subway:['SUBWAY'],tram:['TRAM'],bus:['BUS','COACH']};
 const localMode=new Map(Object.entries(modes).flatMap(([mode,values])=>values.map(value=>[value,mode])));
+const expandedStationName=name=>name.replace(/\bHbf\b/gi,'Hauptbahnhof');
 export function transitousModes(raw){return [...new Set((Array.isArray(raw?.modes)?raw.modes:[]).map(m=>localMode.get(m)).filter(Boolean))];}
 export function parseTransitousStation(raw){
  if(typeof raw?.stopId!=='string'||!raw.stopId.length||raw.stopId.length>500||typeof raw.name!=='string'||!raw.name.trim()||raw.name.length>=200||![raw.lat,raw.lon].every(Number.isFinite)||Math.abs(raw.lat)>90||Math.abs(raw.lon)>180)return null;
@@ -25,7 +26,7 @@ export async function findTransitousStations(query,signal,region='mexico',near){
   if(!station)return [];
   // Matched areas carry the city qualifier when it isn't part of the stop name.
   const areas=Array.isArray(s.areas)?s.areas.filter(a=>a?.matched&&typeof a.name==='string').map(a=>a.name):[];
-  const expandedName=station.name.replace(/\bHbf\b/gi,'Hauptbahnhof');
+  const expandedName=expandedStationName(station.name);
   return [{...station,country:/^[A-Z]{2}$/.test(s.country||'')?s.country:'',aliases:[expandedName,...areas].join(' ')}];
  });
  if(searchCache.size>=200)searchCache.delete(searchCache.keys().next().value);searchCache.set(key,{stations,until:Date.now()+900000});return stations;
@@ -86,7 +87,14 @@ function place(raw){
  if(raw?.vertexType!=='NORMAL'||typeof raw.name!=='string'||![raw.lat,raw.lon].every(Number.isFinite)||Math.abs(raw.lat)>90||Math.abs(raw.lon)>180)throw Error('Ungültiger Fahrplanpunkt');
  return {id:'coord:'+raw.lat+':'+raw.lon,name:raw.name,lat:raw.lat,lon:raw.lon,dbId:'',country:'',main:false,locationType:'coordinate'};
 }
-const samePlace=(a,b)=>[a,b].some(s=>s?.locationType==='coordinate')?distanceKm(a,b)<=.03:sameStation(a,b);
+const nativeStopId=s=>typeof s.transitousId==='string'&&s.id==='transitous:'+s.transitousId?s.transitousId:null;
+function samePlace(a,b){
+ if([a,b].some(s=>s.locationType==='coordinate'))return distanceKm(a,b)<=.03;
+ // Geocoder and planner can use Hbf and Hauptbahnhof for the same native stop.
+ const native=nativeStopId(a);
+ if(native&&native===nativeStopId(b)&&normalize(expandedStationName(a.name))===normalize(expandedStationName(b.name)))return distanceKm(a,b)<=.25;
+ return sameStation(a,b);
+}
 function alerts(raw,start,end,scope){
  return (raw||[]).flatMap((a,i)=>{
   const periods=(a.impactPeriod||[]).map(p=>({from:iso(p.start),until:iso(p.end)}));
@@ -148,7 +156,7 @@ export async function getTransitousJourneys(from,to,departure,signal){
  signal?.throwIfAborted();
  let origin,destination;
  try{[origin,destination]=await Promise.all([resolveCatalogEndpoint(from,signal),resolveCatalogEndpoint(to,signal)]);}catch(error){signal?.throwIfAborted();nextJourneyRequestAt=Date.now()+Math.max(30000,Number.isFinite(error.retryAfterMs)?error.retryAfterMs:0);throw error;}
- const endpoint=s=>typeof s.transitousId==='string'&&s.id==='transitous:'+s.transitousId?s.transitousId:s.lat+','+s.lon;
+ const endpoint=s=>nativeStopId(s)??s.lat+','+s.lon;
  const key=JSON.stringify([endpoint(origin),endpoint(destination),departure]),cached=journeyCache.get(key);
  // Keep source responses, then revalidate endpoints for every caller.
  let data=cached&&cached.until>Date.now()?cached.data:null;
