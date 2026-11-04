@@ -7,6 +7,7 @@ import {findMexicanAirports,mexicoLookupContext,rankMexicanLocations} from '../l
 import {parseBusStops} from '../lib/stop-search.mjs';
 import {withinRegion,mexicanLocationTimeZone} from '../lib/regions.mjs';
 import {parseTransitousJourneys} from '../lib/transitous.mjs';
+import adoStations from '../lib/ado-stations-data.mjs';
 const monterrey=()=>JSON.parse(gunzipSync(fs.readFileSync(new URL('./fixtures/transitous-mexico-monterrey.json.gz',import.meta.url))));
 
 test('CUN, MEX and their names resolve to actual airports, not bus stops or invented entrances',()=>{
@@ -28,6 +29,16 @@ test('Terminal queries retain the requested terminal and focus on the actual air
  const mex=mexicoLookupContext('Terminal 2 MEX');assert.deepEqual(mex.airports.map(a=>a.iata),['MEX']);assert.deepEqual(mex.near,[19.435822,-99.07033]);
  const f={type:'Feature',geometry:{type:'Point',coordinates:[-86.87347,21.040817]},properties:{osm_type:'W',osm_id:123,osm_key:'aeroway',osm_value:'terminal',name:'Terminal 2',countrycode:'MX',city:'Cancún'}};
  const [s]=parseBusStops({features:[f]},'Terminal 2','mexico');assert.equal(s.placeType,'terminal');assert.equal(s.locationType,'coordinate');assert.equal(s.lat,f.geometry.coordinates[1]);assert.deepEqual(parseBusStops({features:[f]},'Terminal 3','mexico'),[]);
+});
+
+test('An explicit ADO Tulum search puts the provider terminal before Avenida Tulum in Cancún',()=>{
+ const terminal=adoStations.find(s=>s.adoStationCode==='MXTULTAT');
+ const avenue={id:'osm:node/9710534261',name:'Av. Tulum ADO',lat:21.1653673,lon:-86.8262166};
+ const near=[avenue.lat,avenue.lon];
+ const ruins={id:'ado:MXTULTBU',adoStationCode:'MXTULTBU',name:'Tulum Ruins',lat:20.21956136163826,lon:-87.43616987882348};
+ const rank=q=>rankMexicanLocations([avenue,ruins,terminal],mexicoLookupContext(q,near)).map(s=>s.id);
+ assert.deepEqual(rank('ADO Tulum'),[terminal.id,ruins.id,avenue.id]);
+ assert.equal(rank('Av Tulum')[0],avenue.id);
 });
 
 test('Mexican searches exclude distant foreign matches and distinguish same-named cities and stops',()=>{
