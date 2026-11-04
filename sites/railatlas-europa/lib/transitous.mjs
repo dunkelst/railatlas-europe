@@ -19,7 +19,15 @@ export async function findTransitousStations(query,signal,region='mexico',near){
  const url=new URL('https://api.transitous.org/api/v1/geocode');url.search=new URLSearchParams({text:query,type:'STOP',place:(near||REGIONS[region].centre).join(','),numResults:'10',language:'de'});
  let raw;try{raw=await fetchJSON(url,{headers:{'User-Agent':'RailAtlas-Europa/31 (+https://github.com/dunkelst/railatlas-europe)'}},signal,16000,1024*1024);}catch(error){signal?.throwIfAborted();if(!error.responseTooLarge)nextSearchRequestAt=Date.now()+Math.max(30000,error.retryAfterMs||0);throw error;}
  if(!Array.isArray(raw))throw Object.assign(Error('Keine lesbare Haltestellensuche.'),{code:'SOURCE_RESPONSE_INVALID'});
- const stations=raw.filter(s=>s.type==='STOP'&&withinRegion(s.lat,s.lon,region)).map(s=>parseTransitousStation({...s,stopId:s.id})).filter(Boolean);
+ const stations=raw.flatMap(s=>{
+  if(s?.type!=='STOP'||!withinRegion(s.lat,s.lon,region))return [];
+  const station=parseTransitousStation({...s,stopId:s.id});
+  if(!station)return [];
+  // Matched areas carry the city qualifier when it isn't part of the stop name.
+  const areas=Array.isArray(s.areas)?s.areas.filter(a=>a?.matched&&typeof a.name==='string').map(a=>a.name):[];
+  const expandedName=station.name.replace(/\bHbf\b/gi,'Hauptbahnhof');
+  return [{...station,country:/^[A-Z]{2}$/.test(s.country||'')?s.country:'',aliases:[expandedName,...areas].join(' ')}];
+ });
  if(searchCache.size>=200)searchCache.delete(searchCache.keys().next().value);searchCache.set(key,{stations,until:Date.now()+900000});return stations;
 }
 const catalogEndpoint=s=>/^\d+$/.test(s?.id||'')&&!s.dbId&&!s.locationType;

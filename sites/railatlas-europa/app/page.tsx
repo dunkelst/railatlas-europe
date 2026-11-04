@@ -34,7 +34,7 @@ function StationField({point,label,onChange,onSelect,onLocate,onMap,onRemove,loc
     if(!live)return;setSearching(true);
     fetch(apiUrl('/api/stations?source='+source+'&region='+region+(near?'&near='+near.join(','):'')+'&q='+encodeURIComponent(point.text)),{signal:controller.signal}).then(r=>r.json() as Promise<{stations?:Station[];error?:string}>).then(data=>{
      if(!live)return;const merged=new Map<string,Station>();
-     for(const s of [...local,...(data.stations||[])]){const id=s.dbId||normalize(s.name)+':'+s.lat+':'+s.lon;if(!merged.has(id))merged.set(id,s);}
+     for(const s of [...local,...(data.stations||[])]){const id=s.transitousId?s.id:s.dbId||normalize(s.name)+':'+s.lat+':'+s.lon;if(!merged.has(id))merged.set(id,s);}
      const all=[...merged.values()],bus=all.filter(s=>s.lookupSource),known=all.filter(s=>!s.lookupSource);setOptions([...known.slice(0,bus.length?10:18),...bus].slice(0,18));setErr(data.error||'');setSearching(false);
     }).catch(()=>{if(live){setSearching(false);setErr('Die ergänzende Online-Suche ist gerade nicht erreichbar.');}});
    },600);

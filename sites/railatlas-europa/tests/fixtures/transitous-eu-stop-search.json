@@ -1,0 +1,180 @@
+{
+  "Wien Hauptbahnhof": [
+    {
+      "type": "STOP",
+      "name": "Wien Hbf",
+      "id": "at-Railway-Current-Reference-Data-2026_Pat:49:1349",
+      "lat": 48.185190000000006,
+      "lon": 16.376413,
+      "country": "AT",
+      "tz": "Europe/Vienna",
+      "modes": [
+        "HIGHSPEED_RAIL",
+        "LONG_DISTANCE",
+        "COACH",
+        "NIGHT_RAIL",
+        "REGIONAL_RAIL",
+        "SUBURBAN",
+        "SUBWAY",
+        "TRAM",
+        "BUS"
+      ],
+      "areas": []
+    },
+    {
+      "type": "STOP",
+      "name": "Wien Hauptbahnhof Ost",
+      "id": "at-PTA-Eastern-Region-Flex-2026_Pat:49:905",
+      "lat": 48.18458905999999,
+      "lon": 16.380572599999997,
+      "country": "AT",
+      "tz": "Europe/Vienna",
+      "modes": [
+        "TRAM"
+      ],
+      "areas": []
+    }
+  ],
+  "Amsterdam Leidseplein": [
+    {
+      "type": "STOP",
+      "name": "Amsterdam, Leidseplein",
+      "id": "nl-OpenOV_3980180",
+      "lat": 52.36309,
+      "lon": 4.880853,
+      "country": "NL",
+      "tz": "Europe/Amsterdam",
+      "modes": [
+        "TRAM",
+        "BUS"
+      ],
+      "areas": []
+    },
+    {
+      "type": "STOP",
+      "name": "Amsterdam Zuid",
+      "id": "nl-OpenOV_stoparea:18146",
+      "lat": 52.33882,
+      "lon": 4.8728657,
+      "country": "NL",
+      "tz": "Europe/Amsterdam",
+      "modes": [
+        "LONG_DISTANCE",
+        "REGIONAL_RAIL",
+        "SUBWAY"
+      ],
+      "areas": []
+    }
+  ],
+  "Bruxelles De Brouckère": [
+    {
+      "type": "STOP",
+      "name": "De Brouckère",
+      "id": "be-stib_15",
+      "lat": 50.849819999999994,
+      "lon": 4.352485999999999,
+      "country": "BE",
+      "tz": "Europe/Brussels",
+      "modes": [
+        "SUBWAY",
+        "TRAM",
+        "BUS"
+      ],
+      "areas": [
+        {
+          "name": "Bruxelles - Brussel",
+          "matched": true
+        }
+      ]
+    },
+    {
+      "type": "STOP",
+      "name": "Brussel De Brouckère",
+      "id": "be-delijn_gs:delijn:300712",
+      "lat": 50.85227,
+      "lon": 4.351240000000001,
+      "country": "BE",
+      "tz": "Europe/Brussels",
+      "modes": [
+        "BUS"
+      ],
+      "areas": [
+        {
+          "name": "Bruxelles - Brussel",
+          "matched": true
+        }
+      ]
+    }
+  ],
+  "Paris Bastille": [
+    {
+      "type": "STOP",
+      "name": "Bastille",
+      "id": "fr-reseau-urbain-et-interurbain-dile-de-france-mobilites_IDFM:463564",
+      "lat": 48.85259,
+      "lon": 2.368726,
+      "country": "FR",
+      "tz": "Europe/Paris",
+      "modes": [
+        "SUBWAY",
+        "BUS"
+      ],
+      "areas": [
+        {
+          "name": "Paris",
+          "matched": true
+        }
+      ]
+    },
+    {
+      "type": "STOP",
+      "name": "Paris-Est",
+      "id": "fr-horaires-sncf_FR::LMU:6cbbab30-cb0a-11e8-8bfa-f784c1c7c611:",
+      "lat": 48.876742,
+      "lon": 2.358424,
+      "country": "FR",
+      "tz": "Europe/Paris",
+      "modes": [
+        "HIGHSPEED_RAIL",
+        "REGIONAL_RAIL",
+        "BUS"
+      ],
+      "areas": []
+    }
+  ],
+  "Praha Malostranská": [
+    {
+      "type": "STOP",
+      "name": "Malostranská",
+      "id": "cz-PID_U360S1",
+      "lat": 50.091675,
+      "lon": 14.409241,
+      "country": "CZ",
+      "tz": "Europe/Prague",
+      "modes": [
+        "SUBWAY",
+        "TRAM",
+        "BUS"
+      ],
+      "areas": [
+        {
+          "name": "Praha",
+          "matched": true
+        }
+      ]
+    },
+    {
+      "type": "STOP",
+      "name": "Praha,Malostranské náměstí",
+      "id": "cz-JDF-merged_jdf:stop:27322",
+      "lat": 50.08799,
+      "lon": 14.404415,
+      "country": "CZ",
+      "tz": "Europe/Prague",
+      "modes": [
+        "BUS"
+      ],
+      "areas": []
+    }
+  ]
+}
