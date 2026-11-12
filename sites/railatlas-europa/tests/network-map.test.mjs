@@ -44,7 +44,7 @@ test('Visible network excludes cached off-screen objects while retaining canonic
  assert.equal(visible.layers.bus.stops[0].station.efaId,'de:03252:4450');assert.equal(visible.layers.bus.stops[0],data.layers.bus.stops[0]);
  assert.equal(visible.layers.bus.lines.length,2);assert.equal(JSON.stringify(data),original,'Panning must not shrink the cached source data');
  const elsewhere=networkInView(data,[52.1,9.3,52.2,9.4]);assert.equal(elsewhere.layers.bus.lines.length,0);assert.equal(elsewhere.layers.bus.stops.length,0);
- const back=networkInView(data,bbox);assert.deepEqual(back.layers.bus,data.layers.bus);
+ const back=networkInView(data,bbox);assert.deepEqual({...back.layers.bus,lines:back.layers.bus.lines.map(({extent,...line})=>line)},data.layers.bus);
 });
 
 test('Visibility requires an actual edge crossing and preserves separate source fragments without creating points',()=>{

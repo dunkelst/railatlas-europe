@@ -31,7 +31,7 @@ export const MEXICO_PLACES=[
  ['jilotepec','Jilotepec',19.9526,-99.5327],['zamora','Zamora',19.985,-102.2834],
  ['uruapan','Uruapan',19.4206,-102.0626],['zitacuaro','Zitácuaro',19.4361,-100.3573],['ixmiquilpan','Ixmiquilpan',20.4858,-99.2187],
 ].map(([id,label,lat,lon,timeZone])=>({id:String(id),label:String(label),centre:[Number(lat),Number(lon)],timeZone:String(timeZone||'America/Mexico_City')}));
-export const TIME_ZONES=['Europe/Berlin','America/Mexico_City','America/Cancun','America/Mazatlan','America/Hermosillo','America/Chihuahua','America/Tijuana','America/Monterrey','America/Merida','America/Matamoros','America/Ojinaga','America/Ciudad_Juarez','America/Bahia_Banderas'];
+export const TIME_ZONES=['Europe/Berlin','Europe/Lisbon','Atlantic/Madeira','Atlantic/Azores','Europe/London','America/Mexico_City','America/Cancun','America/Mazatlan','America/Hermosillo','America/Chihuahua','America/Tijuana','America/Monterrey','America/Merida','America/Matamoros','America/Ojinaga','America/Ciudad_Juarez','America/Bahia_Banderas'];
 
 // Provider metadata takes priority. City centres only supply a bounded fallback;
 // they must not assign a timezone to distant namesakes or arbitrary rural points.

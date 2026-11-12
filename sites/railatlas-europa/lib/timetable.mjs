@@ -28,9 +28,9 @@ export async function findTimetableStations(query, source='auto', signal,region=
    const matches=rankMexicanLocations([...context.airports,...trains,...results.flatMap((r,i)=>r.status==='fulfilled'?relevantStations(r.value,queries[i]):[])],context);
    if(!matches.length&&results.some(r=>r.status==='rejected'))throw Error('Die mexikanische Haltestellensuche ist gerade nur teilweise erreichbar. Bitte erneut suchen.');return matches;
   }
-  const results = await Promise.allSettled([providers.oebb.find(query, signal), providers.efa.find(query, signal), findBusStops(query,signal,region,near)]);
+  const results = await Promise.allSettled([providers.oebb.find(query, signal), providers.efa.find(query, signal), findBusStops(query,signal,region,near), findTransitousStations(query,signal,region,near)]);
   signal?.throwIfAborted();
-  const matches = relevantStations(results.slice(0,2).flatMap(r => r.status === 'fulfilled' ? r.value : []), query);
+  const matches = relevantStations([results[3],...results.slice(0,2)].flatMap(r => r.status === 'fulfilled' ? r.value : []), query);
   const busStops=results[2].status==='fulfilled'?results[2].value:[];
   for(const stop of busStops)if(!matches.some(s=>sameStation(s,stop)))matches.push(stop);
   if (!matches.length && results.some(r => r.status === 'rejected')) throw Error('Die ergänzende Online-Suche ist gerade nur teilweise erreichbar. Bitte erneut suchen oder eine andere Auskunft wählen.');

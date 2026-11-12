@@ -1,5 +1,10 @@
 // RailAtlas-owned interface copy. Provider notices and place names retain their original wording.
 export const messages = {
+  "Halte hier anzeigen": ["Show stops here", "Mostrar paradas aquí"],
+  "Ein Teil der Halte fehlt; die ergänzende Kartenquelle ist gerade nicht erreichbar. Vorhandene Halte bleiben nutzbar.": [
+    "Some stops are missing; the supplementary map source is currently unavailable. Existing stops remain usable.",
+    "Faltan algunas paradas; la fuente cartográfica complementaria no está disponible. Las paradas existentes siguen siendo utilizables."
+  ],
   "Fahrzeiten und Verfügbarkeit laut ADO. Echtzeit- und Störungsmeldungen sind nicht bestätigt. Der genaue Fahrweg wird nicht angezeigt.": [
     "Times and availability supplied by ADO. Live updates and disruption information are unconfirmed. The exact route is not displayed.",
     "Horarios y disponibilidad según ADO. No se confirman datos en tiempo real ni avisos de incidencias. No se muestra el recorrido exacto."
@@ -1664,6 +1669,13 @@ export const messages = {
     "CL identifiers come from map data. Check the vehicle sign and destination. The selection highlights a mapped direction; it does not confirm a timetable.",
     "Los identificadores CL proceden de datos cartográficos. Comprueba el letrero y el destino del vehículo. La selección resalta una dirección cartográfica; no confirma un horario."
   ],
+  "Gespeicherten Linienverlauf anzeigen": ["Show the saved route shape", "Mostrar el recorrido cartografiado"],
+  "Anreise zum Bahnhof": ["Getting to the station", "Cómo llegar a la estación"],
+  "R901 verbindet La Plancha mit dem Bahnhof Mérida Teya. Einstieg und aktuelle Abfahrten in der Va-y-Ven-App oder vor Ort prüfen.": ["R901 connects La Plancha with Mérida Teya station. Check boarding points and current departures in the Va-y-Ven app or locally.", "La R901 conecta La Plancha con la estación Mérida Teya. Comprueba los puntos de subida y las salidas actuales en la app Va-y-Ven o en el lugar."],
+  "Tren Maya bestätigt einen Zubringer zwischen Bahnhof und Flughafen Cancún. Terminal, Einstiegsstelle und aktuelle Abfahrten beim Betreiber prüfen.": ["Tren Maya confirms a feeder service between its station and Cancún airport. Check the terminal, boarding point and current departures with the operator.", "Tren Maya confirma un servicio de enlace entre su estación y el aeropuerto de Cancún. Consulta con el operador la terminal, el punto de subida y las salidas actuales."],
+  "ATY · offizielle R901-Karte (2026)": ["ATY · official R901 map (2026)", "ATY · mapa oficial de R901 (2026)"],
+  "Tren Maya · Betreiberinformation vom 15.08.2026": ["Tren Maya · operator notice of 15 August 2026", "Tren Maya · comunicado del operador del 15 de agosto de 2026"],
+  "Zubringerhinweis zur Orientierung. Abfahrten und Umsteigezeit sind in dieser Reise nicht berechnet.": ["Feeder guidance. Departures and transfer time are not calculated in this journey.", "Información orientativa sobre el enlace. Este viaje no calcula sus salidas ni el tiempo de transbordo."],
   "Kartierte Halte dieser Richtung": [
     "Mapped stops in this direction",
     "Paradas cartografiadas de esta dirección"

@@ -2,6 +2,16 @@
 
 Default mode: **FULL**.
 
+## Artifact retention and frozen references
+
+Keep the last three relevant development variants per project, plus every
+explicit Freeze, Master, Known-Good or Golden reference. Preserve unique source,
+required installers/starters, original references and necessary regression data.
+Trash obsolete packages only after confirming their replacement and project;
+never empty Trash as part of routine cleanup. Do not create redundant source
+archives for repository-backed work. Preserve the exact references recorded in
+`docs/FREEZE_2026-11-12.md`; later fixes must not move or overwrite those refs.
+
 The goal is the smallest correct change that preserves confirmed product behavior.
 
 ## Working order
